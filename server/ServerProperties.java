@@ -11,7 +11,7 @@ class ServerProperties {
 	public static final int DEFAULT_CLIENT_TIMEOUT = 3000;
 	public static final int DEFAULT_SERVER_PORT = 5555;
 	
-	private String properties; //Chemin du fichier de propriétés
+	private String properties; //Chemin du fichier de propriÃ©tÃ©s
 	
 	private int clientTimeout;
 	private int clientMax;
@@ -23,7 +23,7 @@ class ServerProperties {
 		this.serverPort = DEFAULT_SERVER_PORT;
 		String[] prop;
 		
-		//Si aucun chemin n'a été passé en paramètre
+		//Si aucun chemin n'a Ã©tÃ© passÃ© en paramÃ¨tre
 		if ( properties == null )
 			this.properties = "properties";
 		else
@@ -63,8 +63,10 @@ class ServerProperties {
 					  "SERVER_PORT=" + serverPort;
 		
 		try {
-			FileWriter fw = new FileWriter(new File("properties", true));
-			
+			FileWriter fw = new FileWriter(new File("properties"), false);
+			fw.write(prop);
+			fw.flush();
+			fw.close();
 		} catch ( IOException e ) { e.printStackTrace(); }
 	}
 

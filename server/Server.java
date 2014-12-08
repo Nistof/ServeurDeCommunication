@@ -47,8 +47,10 @@ public class Server {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Démarrage du serveur ...");
+		System.out.println("DÃ©marrage du serveur ...");
 		Server serv = new Server();
-		System.out.println("Serveur démarré à l'adresse : " + serv.getIPAdress() + ":" + serv.getServerPort());		
+		System.out.println("Serveur dÃ©marrÃ© Ã  l'adresse : " + serv.getIPAdress() + ":" + serv.getServerPort());	
+		try { serv.close(); } catch ( IOException e ) {}
+		System.out.println("Serveur fermÃ©");
 	}
 }
