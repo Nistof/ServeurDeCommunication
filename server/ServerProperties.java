@@ -16,22 +16,27 @@ class ServerProperties {
 	private int clientTimeout;
 	private int clientMax;
 	private int serverPort;
-		
+	
+	/**
+	 * Défini les propriétés initiales du serveur. Celles-ci sont 
+	 * soit récupérées dans le fichier dont le chemin est passé 
+	 * en paramètre, soit un nouveau est fichier "properties" 
+	 * est créé et les valeurs par défaut sont attribuées
+	 * @param properties chemin du fichier de propriétés
+	 */
 	public ServerProperties (String properties) {
 		this.clientTimeout = DEFAULT_CLIENT_TIMEOUT;
 		this.clientMax = DEFAULT_CLIENT_MAX;
 		this.serverPort = DEFAULT_SERVER_PORT;
 		String[] prop;
 		
-		//Si aucun chemin n'a été passé en paramètre
+		//Si le fichier n'existe pas ou qu'aucun fichier
+		//n'a été passé en paramètre
 		if ( properties == null )
-			this.properties = "properties";
-		else
-			this.properties = properties;
+			properties = "properties";
 		
-		//Si le fichier n'existe pas
 		File f = new File(properties);
-		if ( properties == null || !f.exists() ) {
+		if ( !f.exists() ) {
 			this.properties = "properties";
 			try {
 				f.createNewFile();
@@ -57,6 +62,9 @@ class ServerProperties {
 		} catch ( FileNotFoundException e) { e.printStackTrace(); }
 	}
 	
+	/**
+	 * Sauvegarde les données dans le fichier de propriétés
+	 */
 	public void save () {
 		String prop = "CLIENT_MAX=" + clientMax + "\n" +
 					  "CLIENT_TIMEOUT=" + clientTimeout + "\n" +
@@ -70,14 +78,27 @@ class ServerProperties {
 		} catch ( IOException e ) { e.printStackTrace(); }
 	}
 
+	/**
+	 * Donne le temps d'attente avant de considérer qu'un client ne
+	 * répond pas.
+	 * @return Temps d'attente avant de déconnecter un client ne répondant pas.
+	 */
 	public int getClientTimeout() {
 		return clientTimeout;
 	}
 
+	/**
+	 * Donne le nombre de client maximum accepté simultanément
+	 * @return Nombre de client maximum
+	 */
 	public int getClientMax() {
 		return clientMax;
 	}
 
+	/**
+	 * Donne le port sur lequel le serveur doit pouvoir être accessible.
+	 * @return port serveur.
+	 */
 	public int getServerPort() {
 		return serverPort;
 	}

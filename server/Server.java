@@ -18,6 +18,11 @@ public class Server {
 	private ServerSocket serverSocket;
 	private ServerProperties serverProperties;
 	
+	/**
+	 * Construit un nouvel objet de type Server s'occupant d'ouvrir
+	 * le socket serveur au port (5555 par défaut) défini dans le fichier "properties"
+	 * ainsi que le nombre maximum de connexion simultanées défini (4 par défaut).
+	 */
 	public Server() {
 		this.serverProperties = new ServerProperties("properties");
 		
@@ -26,15 +31,27 @@ public class Server {
 		} catch ( IOException e) { e.printStackTrace(); }
 	}
 	
+	/**
+	 * Sauvegarde les propriétés et ferme le socket serveur ouvert à la création de l'objet.
+	 * @throws IOException Le socket serveur est déjà fermé.
+	 */
 	public void close() throws IOException {
 		this.serverProperties.save();
 		this.serverSocket.close();
 	}
 	
+	/**
+	 * Renvoie vrai si le socket serveur est fermé.
+	 * @return vrai si le socket serveur est fermé, faux sinon.
+	 */
 	public boolean isClosed() {
 		return this.serverSocket.isClosed();
 	}
 	
+	/**
+	 * Donne l'adresse IP de la machine sur laquelle le serveur est démarré.
+	 * @return adresse IP du serveur.
+	 */
 	public InetAddress getIPAdress() {
 		try {
 			return InetAddress.getLocalHost();
@@ -42,6 +59,10 @@ public class Server {
 		return null;
 	}
 	
+	/**
+	 * Donne le port utilisé par le serveur.
+	 * @return port du serveur.
+	 */
 	public int getServerPort() {
 		return serverProperties.getServerPort();
 	}
