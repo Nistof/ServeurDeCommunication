@@ -1,12 +1,16 @@
 package jeu;
 
-public class Diaballik {
+import server.Server;
+
+public class Diaballik implements IJeu{
 	private Support[][] plateau;
 	private Joueur[] tabJoueur;
 	private Joueur joueurCourant;
+    private Server server;
 	
-	public Diaballik( boolean variante ) {
-		this.tabJoueur = new Joueur[2];
+	public Diaballik( boolean variante, Server server ) {
+		this.server = server;
+	    this.tabJoueur = new Joueur[2];
 		this.tabJoueur[0] = new Joueur( "Joueur 1", "Blanc" );
 		this.tabJoueur[1] = new Joueur( "Joueur 2", "Noir" );
 		this.joueurCourant = tabJoueur[0];
@@ -49,7 +53,31 @@ public class Diaballik {
 	}
 	
 	public static void main( String[] args ) {
-		Diaballik d = new Diaballik(false);
+		Diaballik d = new Diaballik(false,null);
 		System.out.println( d.toString() );
 	}
+
+    @Override
+    public String getEtatInitial() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOrdreDuTour() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String action(String action) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String Classement() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
