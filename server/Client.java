@@ -39,12 +39,10 @@ public class Client {
         char c;
         
         for ( int i = 0; i < 8; i++) {
-            val = (int)(Math.random()*95+33);
+            val = (int)(Math.random()*94+33);
             id.append((char)val);
             
         }
-        
-        System.out.println(id);
         
         return id.toString();
     }
