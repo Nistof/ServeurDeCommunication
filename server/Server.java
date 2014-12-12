@@ -67,6 +67,19 @@ public class Server {
 		return serverProperties.getServerPort();
 	}
 	
+	class ConnectionManager extends Thread {
+	    private Server server;
+	    
+	    ConnectionManager (Server server) {
+	        this.server = server;
+	        start();
+	    }
+	    
+	    public void run () {
+	        //Connection loop 
+	    }
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Démarrage du serveur ...");
 		Server serv = new Server();
