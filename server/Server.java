@@ -81,6 +81,12 @@ public class Server {
 	    return clients.get(id).receive();
 	}
 	
+	public void sendToAllClient (String msg) {
+	    for(String c : clients.keySet()) {
+	        clients.get(c).send(msg);
+	    }
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Démarrage du serveur ...");
 		Server serv = new Server();
