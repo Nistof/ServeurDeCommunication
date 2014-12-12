@@ -100,7 +100,7 @@ public class Server {
         // TODO Auto-generated method stub
         Client c = new Client(socket);
         clients.put(c.getId(), c);
-        jeu.action("");
+        jeu.add(c.getId());
         if(clients.size() == serverProperties.getClientMax())
             cm.toggleConnect();
     }

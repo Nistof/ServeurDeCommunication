@@ -5,4 +5,5 @@ public interface IJeu {
     public String getOrdreDuTour();
     public String action ( String action);
     public String Classement ();
+    public void add(String id);
 }
