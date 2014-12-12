@@ -34,10 +34,27 @@ public class Client {
     }
 
     private String genererId() {
-        return null;
+        StringBuilder id = new StringBuilder();
+        int val;
+        char c;
+        
+        for ( int i = 0; i < 8; i++) {
+            val = (int)(Math.random()*95+33);
+            id.append((char)val);
+            
+        }
+        
+        System.out.println(id);
+        
+        return id.toString();
     }
 
     public String getId() {
         return id;
+    }
+    
+    public static void main(String[] args) {
+        Client c =  new Client(null);
+        
     }
 }
