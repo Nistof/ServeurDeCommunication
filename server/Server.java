@@ -3,7 +3,11 @@ package server;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Map;
+
+import jeu.IJeu;
 
 /**
  * 
@@ -14,9 +18,12 @@ import java.net.UnknownHostException;
  * @author Sarah QULORE
  * @version 0.1, 12/03/2014
  */
+
 public class Server {
 	private ServerSocket serverSocket;
 	private ServerProperties serverProperties;
+	private Map<String, Client> clients;
+	private IJeu jeu;
 	
 	/**
 	 * Construit un nouvel objet de type Server s'occupant d'ouvrir
@@ -67,19 +74,6 @@ public class Server {
 		return serverProperties.getServerPort();
 	}
 	
-	class ConnectionManager extends Thread {
-	    private Server server;
-	    
-	    ConnectionManager (Server server) {
-	        this.server = server;
-	        start();
-	    }
-	    
-	    public void run () {
-	        //Connection loop 
-	    }
-	}
-	
 	public static void main(String[] args) {
 		System.out.println("Démarrage du serveur ...");
 		Server serv = new Server();
@@ -87,4 +81,34 @@ public class Server {
 		try { serv.close(); } catch ( IOException e ) {}
 		System.out.println("Serveur fermé");
 	}
+
+    public void add(Socket socket) {
+        // TODO Auto-generated method stub
+        Client c = new Client(socket);
+        clients.put(c.getId(), c);
+        jeu.action("");
+    }
+    
+    class GestionnaireConnexion extends Thread {
+        private Server server;
+        private boolean connect;
+        
+        GestionnaireConnexion (Server server) {
+            this.server = server;
+            this.connect = true;
+            start();
+        }
+        
+        public void run () {
+            while(connect) {
+                try {
+                    Socket tmp = server.serverSocket.accept();
+                    server.add(tmp);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

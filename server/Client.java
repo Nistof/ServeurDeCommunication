@@ -15,26 +15,29 @@ public class Client {
     
     public Client (Socket sock) {
         this.sock = sock;
-        this.id = generateId();
+        this.id = genererId();
         try {
-            this.writer = new PrintWriter(sock.getOutputStream());
-            this.reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            this.writer = new PrintWriter(this.sock.getOutputStream());
+            this.reader = new BufferedReader(new InputStreamReader(this.sock.getInputStream()));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    public void send (String msg) {
-        writer.print(msg);
+    public void envoyer (String msg) {
+        this.writer.print(msg);
     }
     
-    public String receive () throws IOException {
-        return reader.readLine();
+    public String recevoir () throws IOException {
+        return this.reader.readLine();
     }
 
-    private String generateId() {
-        // TODO Auto-generated method stub
+    private String genererId() {
         return null;
+    }
+
+    public String getId() {
+        return id;
     }
 }
