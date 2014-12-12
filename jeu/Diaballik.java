@@ -21,7 +21,16 @@ public class Diaballik implements IJeu{
 		
 		this.plateau = new Support[7][7];
 		if(variante) {
-			//completer
+			for( int i=0; i<plateau.length; i++ ) {
+				if(i==1 || i == 5){
+					this.plateau[0][i] = tabJoueurs[1].getSupport(i);
+					this.plateau[6][i] = tabJoueurs[0].getSupport(i);
+				}
+				else{
+					this.plateau[0][i] = tabJoueurs[0].getSupport(i);
+					this.plateau[6][i] = tabJoueurs[1].getSupport(i);
+				}
+			}
 		} else {
 			for( int i=0; i<plateau.length; i++ ) {
 				this.plateau[0][i] = tabJoueurs[0].getSupport(i);
@@ -30,7 +39,38 @@ public class Diaballik implements IJeu{
 		}
 	}
 	
-	public String toString() {
+	public void deplacerB(String dest){
+		
+	}
+	
+	public void deplacerS(String src, String dir){		
+		String[] j = src.split(",");
+		int[] p = new int[2];
+		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(j[i]); } 
+		
+		if(dir.equals("N")){
+			plateau[p[0]-1][p[1]] = plateau[p[0]][p[1]];
+			plateau[p[0]][p[1]] = null;
+		}
+		else{
+			if(dir.equals("S")){
+				plateau[p[0]+1][p[1]] = plateau[p[0]][p[1]];
+				plateau[p[0]][p[1]] = null;
+			}
+			else{
+				if(dir.equals("E")){
+					plateau[p[0]][p[1]+1] = plateau[p[0]][p[1]];
+					plateau[p[0]][p[1]] = null;
+				}
+				else{
+					plateau[p[0]][p[1]-1] = plateau[p[0]][p[1]];
+					plateau[p[0]][p[1]] = null;
+				}
+			}
+		}
+	}
+	
+	public String toString() {		
 		String s, sep="+";
 		
 		for( int i=0; i<plateau.length; i++ )
@@ -43,9 +83,15 @@ public class Diaballik implements IJeu{
 				if( plateau[i][j] == null )
 					s += "   |";
 				else {
-					//modifier
-					if( plateau[i][j].getABalle() )
-						s += " 0 |";
+					if( plateau[i][j].getABalle() ){
+						if( plateau[i][j].getCouleur().charAt(0) == 'N' ){
+								s += " n |";
+						}
+						if( plateau[i][j].getCouleur().charAt(0) == 'B' ){
+							s += " b |";
+						}
+					}
+					
 					else
 						s += " " + plateau[i][j].getCouleur().charAt(0) + " |";
 				}
