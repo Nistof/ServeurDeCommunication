@@ -32,7 +32,6 @@ public class Server {
 	 */
 	public Server() {
 		this.serverProperties = new ServerProperties("properties");
-		
 		try {
 			this.serverSocket = new ServerSocket( serverProperties.getServerPort(), serverProperties.getClientMax() );
 		} catch ( IOException e) { e.printStackTrace(); }
@@ -74,6 +73,14 @@ public class Server {
 		return serverProperties.getServerPort();
 	}
 	
+	public void sendToClient (String id, String msg) {
+	    clients.get(id).send(msg);
+	}
+	
+	public String receiveFromClient (String id) throws IOException {
+	    return clients.get(id).receive();
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Démarrage du serveur ...");
 		Server serv = new Server();
@@ -89,11 +96,11 @@ public class Server {
         jeu.action("");
     }
     
-    class GestionnaireConnexion extends Thread {
+    class ConnectionManager extends Thread {
         private Server server;
         private boolean connect;
         
-        GestionnaireConnexion (Server server) {
+        ConnectionManager (Server server) {
             this.server = server;
             this.connect = true;
             start();
