@@ -25,11 +25,11 @@ public class Client {
         }
     }
 
-    public void envoyer (String msg) {
+    public void send (String msg) {
         this.writer.print(msg);
     }
     
-    public String recevoir () throws IOException {
+    public String receive () throws IOException {
         return this.reader.readLine();
     }
 
