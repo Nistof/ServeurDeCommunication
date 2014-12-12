@@ -24,6 +24,7 @@ public class Server {
 	private ServerProperties serverProperties;
 	private Map<String, Client> clients;
 	private IJeu jeu;
+    private ConnectionManager cm;
 	
 	/**
 	 * Construit un nouvel objet de type Server s'occupant d'ouvrir
@@ -100,6 +101,8 @@ public class Server {
         Client c = new Client(socket);
         clients.put(c.getId(), c);
         jeu.action("");
+        if(clients.size() == serverProperties.getClientMax())
+            cm.toggleConnect();
     }
     
     class ConnectionManager extends Thread {
@@ -112,6 +115,10 @@ public class Server {
             start();
         }
         
+        public void toggleConnect() {
+            connect = !connect;
+        }
+
         public void run () {
             while(connect) {
                 try {
