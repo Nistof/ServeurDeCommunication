@@ -1,3 +1,5 @@
+package jeu;
+
 import java.util.Scanner;
 
 public abstract class CUI {

@@ -1,3 +1,5 @@
+package jeu;
+
 public class Morpion {
 	private int player;
 	private char[][] grid;
