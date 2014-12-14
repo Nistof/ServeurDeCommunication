@@ -5,8 +5,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Map;
+import java.util.HashMap;
 
+import jeu.Diaballik;
 import jeu.IJeu;
 
 /**
@@ -22,7 +23,7 @@ import jeu.IJeu;
 public class Server {
 	private ServerSocket serverSocket;
 	private ServerProperties serverProperties;
-	private Map<String, Client> clients;
+	private HashMap<String, Client> clients;
 	private IJeu jeu;
     private ConnectionManager cm;
 	
@@ -33,9 +34,17 @@ public class Server {
 	 */
 	public Server() {
 		this.serverProperties = new ServerProperties("properties");
+		this.clients = new HashMap<String, Client>();
+		this.jeu = new Diaballik(false, this);
 		try {
 			this.serverSocket = new ServerSocket( serverProperties.getServerPort(), serverProperties.getClientMax() );
 		} catch ( IOException e) { e.printStackTrace(); }
+	    this.cm = new ConnectionManager(this);
+	    System.out.println("Serveur démarré à l'adresse : " + this.getIPAdress() + ":" + this.getServerPort()); 
+	    while(true){}
+        /*try { this.close(); } catch ( IOException e ) {}
+        System.out.println("Serveur fermé");*/
+
 	}
 	
 	/**
@@ -91,9 +100,6 @@ public class Server {
 	public static void main(String[] args) {
 		System.out.println("Démarrage du serveur ...");
 		Server serv = new Server();
-		System.out.println("Serveur démarré à l'adresse : " + serv.getIPAdress() + ":" + serv.getServerPort());	
-		try { serv.close(); } catch ( IOException e ) {}
-		System.out.println("Serveur fermé");
 	}
 
     public void add(Socket socket) {
