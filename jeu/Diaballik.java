@@ -1,7 +1,5 @@
 package jeu;
 
-import java.util.HashSet;
-
 import server.Server;
 
 public class Diaballik implements IJeu{
@@ -134,7 +132,16 @@ public class Diaballik implements IJeu{
     @Override
     public void add(String id) {
         if(nbJoueur < 2) {
-            tabJoueurs[nbJoueur] =  new Joueur(id,couleurs[nbJoueur]);
+            tabJoueurs[nbJoueur++] =  new Joueur(id,couleurs[nbJoueur]);
         }
+    }
+
+    @Override
+    public void sendToAllPlayers(String action) {
+        server.sendToAllClient(action);
+    }
+    
+    public void sendToPlayer(String action) {
+        server.sendToClient(joueurCourant.getNom(), action);
     }
 }

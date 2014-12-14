@@ -6,4 +6,6 @@ public interface IJeu {
     public String action ( String action);
     public String Classement ();
     public void add(String id);
+    public void sendToAllPlayers(String action);
+    public void sendToPlayer(String action);
 }
