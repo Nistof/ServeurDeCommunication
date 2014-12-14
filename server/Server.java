@@ -46,6 +46,11 @@ public class Server {
 	 * Sauvegarde les propriétés et ferme le socket serveur ouvert à la création de l'objet.
 	 * @throws IOException Le socket serveur est déjà fermé.
 	 */
+	
+	public void launchServer () {
+	    jeu.launchGame();
+	}
+	
 	public void close() throws IOException {
 		this.serverProperties.save();
 		this.serverSocket.close();
@@ -134,6 +139,7 @@ public class Server {
                 }
                 
             }
+            server.launchServer();
         }
     }
 }

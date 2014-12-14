@@ -144,4 +144,11 @@ public class Diaballik implements IJeu{
     public void sendToPlayer(String action) {
         server.sendToClient(tabJoueurs[joueurCourant].getNom(), action);
     }
+
+    @Override
+    public void launchGame() {
+        // TODO Auto-generated method stub
+        sendToAllPlayers("Bienvenue dans Diaballik\n");
+    }
+    
 }

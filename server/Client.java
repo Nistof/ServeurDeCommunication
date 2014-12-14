@@ -27,6 +27,7 @@ public class Client {
 
     public void send (String msg) {
         this.writer.print(msg);
+        this.writer.flush();
     }
     
     public String receive () throws IOException {
