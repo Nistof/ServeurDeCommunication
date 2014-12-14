@@ -104,31 +104,7 @@ public class Diaballik implements IJeu{
 		Diaballik d = new Diaballik(false);
 	}
 
-    @Override
-    public String getEtatInitial() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getOrdreDuTour() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String action(String action) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String Classement() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
+	@Override
     public void add(String id) {
         tabJoueurs[nbJoueur++].setId(id);
         if(nbJoueur >= 2) {
