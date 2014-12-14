@@ -1,5 +1,7 @@
 package jeu;
 
+import java.io.IOException;
+
 import server.Server;
 
 public class Diaballik implements IJeu{
@@ -121,10 +123,19 @@ public class Diaballik implements IJeu{
         server.sendToClient(tabJoueurs[joueurCourant].getNom(), action);
     }
 
+    public String receiveFromPlayer() throws IOException {
+        return server.receiveFromClient(tabJoueurs[joueurCourant].getId());
+    }
     @Override
     public void launchGame() {
         // TODO Auto-generated method stub
         sendToAllPlayers("Bienvenue dans Diaballik\n");
+        try {
+            System.out.println("Joueur 1 : " + receiveFromPlayer());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
 }
