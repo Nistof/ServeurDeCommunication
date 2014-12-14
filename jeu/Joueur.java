@@ -2,6 +2,7 @@ package jeu;
 
 public class Joueur {
 	private String nom;
+	private String id;
 	private String couleur;
 	private Support[] pieces;
 	
@@ -30,4 +31,8 @@ public class Joueur {
 			
 		return null;
 	}
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

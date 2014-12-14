@@ -11,7 +11,7 @@ public class Test {
 		System.out.print ( "Voulez vous jouer avec la situation 2 :" );
 		Boolean b = sc.nextBoolean();
 	    
-		Diaballik d = new Diaballik(b,null);
+		Diaballik d = new Diaballik(b);
 		String c,src,dir,dest;
 		int cpt;
 		

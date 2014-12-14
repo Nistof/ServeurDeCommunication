@@ -6,16 +6,15 @@ public class Diaballik implements IJeu{
     private static String[] couleurs = {"Blanc", "Noir"};
 	private Support[][] plateau;
 	private Joueur[] tabJoueurs;
-	private Joueur joueurCourant;
+	private int joueurCourant;
     private Server server;
     private int nbJoueur;
 	
-	public Diaballik( boolean variante, Server server ) {
-		this.server = server;
+	public Diaballik( boolean variante) {
 	    this.tabJoueurs = new Joueur[2];
 		this.tabJoueurs[0] = new Joueur( "Joueur 1", "Blanc" );
 		this.tabJoueurs[1] = new Joueur( "Joueur 2", "Noir" );
-		this.joueurCourant = tabJoueurs[0];
+		this.joueurCourant = 0;
 		
 		this.plateau = new Support[7][7];
 		if(variante) {
@@ -35,6 +34,7 @@ public class Diaballik implements IJeu{
 				this.plateau[6][i] = tabJoueurs[1].getSupport(i);
 			}
 		}
+		this.server = new Server(this);
 	}
 	
 	public void deplacerB(String dest){
@@ -101,8 +101,7 @@ public class Diaballik implements IJeu{
 	}
 	
 	public static void main( String[] args ) {
-		Diaballik d = new Diaballik(false,null);
-		System.out.println( d.toString() );
+		Diaballik d = new Diaballik(false);
 	}
 
     @Override
@@ -131,8 +130,9 @@ public class Diaballik implements IJeu{
 
     @Override
     public void add(String id) {
-        if(nbJoueur < 2) {
-            tabJoueurs[nbJoueur++] =  new Joueur(id,couleurs[nbJoueur]);
+        tabJoueurs[nbJoueur++].setId(id);
+        if(nbJoueur >= 2) {
+            server.disalowConnections();
         }
     }
 
@@ -142,6 +142,6 @@ public class Diaballik implements IJeu{
     }
     
     public void sendToPlayer(String action) {
-        server.sendToClient(joueurCourant.getNom(), action);
+        server.sendToClient(tabJoueurs[joueurCourant].getNom(), action);
     }
 }

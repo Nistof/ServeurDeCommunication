@@ -32,21 +32,16 @@ public class Server {
 	 * le socket serveur au port (5555 par défaut) défini dans le fichier "properties"
 	 * ainsi que le nombre maximum de connexion simultanées défini (4 par défaut).
 	 */
-	public Server() {
+	public Server(IJeu jeu) {
 		this.serverProperties = new ServerProperties("properties");
 		this.clients = new HashMap<String, Client>();
-		this.jeu = new Diaballik(false, this);
+		this.jeu = jeu;
 		try {
 			this.serverSocket = new ServerSocket( serverProperties.getServerPort(), serverProperties.getClientMax() );
 		} catch ( IOException e) { e.printStackTrace(); }
 	    this.cm = new ConnectionManager(this);
 	    System.out.println("Serveur démarré à l'adresse : " + this.getIPAdress() + ":" + this.getServerPort()); 
-	    while(true){}
-        /*try { this.close(); } catch ( IOException e ) {}
-        System.out.println("Serveur fermé");*/
-
 	}
-	
 	/**
 	 * Sauvegarde les propriétés et ferme le socket serveur ouvert à la création de l'objet.
 	 * @throws IOException Le socket serveur est déjà fermé.
@@ -99,7 +94,7 @@ public class Server {
 	
 	public static void main(String[] args) {
 		System.out.println("Démarrage du serveur ...");
-		Server serv = new Server();
+		Server serv = new Server(null);
 	}
 
     public void add(Socket socket) {
@@ -107,8 +102,11 @@ public class Server {
         Client c = new Client(socket);
         clients.put(c.getId(), c);
         jeu.add(c.getId());
-        if(clients.size() == serverProperties.getClientMax())
-            cm.toggleConnect();
+    }
+    
+    public void disalowConnections() {
+        // TODO Auto-generated method stub
+        cm.toggleConnect();
     }
     
     class ConnectionManager extends Thread {
@@ -134,6 +132,7 @@ public class Server {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                
             }
         }
     }
