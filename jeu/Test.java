@@ -3,83 +3,68 @@ package jeu;
 import java.util.Scanner;
 
 public class Test {
-
-	private static Scanner sc;
+	
+	private Scanner sc;
+	private Boolean b;
+	private Diaballik d;
+	private String c,src,dir,dest;
+	private int cpt;
+	
+	public Test(){
+		sc = new Scanner(System.in);
+	    b = sc.nextBoolean();
+		d = new Diaballik(b);
+	}
+	public boolean aGagne(){
+		return d.aGagne();
+	}
+	
+	public void tour(Joueur joueur){
+		cpt = 0;
+		for(int i=0; i<3; i++){
+			System.out.println( d.toString() );
+			
+			if(cpt<2){
+				System.out.print ( "Joueur "+ joueur.getCouleur() +" (D/B/Q) :" );
+				c = sc.nextLine();
+				while(! c.equals("D") && ! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
+				
+				if(c.equals("D")){
+					System.out.println("Veuillez saisir un support (x,y) : ");
+					src = sc.nextLine();
+					System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
+					dir = sc.nextLine();
+					while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}
+					
+					d.deplacerS(src,dir);
+					cpt++;
+				}
+			}
+			else{ 
+				System.out.print ( "Joueur "+ joueur.getCouleur() +" (B/Q) :" );
+				c = sc.nextLine();
+				while(! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
+			}
+			if(c.equals("B")){
+				System.out.println("Veuillez saisir un support de destination (x,y) : ");
+				dest = sc.nextLine();
+		
+				d.deplacerB(joueur,dest);
+			}
+			if(i>=1 && c.equals("Q") || d.aGagne()){break;}
+		}
+	}
 	
 	public static void main(String[] args) {
-		sc = new Scanner(System.in);
 		System.out.print ( "Voulez vous jouer avec la situation 2 :" );
-		Boolean b = sc.nextBoolean();
-	    
-		Diaballik d = new Diaballik(b);
-		String c,src,dir,dest;
-		int cpt;
+		Test t = new Test();
+		Joueur j1 = new Joueur("J1","Blanc");
+		Joueur j2 = new Joueur("J2","Noir");
 		
-		while (true)
+		while (!t.aGagne())
 		{		
-			cpt = 0;
-			for(int i=0; i<3; i++){
-				System.out.println( d.toString() );
-				
-				//Probleme au premier tour : le joueur blanc passe un tour (surment un probleme de scanner)
-				
-				if(i<2){
-					System.out.print ( "Joueur Blanc (D/B/Q) :" );
-					c = sc.nextLine();
-					
-					if(c.equals("D")){
-						System.out.println("Veuillez saisir un support (x,y) : ");
-						src = sc.nextLine();
-						System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
-						dir = sc.nextLine();
-			
-						d.deplacerS(src,dir);
-						cpt++;
-					}
-				}
-				else{ 
-					System.out.print ( "Joueur Blanc (B/Q) :" );
-					c = sc.nextLine();
-				}
-				if(c.equals("B")){
-					System.out.println("Veuillez saisir un support de destination (x,y) : ");
-					dest = sc.nextLine();
-			
-					d.deplacerB(dest);
-				}
-				if(c.equals("Q")){break;}
-			}
-			
-			cpt=0;
-			for(int i=0; i<3; i++){
-				System.out.println( d.toString() );
-				
-				if(cpt<2){
-					System.out.print ( "Joueur Noir (D/B/Q) :" );
-					c = sc.nextLine();
-					
-					if(c.equals("D")){
-						System.out.println("Veuillez saisir un support (x,y) : ");
-						src = sc.nextLine();
-						System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
-						dir = sc.nextLine();
-			
-						d.deplacerS(src,dir);
-						cpt++;
-					}
-				}
-				else{ 
-					System.out.print ( "Joueur Noir (B/Q) :" );
-					c = sc.nextLine();
-				}
-				if(c.equals("B")){
-					System.out.println("Veuillez saisir un support de destination (x,y) : ");
-					dest = sc.nextLine();
-			
-					d.deplacerB(dest);
-				}
-				if(c.equals("Q")){break;}
-			}
+			t.tour(j1);
+			t.tour(j2);
 		}
 	}
 

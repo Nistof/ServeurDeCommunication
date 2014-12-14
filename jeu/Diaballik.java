@@ -36,11 +36,24 @@ public class Diaballik implements IJeu{
 				this.plateau[6][i] = tabJoueurs[1].getSupport(i);
 			}
 		}
-		this.server = new Server(this);
+		//this.server = new Server(this);
 	}
-	
-	public void deplacerB(String dest){
+
+	public void deplacerB(Joueur j, String dest){
+		String[] s = dest.split(",");
+		int[] p = new int[2];
+		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(s[i]); } 
 		
+		for(int i=0; i<plateau.length-1; i++){
+			for(int g=0; g<plateau.length-1; g++){
+				if(plateau[i][g] != null && plateau[i][g].getABalle() && plateau[i][g].getCouleur().equals(j.getCouleur())){
+					if(plateau[p[0]][p[1]].getCouleur().equals(j.getCouleur())){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[i][g].setABalle();
+					}
+				}
+			}			
+		}
 	}
 	
 	public void deplacerS(String src, String dir){		
@@ -68,6 +81,17 @@ public class Diaballik implements IJeu{
 				}
 			}
 		}
+	}
+	
+	public boolean aGagne(){
+		for(int i=0; i<plateau.length; i++){
+			if(plateau[0][i].getABalle() && plateau[0][i].getCouleur().equals("Noir") ||
+					plateau[6][i].getABalle() && plateau[6][i].getCouleur().equals("Blanc"))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public String toString() {		
