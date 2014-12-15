@@ -1,6 +1,8 @@
-package jeu;
+package jeu.diaballik;
 
 import java.io.IOException;
+
+import jeu.IJeu;
 
 import server.Server;
 
@@ -85,8 +87,8 @@ public class Diaballik implements IJeu{
 	
 	public boolean aGagne(){
 		for(int i=0; i<plateau.length; i++){
-			if(plateau[0][i].getABalle() && plateau[0][i].getCouleur().equals("Noir") ||
-					plateau[6][i].getABalle() && plateau[6][i].getCouleur().equals("Blanc"))
+			if( plateau[0][i]!=null && plateau[0][i].getABalle() && plateau[0][i].getCouleur().equals("Noir") ||
+					plateau[6][i]!=null && plateau[6][i].getABalle() && plateau[6][i].getCouleur().equals("Blanc"))
 			{
 				return true;
 			}

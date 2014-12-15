@@ -7,8 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import jeu.Diaballik;
 import jeu.IJeu;
+import jeu.diaballik.Diaballik;
 
 /**
  * 

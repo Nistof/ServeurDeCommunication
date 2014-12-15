@@ -1,4 +1,4 @@
-package jeu;
+package jeu.morpion;
 
 public class Morpion {
 	private int player;

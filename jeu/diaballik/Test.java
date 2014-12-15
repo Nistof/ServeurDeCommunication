@@ -1,6 +1,7 @@
-package jeu;
+package jeu.diaballik;
 
 import java.util.Scanner;
+
 
 public class Test {
 	

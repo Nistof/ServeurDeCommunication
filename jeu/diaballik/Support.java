@@ -1,4 +1,4 @@
-package jeu;
+package jeu.diaballik;
 
 public class Support {
 	private String couleur;

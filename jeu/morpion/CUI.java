@@ -1,6 +1,7 @@
-package jeu;
+package jeu.morpion;
 
 import java.util.Scanner;
+
 
 public abstract class CUI {
 	public static void main(String[] args) {

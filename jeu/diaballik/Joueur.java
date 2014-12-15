@@ -1,4 +1,5 @@
-package jeu;
+package jeu.diaballik;
+
 
 public class Joueur {
 	private String nom;
