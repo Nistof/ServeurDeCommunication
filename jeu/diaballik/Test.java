@@ -20,7 +20,7 @@ public class Test {
 		return d.aGagne();
 	}
 	
-	public void tour(Joueur joueur){
+	public void tour(JoueurDiaballik joueur){
 		cpt = 0;
 		for(int i=0; i<3; i++){
 			System.out.println( d.toString() );
@@ -59,8 +59,8 @@ public class Test {
 	public static void main(String[] args) {
 		System.out.print ( "Voulez vous jouer avec la situation 2 :" );
 		Test t = new Test();
-		Joueur j1 = new Joueur("J1","Blanc");
-		Joueur j2 = new Joueur("J2","Noir");
+		JoueurDiaballik j1 = new JoueurDiaballik("J1","Blanc");
+		JoueurDiaballik j2 = new JoueurDiaballik("J2","Noir");
 		
 		while (!t.aGagne())
 		{		

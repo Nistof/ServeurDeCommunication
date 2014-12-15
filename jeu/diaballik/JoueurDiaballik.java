@@ -1,14 +1,14 @@
 package jeu.diaballik;
 
+import jeu.Joueur;
 
-public class Joueur {
-	private String nom;
-	private String id;
+
+public class JoueurDiaballik extends Joueur {
 	private String couleur;
 	private Support[] pieces;
 	
-	public Joueur( String nom, String couleur ) {
-		this.nom = nom;
+	public JoueurDiaballik( String nom, String couleur ) {
+		super(nom);
 		this.couleur = couleur;
 		this.pieces = new Support[7];
 		
@@ -16,10 +16,6 @@ public class Joueur {
 			this.pieces[i] = new Support( this.couleur, false );
 			
 		this.pieces[3].setABalle();
-	}
-	
-	public String getNom() {
-		return this.nom;
 	}
 	
 	public String getCouleur() {
@@ -32,14 +28,4 @@ public class Joueur {
 			
 		return null;
 	}
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-    
-    
 }

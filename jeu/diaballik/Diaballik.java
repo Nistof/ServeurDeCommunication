@@ -8,15 +8,15 @@ import server.Server;
 public class Diaballik implements IJeu{
     private static String[] couleurs = {"Blanc", "Noir"};
 	private Support[][] plateau;
-	private Joueur[] tabJoueurs;
+	private JoueurDiaballik[] tabJoueurs;
 	private int joueurCourant;
     private Server server;
     private int nbJoueur;
 	
 	public Diaballik( boolean variante) {
-	    this.tabJoueurs = new Joueur[2];
-		this.tabJoueurs[0] = new Joueur( "Joueur 1", "Blanc" );
-		this.tabJoueurs[1] = new Joueur( "Joueur 2", "Noir" );
+	    this.tabJoueurs = new JoueurDiaballik[2];
+		this.tabJoueurs[0] = new JoueurDiaballik( "Joueur 1", "Blanc" );
+		this.tabJoueurs[1] = new JoueurDiaballik( "Joueur 2", "Noir" );
 		this.joueurCourant = 0;
 		
 		this.plateau = new Support[7][7];
@@ -40,7 +40,7 @@ public class Diaballik implements IJeu{
 		//this.server = new Server(this);
 	}
 
-	public void deplacerB(Joueur j, String dest){
+	public void deplacerB(JoueurDiaballik j, String dest){
 		String[] s = dest.split(",");
 		int[] p = new int[2];
 		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(s[i]); } 
