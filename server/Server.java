@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
@@ -107,6 +108,7 @@ public class Server {
         Client c = new Client(socket);
         clients.put(c.getId(), c);
         jeu.add(c.getId());
+        sendToClient(c.getId(), c.getId());
     }
     
     public void disalowConnections() {

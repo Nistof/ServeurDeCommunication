@@ -78,13 +78,13 @@ public class Morpion implements IJeu {
     }
 
     @Override
-    public void sendToAllPlayers(String action) {
-        server.sendToAllClient(action);
+    public void sendToAllPlayers(String msg) {
+        server.sendToAllClient(msg);
     }
 
     @Override
-    public void sendToPlayer(String action) {
-       server.sendToClient(players[player].getId(), action);
+    public void sendToPlayer(String msg) {
+       server.sendToClient(players[player].getId(), msg);
     }
 
     @Override
@@ -115,9 +115,9 @@ public class Morpion implements IJeu {
     }
 
     @Override
-    public boolean processMessage(String action) {
+    public boolean processMessage(String msg) {
         if ( canPlay() ) {
-            String[] pos = action.split(" ");
+            String[] pos = msg.split(" ");
             int x, y;
             if ( pos.length != 2)
                 return false;
