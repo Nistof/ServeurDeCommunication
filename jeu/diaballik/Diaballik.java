@@ -12,6 +12,7 @@ public class Diaballik implements IJeu{
 	private int joueurCourant;
     private Server server;
     private int nbJoueur;
+    private boolean finTour;
 	
 	public Diaballik( boolean variante) {
 	    this.tabJoueurs = new JoueurDiaballik[2];
@@ -195,22 +196,59 @@ public class Diaballik implements IJeu{
     public String receiveFromPlayer() throws IOException {
         return server.receiveFromClient(tabJoueurs[joueurCourant].getId());
     }
+
     @Override
     public void launchGame() {
         // TODO Auto-generated method stub
-        sendToAllPlayers("Bienvenue dans Diaballik\n");
-        try {
-            System.out.println("Joueur 1 : " + receiveFromPlayer());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        System.out.println(toString());
+        int compteTour = 0;
+        do {
+            if(finTour) {
+                changeJoueur();
+                finTour = !finTour;
+            }
+            String msg = "";
+            try {
+                msg = receiveFromPlayer();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if(processMessage(msg)) {
+                sendToAllPlayers(msg);
+                compteTour++;
+                if(compteTour == 3)
+                    finirTour();
+                System.out.println(toString());
+            }
+            else {
+                sendToPlayer(tabJoueurs[joueurCourant].getId()+"|ERROR");
+            }
+        }while(!aGagne());
     }
     
+    private void changeJoueur() {
+        joueurCourant = 1 - joueurCourant;
+    }
+
+    private void finirTour() {
+        finTour = true;
+    }
+
     @Override
-    public boolean processMessage(String action) {
-        // TODO Auto-generated method stub
-        return false;
+     public boolean processMessage(String msg) {
+        String[] action = msg.split(":");
+        boolean b = false;
+        if(action[1].equals("deplacerB")) {
+            b = deplacerB(tabJoueurs[joueurCourant].getCouleur(), action[2]);
+        }
+        else if(action[1].equals("deplacerS")) {
+            b = deplacerS(tabJoueurs[joueurCourant].getCouleur(),action[2], action[3]);
+        }
+        else if(action[1].equals("finTour")) {
+            b = true;
+        }
+        return b;
     }
     
 }
