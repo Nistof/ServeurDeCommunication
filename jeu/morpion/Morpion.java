@@ -1,36 +1,30 @@
 package jeu.morpion;
 
-public class Morpion {
-	private int player;
+import java.io.IOException;
+
+import jeu.IJeu;
+import jeu.diaballik.Joueur;
+import server.Server;
+
+public class Morpion implements IJeu {
+	private static char[] symbols = {'X', 'O'};
+    private int player;
+	private int playersCount;
+	private Joueur[] players;
+	private Server server;
 	private char[][] grid;
 	
 	public Morpion() {
 		this.player = 0;
+		this.players = new Joueur[2];
+		this.players[0] = new Joueur("X", null);
+		this.players[1] = new Joueur("O", null);
 		this.grid = new char[3][3];
 		
 		for ( int j = 0; j < grid.length; j++)
 			for ( int i = 0; i < grid[0].length; i++)
-				grid[i][j] = ' ';		
-	}
-	
-	public boolean action (String action) {
-		if ( canPlay() ) {
-			String[] pos = action.split(" ");
-			int x, y;
-			if ( pos.length != 2)
-				return false;
-			
-			x = Integer.parseInt(pos[0]);
-			y = Integer.parseInt(pos[1]);
-			
-			if ( grid[x][y] == 'X' || grid[x][y] == 'O')
-				return false;
-			
-			grid[x][y] = (player == 0)?'X':'O';
-			return true;
-		}
-		
-		return false;
+				grid[i][j] = ' ';	
+		this.server = new Server(this);
 	}
 	
 	public boolean canPlay() {
@@ -74,4 +68,74 @@ public class Morpion {
 		
 		return str;
 	}
+
+    @Override
+    public void add(String id) {
+        players[playersCount++].setId(id);
+        if(playersCount >= 2) {
+            server.disalowConnections();
+        }
+    }
+
+    @Override
+    public void sendToAllPlayers(String action) {
+        server.sendToAllClient(action);
+    }
+
+    @Override
+    public void sendToPlayer(String action) {
+       server.sendToClient(players[player].getId(), action);
+    }
+
+    @Override
+    public void launchGame() {
+        // TODO Auto-generated method stub
+        do {
+            String msg = "";
+            try {
+                msg = receiveFromPlayer();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if(processMessage(msg)) {
+                sendToAllPlayers(msg);
+                changePlayer();
+            }
+            else {
+                sendToPlayer(players[player].getId()+"|ERROR");
+            }
+            System.out.println(this.toString());
+        }while(!win());
+    }
+
+    @Override
+    public String receiveFromPlayer() throws IOException {
+        return server.receiveFromClient(players[player].getId());
+    }
+
+    @Override
+    public boolean processMessage(String action) {
+        if ( canPlay() ) {
+            String[] pos = action.split(" ");
+            int x, y;
+            if ( pos.length != 2)
+                return false;
+            
+            x = Integer.parseInt(pos[0]);
+            y = Integer.parseInt(pos[1]);
+            
+            if ( grid[x][y] == 'X' || grid[x][y] == 'O')
+                return false;
+            
+            grid[x][y] = symbols[player];
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public static void main(String[] args) {
+        new Morpion();
+    }
 }

@@ -15,7 +15,7 @@ public abstract class CUI {
 			if ( m.canPlay()) {
 				System.out.print(m.getPlayer() + " : ");
 				str = sc.nextLine();
-				if ( m.action(str) && !m.win())
+				if ( m.processMessage(str) && !m.win())
 					m.changePlayer();
 			}
 		} while ( !m.win() && m.canPlay() );

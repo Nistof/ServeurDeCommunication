@@ -3,7 +3,6 @@ package jeu.diaballik;
 import java.io.IOException;
 
 import jeu.IJeu;
-
 import server.Server;
 
 public class Diaballik implements IJeu{
@@ -162,6 +161,12 @@ public class Diaballik implements IJeu{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+    @Override
+    public boolean processMessage(String action) {
+        // TODO Auto-generated method stub
+        return false;
     }
     
 }
