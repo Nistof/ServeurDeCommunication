@@ -37,7 +37,13 @@ public class Test {
 					dir = sc.nextLine();
 					while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}
 					
-					d.deplacerS(src,dir);
+					while (! d.deplacerS(joueur.getCouleur(),src,dir)){
+						System.out.println("Veuillez saisir un support (x,y) : ");
+						src = sc.nextLine();
+						System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
+						dir = sc.nextLine();
+						while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}					
+					}
 					cpt++;
 				}
 			}
@@ -50,7 +56,10 @@ public class Test {
 				System.out.println("Veuillez saisir un support de destination (x,y) : ");
 				dest = sc.nextLine();
 		
-				d.deplacerB(joueur,dest);
+				while (! d.deplacerB(joueur.getCouleur(),dest)){
+					System.out.println("Veuillez saisir un support de destination (x,y) : ");
+					dest = sc.nextLine();
+				}
 			}
 			if(i>=1 && c.equals("Q") || d.aGagne()){break;}
 		}
@@ -68,5 +77,4 @@ public class Test {
 			t.tour(j2);
 		}
 	}
-
 }

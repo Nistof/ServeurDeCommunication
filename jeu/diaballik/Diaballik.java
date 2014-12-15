@@ -40,48 +40,92 @@ public class Diaballik implements IJeu{
 		//this.server = new Server(this);
 	}
 
-	public void deplacerB(JoueurDiaballik j, String dest){
+	public boolean deplacerB(String coul, String dest){
 		String[] s = dest.split(",");
+		int x=0,y=0;
 		int[] p = new int[2];
 		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(s[i]); } 
 		
-		for(int i=0; i<plateau.length-1; i++){
-			for(int g=0; g<plateau.length-1; g++){
-				if(plateau[i][g] != null && plateau[i][g].getABalle() && plateau[i][g].getCouleur().equals(j.getCouleur())){
-					if(plateau[p[0]][p[1]].getCouleur().equals(j.getCouleur())){
-						plateau[p[0]][p[1]].setABalle();
-						plateau[i][g].setABalle();
-					}
+		for(int i=0; i<plateau.length; i++){
+			for(int j=0; j<plateau.length; j++){
+				if(plateau[i][j] != null && plateau[i][j].getABalle() && plateau[i][j].getCouleur().equals(coul)){
+					x=i;
+					y=j;
 				}
 			}			
 		}
+		for(int i=1; i<plateau.length; i++){
+			if ( x-i>=0 && x-i<7 && y-i>=0 && y-i<7 && plateau[x - i][y - i] == plateau[p[0]][p[1]] && plateau[x - i][y - i].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}
+			if ( x-i>=0 && x-i<7 && plateau[x - i][y] == plateau[p[0]][p[1]] && plateau[x - i][y].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}
+			if ( x-i>=0 && x-i<7 && y+i<7 && y+i>=0 && plateau[x - i][y + i] == plateau[p[0]][p[1]] && plateau[x - i][y + i].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}
+			if ( y-i<7 && y-i>=0 && plateau[x][y - i] == plateau[p[0]][p[1]] && plateau[x][y - i].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}
+			if ( y+i<7 && y+i>=0 && plateau[x][y + i] == plateau[p[0]][p[1]] && plateau[x][y + i].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}		
+			if (  x+i>=0 && x+i<7 && y-i<7 && y-i>=0 && plateau[x + i][y - i] == plateau[p[0]][p[1]] && plateau[x + i][y - i].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}
+			if (  x+i>=0 && x+i<7 && plateau[x + i][y] == plateau[p[0]][p[1]] && plateau[x + i][y].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			}
+			if ( x+i>=0 && x+i<7 && y+i<7 && y+i>=0 && plateau[x + i][y + i] == plateau[p[0]][p[1]] && plateau[x + i][y + i].getCouleur().equals(coul)){
+				plateau[p[0]][p[1]].setABalle();
+				plateau[x][y].setABalle();
+				return true;
+			
+			}			
+		}
+		return false;
 	}
 	
-	public void deplacerS(String src, String dir){		
+	public boolean deplacerS(String coul, String src, String dir){		
 		String[] j = src.split(",");
 		int[] p = new int[2];
 		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(j[i]); } 
-		
-		if(dir.equals("N")){
+		if(plateau[p[0]][p[1]].getABalle()){ return false; }
+		if(p[0] != 0 && dir.equals("N") && plateau[p[0]][p[1]].getCouleur().equals(coul)){
 			plateau[p[0]-1][p[1]] = plateau[p[0]][p[1]];
 			plateau[p[0]][p[1]] = null;
+			return true;
 		}
-		else{
-			if(dir.equals("S")){
-				plateau[p[0]+1][p[1]] = plateau[p[0]][p[1]];
-				plateau[p[0]][p[1]] = null;
-			}
-			else{
-				if(dir.equals("E")){
-					plateau[p[0]][p[1]+1] = plateau[p[0]][p[1]];
-					plateau[p[0]][p[1]] = null;
-				}
-				else{
-					plateau[p[0]][p[1]-1] = plateau[p[0]][p[1]];
-					plateau[p[0]][p[1]] = null;
-				}
-			}
+		if(p[0] != 6 && dir.equals("S") && plateau[p[0]][p[1]].getCouleur().equals(coul)){
+			plateau[p[0]+1][p[1]] = plateau[p[0]][p[1]];
+			plateau[p[0]][p[1]] = null;
+			return true;
 		}
+		if(p[1] != 6 && dir.equals("E") && plateau[p[0]][p[1]].getCouleur().equals(coul)){
+			plateau[p[0]][p[1]+1] = plateau[p[0]][p[1]];
+			plateau[p[0]][p[1]] = null;
+			return true;
+		}
+		if(p[1] != 0 &&dir.equals("O") && plateau[p[0]][p[1]].getCouleur().equals(coul)){	
+			plateau[p[0]][p[1]-1] = plateau[p[0]][p[1]];
+			plateau[p[0]][p[1]] = null;
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean aGagne(){
