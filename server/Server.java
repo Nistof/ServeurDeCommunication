@@ -34,7 +34,7 @@ public class Server {
 	 * ainsi que le nombre maximum de connexion simultanées défini (4 par défaut).
 	 */
 	public Server(IJeu jeu) {
-		this.serverProperties = new ServerProperties("properties");
+		this.serverProperties = new ServerProperties("properties.xml");
 		this.clients = new HashMap<String, Client>();
 		this.jeu = jeu;
 		try {
