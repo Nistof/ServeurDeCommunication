@@ -122,4 +122,18 @@ class ServerProperties {
 	public int getServerPort() {
 		return serverPort;
 	}
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public int getClientDelay() {
+        return clientDelay;
+    }
+
+    public int getTimeWait() {
+        return timeWait;
+    }
+	
+	
 }

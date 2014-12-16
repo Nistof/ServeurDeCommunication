@@ -90,7 +90,7 @@ public class Morpion implements IJeu {
     @Override
     public void launchGame() {
         // TODO Auto-generated method stub
-        do {
+        while(!win() && playersCount == 2) {
             String msg = "";
             try {
                 msg = receiveFromPlayer();
@@ -106,7 +106,10 @@ public class Morpion implements IJeu {
                 sendToPlayer(players[player].getId()+"|ERROR");
             }
             System.out.println(this.toString());
-        }while(!win());
+        }
+        if(playersCount != 2)
+            changePlayer();
+        sendToAllPlayers(players[player].getId()+":win");
     }
 
     @Override
@@ -116,8 +119,13 @@ public class Morpion implements IJeu {
 
     @Override
     public boolean processMessage(String msg) {
+        String[] action = msg.split(":");
+        if(action[1].equals("disconnect")) {
+            playersCount--;
+            return false;
+        }
         if ( canPlay() ) {
-            String[] pos = msg.split(" ");
+            String[] pos = action[1].split(",");
             int x, y;
             if ( pos.length != 2)
                 return false;

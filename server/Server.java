@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
@@ -39,7 +40,9 @@ public class Server {
 		this.jeu = jeu;
 		try {
 			this.serverSocket = new ServerSocket( serverProperties.getServerPort(), serverProperties.getClientMax() );
+			this.serverSocket.setSoTimeout(serverProperties.getClientTimeout());
 		} catch ( IOException e) { e.printStackTrace(); }
+		
 	    this.cm = new ConnectionManager(this);
 	    System.out.println("Serveur démarré à l'adresse : " + this.getIPAdress() + ":" + this.getServerPort()); 
 	}
@@ -89,7 +92,18 @@ public class Server {
 	}
 	
 	public String receiveFromClient (String id) throws IOException {
-	    return clients.get(id).receive();
+	    String msg = "";
+	    try {
+            Thread.sleep(serverProperties.getClientDelay());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+	    msg = clients.get(id).receive();
+	    if(msg == null) {
+	        msg = "disconnected";
+	    }
+	    return "id:"+msg;
 	}
 	
 	public void sendToAllClient (String msg) {
@@ -135,11 +149,12 @@ public class Server {
                 try {
                     Socket tmp = server.serverSocket.accept();
                     server.add(tmp);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                
+                } catch (SocketTimeoutException s) {
+                    toggleConnect();
+                    launchServer();
+                } catch (IOException i) {
+                    i.printStackTrace();
+                } 
             }
             server.launchServer();
         }
