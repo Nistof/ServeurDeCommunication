@@ -94,7 +94,7 @@ public class Server {
 	public String receiveFromClient (String id) throws IOException {
 	    String msg = "";
 	    try {
-            Thread.sleep(serverProperties.getClientDelay());
+            Thread.sleep(serverProperties.getTimeWait());
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -120,7 +120,7 @@ public class Morpion implements IJeu {
     @Override
     public boolean processMessage(String msg) {
         String[] action = msg.split(":");
-        if(action[1].equals("disconnect")) {
+        if(action[1].equals("disconnected")) {
             playersCount--;
             return false;
         }

@@ -10,7 +10,7 @@ class ServerProperties {
 	public static final int DEFAULT_CLIENT_MAX = 4;
 	public static final int DEFAULT_CLIENT_TIMEOUT = 3000;
 	public static final int DEFAULT_CLIENT_DELAY = 10000;
-	public static final int DEFAULT_TIME_WAIT = 5000;
+	public static final int DEFAULT_TIME_WAIT = 2000;
 	public static final int DEFAULT_SERVER_PORT = 5555;
 	
 	private String properties; //Chemin du fichier de propriétés
