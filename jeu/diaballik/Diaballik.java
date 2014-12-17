@@ -43,60 +43,126 @@ public class Diaballik implements IJeu{
 
 	public boolean deplacerB(String coul, String dest){
 		String[] s = dest.split(",");
-		int x=0,y=0;
+		int cpt=0,x=0,y=0;
 		int[] p = new int[2];
 		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(s[i]); } 
 		
-		for(int i=0; i<plateau.length; i++){
-			for(int j=0; j<plateau.length; j++){
-				if(plateau[i][j] != null && plateau[i][j].getABalle() && plateau[i][j].getCouleur().equals(coul)){
-					x=i;
-					y=j;
+		if(plateau[p[0]][p[1]]!=null){
+			for(int i=0; i<plateau.length; i++){
+				for(int j=0; j<plateau.length; j++){
+					if(plateau[i][j] != null && plateau[i][j].getABalle() && plateau[i][j].getCouleur().equals(coul)){
+						x=i;
+						y=j;
+					}
+				}			
+			}
+			for(int i=1; i<plateau.length; i++){
+				if ( x-i>=0 && x-i<7 && y-i>=0 && y-i<7 && plateau[x - i][y - i] == plateau[p[0]][p[1]] && plateau[x - i][y - i].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if(x-i+j<x && y-i+j<y && ! plateau[x-i+j][y-i+j].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
 				}
-			}			
-		}
-		for(int i=1; i<plateau.length; i++){
-			if ( x-i>=0 && x-i<7 && y-i>=0 && y-i<7 && plateau[x - i][y - i] == plateau[p[0]][p[1]] && plateau[x - i][y - i].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
+				if ( x-i>=0 && x-i<7 && plateau[x - i][y] == plateau[p[0]][p[1]] && plateau[x - i][y].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if(x-i+j<x && ! plateau[x-i+j][y].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				}
+				if ( x-i>=0 && x-i<7 && y+i<7 && y+i>=0 && plateau[x - i][y + i] == plateau[p[0]][p[1]] && plateau[x - i][y + i].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if( x-i+j<x && y+i-j>y && ! plateau[x-i+j][y+i-j].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				}
+				if ( y-i<7 && y-i>=0 && plateau[x][y - i] == plateau[p[0]][p[1]] && plateau[x][y - i].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if( y-i+j<y && ! plateau[x][y-i+j].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				}
+				if ( y+i<7 && y+i>=0 && plateau[x][y + i] == plateau[p[0]][p[1]] && plateau[x][y + i].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if( y+i-j>y && ! plateau[x][y+i-j].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				}		
+				if (  x+i>=0 && x+i<7 && y-i<7 && y-i>=0 && plateau[x + i][y - i] == plateau[p[0]][p[1]] && plateau[x + i][y - i].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if(x+i-j>x && y-i+j<y && ! plateau[x+i-j][y-i+j].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				}
+				if (  x+i>=0 && x+i<7 && plateau[x + i][y] == plateau[p[0]][p[1]] && plateau[x + i][y].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if(x+i-j>x && ! plateau[x+i-j][y].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				}
+				if ( x+i>=0 && x+i<7 && y+i<7 && y+i>=0 && plateau[x + i][y + i] == plateau[p[0]][p[1]] && plateau[x + i][y + i].getCouleur().equals(coul)){
+					cpt=0;
+					for(int j=1; j<plateau.length; j++){
+						if(x+i-j>x && y+i-j>y && ! plateau[x+i-j][y+i-j].getCouleur().equals(coul)){
+							cpt++;
+						}
+					}
+					if(cpt==0){
+						plateau[p[0]][p[1]].setABalle();
+						plateau[x][y].setABalle();
+						return true;
+					}
+				
+				}			
 			}
-			if ( x-i>=0 && x-i<7 && plateau[x - i][y] == plateau[p[0]][p[1]] && plateau[x - i][y].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			}
-			if ( x-i>=0 && x-i<7 && y+i<7 && y+i>=0 && plateau[x - i][y + i] == plateau[p[0]][p[1]] && plateau[x - i][y + i].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			}
-			if ( y-i<7 && y-i>=0 && plateau[x][y - i] == plateau[p[0]][p[1]] && plateau[x][y - i].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			}
-			if ( y+i<7 && y+i>=0 && plateau[x][y + i] == plateau[p[0]][p[1]] && plateau[x][y + i].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			}		
-			if (  x+i>=0 && x+i<7 && y-i<7 && y-i>=0 && plateau[x + i][y - i] == plateau[p[0]][p[1]] && plateau[x + i][y - i].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			}
-			if (  x+i>=0 && x+i<7 && plateau[x + i][y] == plateau[p[0]][p[1]] && plateau[x + i][y].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			}
-			if ( x+i>=0 && x+i<7 && y+i<7 && y+i>=0 && plateau[x + i][y + i] == plateau[p[0]][p[1]] && plateau[x + i][y + i].getCouleur().equals(coul)){
-				plateau[p[0]][p[1]].setABalle();
-				plateau[x][y].setABalle();
-				return true;
-			
-			}			
 		}
 		return false;
 	}
@@ -106,25 +172,63 @@ public class Diaballik implements IJeu{
 		int[] p = new int[2];
 		for(int i=0; i<2; i++){ p[i] =Integer.parseInt(j[i]); } 
 		if(plateau[p[0]][p[1]].getABalle()){ return false; }
-		if(p[0] != 0 && dir.equals("N") && plateau[p[0]][p[1]].getCouleur().equals(coul)){
+		if(p[0] != 0 && dir.equals("N") && plateau[p[0]][p[1]].getCouleur().equals(coul) && plateau[p[0]-1][p[1]]==null){
 			plateau[p[0]-1][p[1]] = plateau[p[0]][p[1]];
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
-		if(p[0] != 6 && dir.equals("S") && plateau[p[0]][p[1]].getCouleur().equals(coul)){
+		if(p[0] != 6 && dir.equals("S") && plateau[p[0]][p[1]].getCouleur().equals(coul) && plateau[p[0]+1][p[1]]==null){
 			plateau[p[0]+1][p[1]] = plateau[p[0]][p[1]];
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
-		if(p[1] != 6 && dir.equals("E") && plateau[p[0]][p[1]].getCouleur().equals(coul)){
+		if(p[1] != 6 && dir.equals("E") && plateau[p[0]][p[1]].getCouleur().equals(coul) && plateau[p[0]][p[1]+1]==null){
 			plateau[p[0]][p[1]+1] = plateau[p[0]][p[1]];
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
-		if(p[1] != 0 &&dir.equals("O") && plateau[p[0]][p[1]].getCouleur().equals(coul)){	
+		if(p[1] != 0 &&dir.equals("O") && plateau[p[0]][p[1]].getCouleur().equals(coul) && plateau[p[0]][p[1]-1]==null){	
 			plateau[p[0]][p[1]-1] = plateau[p[0]][p[1]];
 			plateau[p[0]][p[1]] = null;
 			return true;
+		}
+		return false;
+	}
+	
+	public boolean isBlocked(JoueurDiaballik joueur){
+		int cpt1,cpt2,x,y;
+		for(int i=0; i<plateau.length; i++){
+			if(plateau[i][0] != null){
+				cpt1=1;
+				cpt2=0;
+				x=i; y=0;
+				if(x-1>=0 && plateau[x-1][0] != null && !plateau[x-1][0].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+				if(x+1<7 && plateau[x+1][0] != null && !plateau[x+1][0].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+					
+				for(int j=1; j<plateau.length; j++){
+					if(plateau[x][j] != null && plateau[x][j].getCouleur().equals(joueur.getCouleur())){
+						y=j;
+						cpt1++;
+						if(x-1>=0 && plateau[x-1][j] != null && !plateau[x-1][j].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+						if(x+1<7 && plateau[x+1][j] != null && !plateau[x+1][j].getCouleur().equals(joueur.getCouleur())){ cpt2++; }	
+					}
+					if(x-1>=0 && plateau[x-1][j] != null && plateau[x-1][j].getCouleur().equals(joueur.getCouleur())){
+						x=x-1; y=j;
+						cpt1++;
+						if(x-1>=0 && plateau[x-1][j] != null && !plateau[x-1][j].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+						if(x+1<7 && plateau[x+1][j] != null && !plateau[x+1][j].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+					}
+					if(x+1<7 && plateau[x+1][j] != null && plateau[x+1][j].getCouleur().equals(joueur.getCouleur())){
+						x=x+1; y=j;
+						cpt1++;
+						if(x-1>=0 && plateau[x-1][j] != null && !plateau[x-1][j].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+						if(x+1<7 && plateau[x+1][j] != null && !plateau[x+1][j].getCouleur().equals(joueur.getCouleur())){ cpt2++; }
+					}
+				}
+				if(cpt1 == plateau.length && cpt2>=3){ 
+					return true;
+				}
+			}
 		}
 		return false;
 	}

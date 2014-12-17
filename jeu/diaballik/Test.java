@@ -5,11 +5,11 @@ import java.util.Scanner;
 
 public class Test {
 	
-	private Scanner sc;
+	private static Scanner sc;
 	private Boolean b;
 	private Diaballik d;
 	private String c,src,dir,dest;
-	private int cpt;
+	private int cptD,cptB;
 	
 	public Test(){
 		sc = new Scanner(System.in);
@@ -19,17 +19,29 @@ public class Test {
 	public boolean aGagne(){
 		return d.aGagne();
 	}
+	public boolean antijeu(JoueurDiaballik j){
+		if(d.isBlocked(j)){ return true; }
+		return false;
+	}
 	
 	public void tour(JoueurDiaballik joueur){
-		cpt = 0;
+		cptD = 0;
+		cptB = 0;
 		for(int i=0; i<3; i++){
 			System.out.println( d.toString() );
 			
-			if(cpt<2){
-				System.out.print ( "Joueur "+ joueur.getCouleur() +" (D/B/Q) :" );
-				c = sc.nextLine();
-				while(! c.equals("D") && ! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
-				
+			if(cptD<2){
+				if(cptB<1){
+					System.out.print ( "Joueur "+ joueur.getCouleur() +" (D/B/Q) :" );
+					c = sc.nextLine();
+					while(! c.equals("D") && ! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
+				}
+				else {
+					System.out.print ( "Joueur "+ joueur.getCouleur() +" (D/Q) :" );
+					c = sc.nextLine();
+					while(! c.equals("D") && ! c.equals("Q")){c = sc.nextLine();}
+				}
+					
 				if(c.equals("D")){
 					System.out.println("Veuillez saisir un support (x,y) : ");
 					src = sc.nextLine();
@@ -44,15 +56,22 @@ public class Test {
 						dir = sc.nextLine();
 						while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}					
 					}
-					cpt++;
+					cptD++;
 				}
 			}
 			else{ 
-				System.out.print ( "Joueur "+ joueur.getCouleur() +" (B/Q) :" );
-				c = sc.nextLine();
-				while(! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
-			}
-			if(c.equals("B")){
+				if(cptB<1){
+					System.out.print ( "Joueur "+ joueur.getCouleur() +" (B/Q) :" );
+					c = sc.nextLine();
+					while(! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
+				}
+				else {
+					System.out.print ( "Joueur "+ joueur.getCouleur() +" (Q) :" );
+					c = sc.nextLine();
+					while(! c.equals("Q")){c = sc.nextLine();}
+				} 
+			}	
+			if(c.equals("B") && cptB <1){	
 				System.out.println("Veuillez saisir un support de destination (x,y) : ");
 				dest = sc.nextLine();
 		
@@ -60,12 +79,14 @@ public class Test {
 					System.out.println("Veuillez saisir un support de destination (x,y) : ");
 					dest = sc.nextLine();
 				}
+				cptB++;
+				
 			}
-			if(i>=1 && c.equals("Q") || d.aGagne()){break;}
+			if( i>=1 && c.equals("Q")){break;}
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		System.out.print ( "Voulez vous jouer avec la situation 2 :" );
 		Test t = new Test();
 		JoueurDiaballik j1 = new JoueurDiaballik("J1","Blanc");
@@ -73,7 +94,18 @@ public class Test {
 		
 		while (!t.aGagne())
 		{		
+			if(t.antijeu(j2)){ 
+				System.out.println("Présence d'antijeu du joueur 2 : voulez vous le déclarer ?");
+				 boolean b = sc.nextBoolean();
+				 if(b){	break; }
+			}
 			t.tour(j1);
+			if(t.aGagne()){ break; }
+			if(t.antijeu(j1)){ 
+				System.out.println("Présence d'antijeu du joueur 1 : voulez vous le déclarer ?");
+				 boolean b = sc.nextBoolean();
+				 if(b){	break; }
+			}
 			t.tour(j2);
 		}
 	}
