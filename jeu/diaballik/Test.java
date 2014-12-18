@@ -45,6 +45,7 @@ public class Test {
 				if(c.equals("D")){
 					System.out.println("Veuillez saisir un support (x,y) : ");
 					src = sc.nextLine();
+					while(! src.matches("[0-6],[0-6]")){src = sc.nextLine();}
 					System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
 					dir = sc.nextLine();
 					while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}
@@ -52,6 +53,7 @@ public class Test {
 					while (! d.moveS(joueur.getColor(),src,dir)){
 						System.out.println("Veuillez saisir un support (x,y) : ");
 						src = sc.nextLine();
+						while(! src.matches("[0-6],[0-6]")){src = sc.nextLine();}
 						System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
 						dir = sc.nextLine();
 						while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}					
@@ -74,10 +76,12 @@ public class Test {
 			if(c.equals("B") && cptB <1){	
 				System.out.println("Veuillez saisir un support de destination (x,y) : ");
 				dest = sc.nextLine();
+				while(! dest.matches("[0-6],[0-6]")){dest = sc.nextLine();}
 		
 				while (! d.moveB(joueur.getColor(),dest)){
 					System.out.println("Veuillez saisir un support de destination (x,y) : ");
 					dest = sc.nextLine();
+					while(! dest.matches("[0-6],[0-6]")){dest = sc.nextLine();}
 				}
 				cptB++;
 				
@@ -95,14 +99,14 @@ public class Test {
 		while (!t.aGagne())
 		{		
 			if(t.antijeu(j2)){ 
-				System.out.println("Pr�sence d'antijeu du joueur 2 : voulez vous le d�clarer ?");
+				System.out.println("Presence d'antijeu du joueur 2 : voulez vous le d�clarer ?");
 				 boolean b = sc.nextBoolean();
 				 if(b){	break; }
 			}
 			t.tour(j1);
 			if(t.aGagne()){ break; }
 			if(t.antijeu(j1)){ 
-				System.out.println("Pr�sence d'antijeu du joueur 1 : voulez vous le d�clarer ?");
+				System.out.println("Presence d'antijeu du joueur 1 : voulez vous le d�clarer ?");
 				 boolean b = sc.nextBoolean();
 				 if(b){	break; }
 			}
