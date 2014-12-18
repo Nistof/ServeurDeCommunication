@@ -1,11 +1,11 @@
 package jeu;
 
-public class Joueur {
+public class Player {
 	private String nom;
 	private String id;
 
 	
-	public Joueur( String nom ) {
+	public Player( String nom ) {
 		this.nom = nom;
 	}
 	

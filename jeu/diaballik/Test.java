@@ -17,14 +17,14 @@ public class Test {
 		d = new Diaballik(b);
 	}
 	public boolean aGagne(){
-		return d.aGagne();
+		return d.win();
 	}
-	public boolean antijeu(JoueurDiaballik j){
+	public boolean antijeu(DiaballikPlayer j){
 		if(d.isBlocked(j)){ return true; }
 		return false;
 	}
 	
-	public void tour(JoueurDiaballik joueur){
+	public void tour(DiaballikPlayer joueur){
 		cptD = 0;
 		cptB = 0;
 		for(int i=0; i<3; i++){
@@ -32,12 +32,12 @@ public class Test {
 			
 			if(cptD<2){
 				if(cptB<1){
-					System.out.print ( "Joueur "+ joueur.getCouleur() +" (D/B/Q) :" );
+					System.out.print ( "Joueur "+ joueur.getColor() +" (D/B/Q) :" );
 					c = sc.nextLine();
 					while(! c.equals("D") && ! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
 				}
 				else {
-					System.out.print ( "Joueur "+ joueur.getCouleur() +" (D/Q) :" );
+					System.out.print ( "Joueur "+ joueur.getColor() +" (D/Q) :" );
 					c = sc.nextLine();
 					while(! c.equals("D") && ! c.equals("Q")){c = sc.nextLine();}
 				}
@@ -49,7 +49,7 @@ public class Test {
 					dir = sc.nextLine();
 					while(! dir.equals("N") && ! dir.equals("S") && ! dir.equals("E") && ! dir.equals("O")){dir = sc.nextLine();}
 					
-					while (! d.deplacerS(joueur.getCouleur(),src,dir)){
+					while (! d.moveS(joueur.getColor(),src,dir)){
 						System.out.println("Veuillez saisir un support (x,y) : ");
 						src = sc.nextLine();
 						System.out.println("Veuillez saisir la direction (N,S,E,O) : ");
@@ -61,12 +61,12 @@ public class Test {
 			}
 			else{ 
 				if(cptB<1){
-					System.out.print ( "Joueur "+ joueur.getCouleur() +" (B/Q) :" );
+					System.out.print ( "Joueur "+ joueur.getColor() +" (B/Q) :" );
 					c = sc.nextLine();
 					while(! c.equals("B") && ! c.equals("Q")){c = sc.nextLine();}
 				}
 				else {
-					System.out.print ( "Joueur "+ joueur.getCouleur() +" (Q) :" );
+					System.out.print ( "Joueur "+ joueur.getColor() +" (Q) :" );
 					c = sc.nextLine();
 					while(! c.equals("Q")){c = sc.nextLine();}
 				} 
@@ -75,7 +75,7 @@ public class Test {
 				System.out.println("Veuillez saisir un support de destination (x,y) : ");
 				dest = sc.nextLine();
 		
-				while (! d.deplacerB(joueur.getCouleur(),dest)){
+				while (! d.moveB(joueur.getColor(),dest)){
 					System.out.println("Veuillez saisir un support de destination (x,y) : ");
 					dest = sc.nextLine();
 				}
@@ -89,20 +89,20 @@ public class Test {
 	public static void main(String[] args) {	
 		System.out.print ( "Voulez vous jouer avec la situation 2 :" );
 		Test t = new Test();
-		JoueurDiaballik j1 = new JoueurDiaballik("J1","Blanc");
-		JoueurDiaballik j2 = new JoueurDiaballik("J2","Noir");
+		DiaballikPlayer j1 = new DiaballikPlayer("J1","Blanc");
+		DiaballikPlayer j2 = new DiaballikPlayer("J2","Noir");
 		
 		while (!t.aGagne())
 		{		
 			if(t.antijeu(j2)){ 
-				System.out.println("Présence d'antijeu du joueur 2 : voulez vous le déclarer ?");
+				System.out.println("Prï¿½sence d'antijeu du joueur 2 : voulez vous le dï¿½clarer ?");
 				 boolean b = sc.nextBoolean();
 				 if(b){	break; }
 			}
 			t.tour(j1);
 			if(t.aGagne()){ break; }
 			if(t.antijeu(j1)){ 
-				System.out.println("Présence d'antijeu du joueur 1 : voulez vous le déclarer ?");
+				System.out.println("Prï¿½sence d'antijeu du joueur 1 : voulez vous le dï¿½clarer ?");
 				 boolean b = sc.nextBoolean();
 				 if(b){	break; }
 			}

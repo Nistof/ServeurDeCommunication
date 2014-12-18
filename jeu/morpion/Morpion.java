@@ -3,22 +3,22 @@ package jeu.morpion;
 import java.io.IOException;
 
 import jeu.IJeu;
-import jeu.Joueur;
+import jeu.Player;
 import server.Server;
 
 public class Morpion implements IJeu {
 	private static char[] symbols = {'X', 'O'};
     private int player;
 	private int playersCount;
-	private Joueur[] players;
+	private Player[] players;
 	private Server server;
 	private char[][] grid;
 	
 	public Morpion() {
 		this.player = 0;
-		this.players = new Joueur[2];
-		this.players[0] = new Joueur("X");
-		this.players[1] = new Joueur("O");
+		this.players = new Player[2];
+		this.players[0] = new Player("X");
+		this.players[1] = new Player("O");
 		this.grid = new char[3][3];
 		
 		for ( int j = 0; j < grid.length; j++)

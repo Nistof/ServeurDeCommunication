@@ -2,25 +2,25 @@ package jeu.diaballik;
 
 public class Support {
 	private String couleur;
-	private boolean aBalle;
+	private boolean haveBall;
 	
 	public Support( String couleur, boolean aBalle ) {
 		this.couleur = couleur;
-		this.aBalle = aBalle;
+		this.haveBall = aBalle;
 	}
 	
-	public String getCouleur() {
+	public String getColor() {
 		return this.couleur;
 	}
 	
-	public boolean getABalle() {
-		return this.aBalle;
+	public boolean getHaveBall() {
+		return this.haveBall;
 	}
 	
-	public void setABalle() {
-		if( this.aBalle ) 
-			this.aBalle = false;
+	public void setHaveBall() {
+		if( this.haveBall ) 
+			this.haveBall = false;
 		else
-			this.aBalle = true;
+			this.haveBall = true;
 	}
 }
