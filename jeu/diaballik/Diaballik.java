@@ -37,7 +37,7 @@ public class Diaballik implements IJeu{
 				this.plateau[6][i] = tabPlayer[1].getSupport(i);
 			}
 		}
-		//this.server = new Server(this);
+		this.server = new Server(this);
 	}
 
 	public boolean moveB(String color, String dest){
