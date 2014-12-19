@@ -50,15 +50,20 @@ public class Server {
 	 */
 	public void launchServer () {
 	    jeu.launchGame();
+	    this.close();
 	}
 	
 	/**
      * Sauvegarde les propriétés et ferme le socket serveur ouvert à la création de l'objet.
      * @throws IOException Le socket serveur est déjà fermé.
      */
-	public void close() throws IOException {
+	public void close() {
 		this.serverProperties.save();
-		this.serverSocket.close();
+		try {
+            this.serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**
@@ -140,7 +145,6 @@ public class Server {
 	 * @throws IOException Flux d'entrée fermé
 	 */
     public void add(Socket socket) throws IOException {
-        // TODO Auto-generated method stub
         Client c = new Client(socket);
         String name = "";
         clients.put(c.getId(), c);
@@ -154,7 +158,6 @@ public class Server {
      * Interdire toutes les nouvelles connexions au serveur.
      */
     public void disalowConnections() {
-        // TODO Auto-generated method stub
         cm.toggleConnect();
     }
     
