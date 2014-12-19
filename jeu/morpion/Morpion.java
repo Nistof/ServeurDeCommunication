@@ -143,8 +143,4 @@ public class Morpion implements IJeu {
         
         return false;
     }
-    
-    public static void main(String[] args) {
-        new Morpion();
-    }
 }

@@ -99,9 +99,9 @@ public class Server {
         }
 	    msg = clients.get(id).receive();
 	    if(msg == null) {
-	        msg = "disconnected";
+	        msg = ":disconnected";
 	    }
-	    return "id:"+msg;
+	    return  id+msg;
 	}
 	
 	public void sendToAllClient (String msg) {

@@ -299,9 +299,8 @@ public class Diaballik implements IJeu{
     @Override
     public void launchGame() {
         // TODO Auto-generated method stub
-        System.out.println(toString());
         int countTurn = 0;
-        do {
+        while(!win() && nbJoueur == 2) {
             if(endTurn) {
                 changePlayer();
                 endTurn = !endTurn;
@@ -323,7 +322,7 @@ public class Diaballik implements IJeu{
             else {
                 sendToPlayer(tabPlayer[currentPlayer].getId()+"|ERROR");
             }
-        }while(!win());
+        }
     }
     
     private void changePlayer() {
