@@ -17,7 +17,7 @@ import jeu.IJeu;
  * @author Florian MARTIN
  * @author Thibaut QUENTIN
  * @author Sarah QULORE
- * @version 0.1, 12/03/2014
+ * @version 0.1, 12-03-2014
  */
 
 public class Server {
@@ -44,15 +44,18 @@ public class Server {
 	    this.cm = new ConnectionManager(this);
 	    System.out.println("Serveur démarré à l'adresse : " + this.getIPAdress() + ":" + this.getServerPort()); 
 	}
-	/**
-	 * Sauvegarde les propriétés et ferme le socket serveur ouvert à la création de l'objet.
-	 * @throws IOException Le socket serveur est déjà fermé.
-	 */
 	
+	/**
+	 * Lance le jeu.
+	 */
 	public void launchServer () {
 	    jeu.launchGame();
 	}
 	
+	/**
+     * Sauvegarde les propriétés et ferme le socket serveur ouvert à la création de l'objet.
+     * @throws IOException Le socket serveur est déjà fermé.
+     */
 	public void close() throws IOException {
 		this.serverProperties.save();
 		this.serverSocket.close();
@@ -85,31 +88,57 @@ public class Server {
 		return serverProperties.getServerPort();
 	}
 	
+	/**
+	 * Transmet un message à un client
+	 * @param id Identifiant du client
+	 * @param msg Message à transmettre au client
+	 */
 	public void sendToClient (String id, String msg) {
 	    clients.get(id).send(msg);
 	}
 	
+	/**
+	 * Attend la réception d'un message d'un client et renvoie une chaine de la forme
+	 * id:message
+	 * @param id Identifiant du client
+	 * @return "id:Message envoyé par le client"
+	 * @throws IOException Si il est impossible de recevoir le message (Flux d'entrée fermé)
+	 */
 	public String receiveFromClient (String id) throws IOException {
 	    String msg = "";
+	    
+	    //Attente avant la réception d'un message
 	    try {
             Thread.sleep(serverProperties.getTimeWait());
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+	    
+	    //Récupération d'un message
 	    msg = clients.get(id).receive();
-	    if(msg == null) {
+	    
+	    //Si le message est null (Le client est déconnecté)
+	    if(msg == null)
 	        msg = ":disconnected";
-	    }
+	        
 	    return  id+msg;
 	}
 	
+	/**
+	 * Transmet un message à tout les clients
+	 * @param msg Message à transmettre aux clients
+	 */
 	public void sendToAllClient (String msg) {
 	    for(String c : clients.keySet()) {
 	        clients.get(c).send(msg);
 	    }
 	}
 	
+	/**
+	 * Ajoute un client à partir d'un socket renvoyé par le ConnectionManager
+	 * @param socket Socket du client
+	 * @throws IOException Flux d'entrée fermé
+	 */
     public void add(Socket socket) throws IOException {
         // TODO Auto-generated method stub
         Client c = new Client(socket);
@@ -121,12 +150,15 @@ public class Server {
         sendToClient(c.getId(), c.getId()+":ok");
     }
     
+    /**
+     * Interdire toutes les nouvelles connexions au serveur.
+     */
     public void disalowConnections() {
         // TODO Auto-generated method stub
         cm.toggleConnect();
     }
     
-    class ConnectionManager extends Thread {
+    private class ConnectionManager extends Thread {
         private Server server;
         private boolean connect;
         
@@ -136,6 +168,9 @@ public class Server {
             start();
         }
         
+        /**
+         * Autorise ou non les nouvelles connexions
+         */
         public void toggleConnect() {
             connect = !connect;
         }

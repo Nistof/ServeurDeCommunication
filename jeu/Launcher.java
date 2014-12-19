@@ -3,13 +3,18 @@ package jeu;
 import jeu.diaballik.Diaballik;
 import jeu.morpion.Morpion;
 
-public class Launcher {
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 12-03-2014
+ */
 
-    /**
-     * @param args
-     */
+public class Launcher {
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
         if(args.length < 1) {
             System.out.println("Erreur : vous devez spécifier un jeu à lancer");
             System.exit(1);

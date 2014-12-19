@@ -6,6 +6,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 12-03-2014
+ */
+
 class ServerProperties {
 	public static final int DEFAULT_CLIENT_MAX = 4;
 	public static final int DEFAULT_CLIENT_TIMEOUT = 3000;
@@ -123,14 +133,26 @@ class ServerProperties {
 		return serverPort;
 	}
 
+	/**
+	 * Donne le chemin du fichier de propriétés
+	 * @return chemin du fichier de propriétés
+	 */
     public String getProperties() {
         return properties;
     }
 
+    /**
+     * Donne le delai avant qu'un client soit considéré comme déconnecté
+     * @return delai avant qu'un client soit considéré comme déconnecté
+     */
     public int getClientDelay() {
         return clientDelay;
     }
 
+    /**
+     * Donne le temps à attendre avant d'accepter de nouveau un message
+     * @return temps à attendre avant d'accepter de nouveau un message
+     */
     public int getTimeWait() {
         return timeWait;
     }

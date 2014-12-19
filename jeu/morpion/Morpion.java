@@ -6,6 +6,16 @@ import jeu.IJeu;
 import jeu.Player;
 import server.Server;
 
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 12-03-2014
+ */
+
 public class Morpion implements IJeu {
 	private static char[] symbols = {'X', 'O'};
     private int player;
@@ -27,6 +37,10 @@ public class Morpion implements IJeu {
 		this.server = new Server(this);
 	}
 	
+	/**
+	 * Vérification de la grille de jeu pour savoir s'il est encore possible de jouer
+	 * @return Vrai si il est encore possible de jouer
+	 */
 	public boolean canPlay() {
 		boolean b = false;
 		
@@ -37,6 +51,10 @@ public class Morpion implements IJeu {
 		return b;
 	}
 	
+	/**
+	 * Condition de victoire d'une partie
+	 * @return Vrai si il y a un gagnant
+	 */
 	public boolean win() {
 		return 	( grid[1][1] == 'X' || grid[1][1] == 'O') &&
 				(( grid[0][1] == grid[1][1] && grid[0][1] == grid[2][1] ) ||
@@ -51,9 +69,20 @@ public class Morpion implements IJeu {
 				( grid[2][0] == grid[2][1] && grid[2][0] == grid[2][2] ));
 	}
 	
+	/**
+	 * Changement de joueur
+	 */
 	public void changePlayer () { player = (player+1)%2; }
+	
+	/**
+	 * Donne le joueur courant
+	 * @return Joueur courant
+	 */
 	public char getPlayer () { return (player == 0)?'X':'O'; }
 	
+	/**
+	 * Affichage du jeu
+	 */
 	public String toString() {
 		String str = "";
 		String sep = "______\n";
@@ -90,13 +119,13 @@ public class Morpion implements IJeu {
 
     @Override
     public void launchGame() {
-        // TODO Auto-generated method stub
-        while(!win() && playersCount == 2) {
+        //Tant que la partie n'est pas finie, que l'on peut encore jouer
+        //et que le nombre de joueur est égal à 2
+        while(!win() && canPlay() && playersCount == 2) {
             String msg = "";
             try {
                 msg = receiveFromPlayer();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             if(processMessage(msg)) {
@@ -108,6 +137,8 @@ public class Morpion implements IJeu {
             }
             System.out.println(this.toString());
         }
+        
+        //Envoi du gagnant
         if(playersCount != 2)
             changePlayer();
         sendToAllPlayers(players[player].getId()+":win");

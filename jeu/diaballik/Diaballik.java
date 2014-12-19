@@ -5,6 +5,16 @@ import java.io.IOException;
 import jeu.IJeu;
 import server.Server;
 
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 12-03-2014
+ */
+
 public class Diaballik implements IJeu{
 	private Support[][] plateau;
 	private DiaballikPlayer[] tabPlayer;
@@ -65,8 +75,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}
@@ -78,8 +88,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}
@@ -91,8 +101,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}
@@ -104,8 +114,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}
@@ -117,8 +127,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}		
@@ -130,8 +140,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}
@@ -143,8 +153,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				}
@@ -156,8 +166,8 @@ public class Diaballik implements IJeu{
 						}
 					}
 					if(cpt==0){
-						plateau[p[0]][p[1]].setHaveBall();
-						plateau[x][y].setHaveBall();
+						plateau[p[0]][p[1]].toggleHaveBall();
+						plateau[x][y].toggleHaveBall();
 						return true;
 					}
 				
@@ -290,7 +300,7 @@ public class Diaballik implements IJeu{
     }
     
     public void sendToPlayer(String action) {
-        server.sendToClient(tabPlayer[currentPlayer].getNom(), action);
+        server.sendToClient(tabPlayer[currentPlayer].getName(), action);
     }
 
     public String receiveFromPlayer() throws IOException {
@@ -299,7 +309,6 @@ public class Diaballik implements IJeu{
 
     @Override
     public void launchGame() {
-        // TODO Auto-generated method stub
         int countTurn = 0;
         while(!win() && nbJoueur == 2) {
             if(endTurn) {
@@ -310,7 +319,6 @@ public class Diaballik implements IJeu{
             try {
                 msg = receiveFromPlayer();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             if(processMessage(msg)) {

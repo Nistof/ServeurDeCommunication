@@ -6,6 +6,16 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 12-03-2014
+ */
+
 public class Client {
     private Socket sock; 
     private String id; // Unique identifier
@@ -25,15 +35,28 @@ public class Client {
         }
     }
 
+    /**
+     * Envoi d'un message au client
+     * @param msg Message à envoyer
+     */
     public void send (String msg) {
         this.writer.print(msg);
         this.writer.flush();
     }
     
+    /**
+     * Recevoir un message du client
+     * @return Message du client
+     * @throws IOException Flux d'entrée fermé
+     */
     public String receive () throws IOException {
         return this.reader.readLine();
     }
 
+    /**
+     * Génère un identifiant aléatoire pour le client
+     * @return Identifiant du client
+     */
     private String genererId() {
         StringBuilder id = new StringBuilder();
         int val;
@@ -50,6 +73,10 @@ public class Client {
         return id.toString();
     }
 
+    /**
+     * Donne l'identifiant du client
+     * @return Identifiant du client
+     */
     public String getId() {
         return id;
     }
