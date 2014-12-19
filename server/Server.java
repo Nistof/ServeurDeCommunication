@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import jeu.IJeu;
-import jeu.diaballik.Diaballik;
 
 /**
  * 
@@ -112,11 +110,6 @@ public class Server {
 	    }
 	}
 	
-	public static void main(String[] args) {
-		System.out.println("Démarrage du serveur ...");
-		Server serv = new Server(null);
-	}
-
     public void add(Socket socket) throws IOException {
         // TODO Auto-generated method stub
         Client c = new Client(socket);

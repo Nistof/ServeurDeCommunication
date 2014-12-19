@@ -37,11 +37,13 @@ public class Client {
     private String genererId() {
         StringBuilder id = new StringBuilder();
         int val;
-        char c;
         
         for ( int i = 0; i < 8; i++) {
             val = (int)(Math.random()*94+33);
-            id.append((char)val);
+            if((char)val == ':')
+                i--;
+            else
+                id.append((char)val);
             
         }
         
@@ -52,8 +54,4 @@ public class Client {
         return id;
     }
     
-    public static void main(String[] args) {
-        Client c =  new Client(null);
-        
-    }
 }

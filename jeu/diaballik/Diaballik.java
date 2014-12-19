@@ -6,7 +6,6 @@ import jeu.IJeu;
 import server.Server;
 
 public class Diaballik implements IJeu{
-    private static String[] colors = {"Blanc", "Noir"};
 	private Support[][] plateau;
 	private DiaballikPlayer[] tabPlayer;
 	private int currentPlayer;
@@ -195,31 +194,30 @@ public class Diaballik implements IJeu{
 		return false;
 	}
 	
-	public boolean isBlocked(DiaballikPlayer player){
-		int c1,c2,x,y;
+    public boolean isBlocked(DiaballikPlayer player){
+		int c1,c2,x;
 		for(int i=0; i<plateau.length; i++){
 			if(plateau[i][0] != null){
 				c1=1;
 				c2=0;
-				x=i; y=0;
+				x=i; 
 				if(x-1>=0 && plateau[x-1][0] != null && !plateau[x-1][0].getColor().equals(player.getColor())){ c2++; }
 				if(x+1<7 && plateau[x+1][0] != null && !plateau[x+1][0].getColor().equals(player.getColor())){ c2++; }
 					
 				for(int j=1; j<plateau.length; j++){
 					if(plateau[x][j] != null && plateau[x][j].getColor().equals(player.getColor())){
-						y=j;
 						c1++;
 						if(x-1>=0 && plateau[x-1][j] != null && !plateau[x-1][j].getColor().equals(player.getColor())){ c2++; }
 						if(x+1<7 && plateau[x+1][j] != null && !plateau[x+1][j].getColor().equals(player.getColor())){ c2++; }	
 					}
 					if(x-1>=0 && plateau[x-1][j] != null && plateau[x-1][j].getColor().equals(player.getColor())){
-						x=x-1; y=j;
+						x=x-1; 
 						c1++;
 						if(x-1>=0 && plateau[x-1][j] != null && !plateau[x-1][j].getColor().equals(player.getColor())){ c2++; }
 						if(x+1<7 && plateau[x+1][j] != null && !plateau[x+1][j].getColor().equals(player.getColor())){ c2++; }
 					}
 					if(x+1<7 && plateau[x+1][j] != null && plateau[x+1][j].getColor().equals(player.getColor())){
-						x=x+1; y=j;
+						x=x+1; 
 						c1++;
 						if(x-1>=0 && plateau[x-1][j] != null && !plateau[x-1][j].getColor().equals(player.getColor())){ c2++; }
 						if(x+1<7 && plateau[x+1][j] != null && !plateau[x+1][j].getColor().equals(player.getColor())){ c2++; }
@@ -274,10 +272,6 @@ public class Diaballik implements IJeu{
 		}
 		
 		return s;
-	}
-	
-	public static void main( String[] args ) {
-		Diaballik d = new Diaballik(false);
 	}
 
 	@Override

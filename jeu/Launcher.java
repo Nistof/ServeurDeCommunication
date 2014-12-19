@@ -3,7 +3,7 @@ package jeu;
 import jeu.diaballik.Diaballik;
 import jeu.morpion.Morpion;
 
-public class Launcherjava {
+public class Launcher {
 
     /**
      * @param args
@@ -14,10 +14,10 @@ public class Launcherjava {
             System.out.println("Erreur : vous devez spécifier un jeu à lancer");
             System.exit(1);
         }
-        if(args[0].equals("diabiallik")) {
+        if(args[0].equals("diaballik")) {
             new Diaballik(false);
         }
-        else if(args[0].equals("diabiallik_variante")) {
+        else if(args[0].equals("diaballik_variante")) {
             new Diaballik(true);
         }
         else if (args[0].equals("morpion")) {
