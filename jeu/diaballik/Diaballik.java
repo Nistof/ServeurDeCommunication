@@ -18,6 +18,7 @@ public class Diaballik implements IJeu{
 		this.tabPlayer[0] = new DiaballikPlayer( "Joueur 1", "Blanc" );
 		this.tabPlayer[1] = new DiaballikPlayer( "Joueur 2", "Noir" );
 		this.currentPlayer = 0;
+		this.nbJoueur = 0;
 		
 		this.plateau = new Support[7][7];
 		if(variante) {
@@ -276,7 +277,7 @@ public class Diaballik implements IJeu{
 
 	@Override
     public void add(String name, String id) {
-	    tabPlayer[nbJoueur++].setName(name);
+	    tabPlayer[nbJoueur].setName(name);
         tabPlayer[nbJoueur++].setId(id);
         if(nbJoueur >= 2) {
             server.disalowConnections();
