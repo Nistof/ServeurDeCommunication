@@ -281,7 +281,8 @@ public class Diaballik implements IJeu{
 	}
 
 	@Override
-    public void add(String id) {
+    public void add(String name, String id) {
+	    tabPlayer[nbJoueur++].setName(name);
         tabPlayer[nbJoueur++].setId(id);
         if(nbJoueur >= 2) {
             server.disalowConnections();

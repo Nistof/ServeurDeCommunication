@@ -20,4 +20,9 @@ public class Player {
     public String getId() {
         return id;
     }
+
+    public void setName(String name) {
+        // TODO Auto-generated method stub
+        this.nom = name;
+    }
 }

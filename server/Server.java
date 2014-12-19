@@ -117,12 +117,15 @@ public class Server {
 		Server serv = new Server(null);
 	}
 
-    public void add(Socket socket) {
+    public void add(Socket socket) throws IOException {
         // TODO Auto-generated method stub
         Client c = new Client(socket);
+        String name = "";
         clients.put(c.getId(), c);
-        jeu.add(c.getId());
-        sendToClient(c.getId(), c.getId());
+        sendToClient(c.getId(), c.getId()+":name");
+        name = receiveFromClient(c.getId());
+        jeu.add(name, c.getId());
+        sendToClient(c.getId(), c.getId()+":ok");
     }
     
     public void disalowConnections() {

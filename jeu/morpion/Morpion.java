@@ -70,7 +70,8 @@ public class Morpion implements IJeu {
 	}
 
     @Override
-    public void add(String id) {
+    public void add(String name, String id) {
+        players[playersCount++].setName(name);
         players[playersCount++].setId(id);
         if(playersCount >= 2) {
             server.disalowConnections();
