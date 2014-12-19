@@ -49,13 +49,19 @@ public class Server {
 	 * @throws IOException Le socket serveur est déjà fermé.
 	 */
 	
-	public void launchServer () {
+	public void launchServer (){
 	    jeu.launchGame();
+	    this.close();
 	}
 	
-	public void close() throws IOException {
+	public void close() {
 		this.serverProperties.save();
-		this.serverSocket.close();
+		try {
+            this.serverSocket.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 	
 	/**
