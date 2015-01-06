@@ -1,10 +1,6 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.net.InetAddress;
 
 /**
  * 
@@ -17,40 +13,14 @@ import java.net.Socket;
  */
 
 public class Client {
-    private Socket sock; 
-    private String id; // Unique identifier
-    private PrintWriter writer;
-    private BufferedReader reader;
+    private InetAddress ip;
+    private int port;
+    private String cid; // Unique identifier
     
-    
-    public Client (Socket sock) {
-        this.sock = sock;
-        this.id = genererId();
-        try {
-            this.writer = new PrintWriter(this.sock.getOutputStream());
-            this.reader = new BufferedReader(new InputStreamReader(this.sock.getInputStream()));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Envoi d'un message au client
-     * @param msg Message à envoyer
-     */
-    public void send (String msg) {
-        this.writer.print(msg);
-        this.writer.flush();
-    }
-    
-    /**
-     * Recevoir un message du client
-     * @return Message du client
-     * @throws IOException Flux d'entrée fermé
-     */
-    public String receive () throws IOException {
-        return this.reader.readLine();
+    public Client (InetAddress ip, int port) {
+        this.cid = genererId();
+        this.ip = ip;
+        this.port = port;
     }
 
     /**
@@ -77,8 +47,15 @@ public class Client {
      * Donne l'identifiant du client
      * @return Identifiant du client
      */
-    public String getId() {
-        return id;
+    public String getCid() {
+        return cid;
     }
-    
+
+    public InetAddress getIp() {
+        return ip;
+    }
+
+    public int getPort() {
+        return port;
+    }
 }

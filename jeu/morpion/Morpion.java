@@ -26,6 +26,7 @@ public class Morpion implements IJeu {
 	
 	public Morpion() {
 		this.player = 0;
+		this.playersCount = 0;
 		this.players = new Player[2];
 		this.players[0] = new Player("X");
 		this.players[1] = new Player("O");
@@ -102,39 +103,42 @@ public class Morpion implements IJeu {
     public void add(String name, String id) {
         players[playersCount].setName(name);
         players[playersCount++].setId(id);
+        System.out.println(server);
         if(playersCount >= 2) {
             server.disalowConnections();
         }
     }
 
     @Override
-    public void sendToAllPlayers(String msg) {
+    public void sendToAllPlayers(String msg) throws IOException {
         server.sendToAllClient(msg);
     }
 
     @Override
-    public void sendToPlayer(String msg) {
+    public void sendToPlayer(String msg) throws IOException {
+       System.out.println(playersCount + " " +  players);
        server.sendToClient(players[player].getId(), msg);
     }
 
     @Override
-    public void launchGame() {
+    public void launchGame() throws IOException {
         //Tant que la partie n'est pas finie, que l'on peut encore jouer
         //et que le nombre de joueur est égal à 2
         while(!win() && canPlay() && playersCount == 2) {
             String msg = "";
             try {
-            	System.out.println(playersCount);
+            	sendToPlayer(players[player].getId()+":START");
                 msg = receiveFromPlayer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             if(processMessage(msg)) {
+                sendToPlayer(":OK");
                 sendToAllPlayers(msg);
                 changePlayer();
             }
             else {
-                sendToPlayer(players[player].getId()+"|ERROR");
+                sendToPlayer(players[player].getId()+":ERROR");
             }
             System.out.println(this.toString());
         }
@@ -148,11 +152,12 @@ public class Morpion implements IJeu {
 
     @Override
     public String receiveFromPlayer() throws IOException {
-        return server.receiveFromClient(players[player].getId());
+        return server.receive();
     }
 
     @Override
     public boolean processMessage(String msg) {
+        System.out.println(msg);
         String[] action = msg.split(":");
         if(action[1].equals("disconnected")) {
             playersCount--;
@@ -160,14 +165,15 @@ public class Morpion implements IJeu {
         }
         if ( canPlay() ) {
             String[] pos = action[1].split(",");
-            int x, y;
+            int x = 0, y = 0;
             if ( pos.length != 2)
                 return false;
             
-            x = Integer.parseInt(pos[0]);
-            y = Integer.parseInt(pos[1]);
             
-            if ( grid[x][y] == 'X' || grid[x][y] == 'O')
+            x = Integer.parseInt(pos[0].trim());
+            y = Integer.parseInt(pos[1].trim());
+            
+            if ( x < 0 || x > 2 || y < 0 || y > 2 || grid[x][y] == 'X' || grid[x][y] == 'O')
                 return false;
             
             grid[x][y] = symbols[player];

@@ -295,20 +295,20 @@ public class Diaballik implements IJeu{
     }
 
     @Override
-    public void sendToAllPlayers(String action) {
+    public void sendToAllPlayers(String action) throws IOException {
         server.sendToAllClient(action);
     }
     
-    public void sendToPlayer(String action) {
+    public void sendToPlayer(String action) throws IOException {
         server.sendToClient(tabPlayer[currentPlayer].getName(), action);
     }
 
     public String receiveFromPlayer() throws IOException {
-        return server.receiveFromClient(tabPlayer[currentPlayer].getId());
+        return server.receive();
     }
 
     @Override
-    public void launchGame() {
+    public void launchGame() throws IOException {
         int countTurn = 0;
         while(!win() && nbJoueur == 2) {
             if(endTurn) {
