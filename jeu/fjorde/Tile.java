@@ -11,7 +11,7 @@ public class Tile {
     private Item item;
     
     
-    /**
+    /**Retourne l'etat de la pioche
      * Construit une tuile
      * @param start Détermine si c'est une tuile de départ
      */
@@ -32,7 +32,7 @@ public class Tile {
         boolean b = false;
         if(this.item == null && item != null) {
             this.item = item;
-            owner = p;
+            this.owner = p;
             b = true;
         }
         return b;
