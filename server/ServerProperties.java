@@ -20,7 +20,7 @@ class ServerProperties {
 	public static final int DEFAULT_CLIENT_MAX = 4;
 	public static final int DEFAULT_CLIENT_TIMEOUT = 3000;
 	public static final int DEFAULT_CLIENT_DELAY = 10000;
-	public static final int DEFAULT_TIME_WAIT = 2000;
+	public static final int DEFAULT_TIME_WAIT = 5000;
 	public static final int DEFAULT_SERVER_PORT = 5555;
 	
 	private String properties; //Chemin du fichier de propriétés
@@ -53,11 +53,11 @@ class ServerProperties {
 		
 		File f = new File(properties);
 		if ( !f.exists() ) {
-			this.properties = properties;
 			try {
 				f.createNewFile();
 			} catch ( IOException e ) { e.printStackTrace(); }
 		}
+		this.properties = properties;
 		
 		//Lecture du fichier et passage des valeurs
 		try {
