@@ -23,14 +23,16 @@ public interface IJeu {
     /**
      * Envoi un message à tout les joueurs
      * @param msg Message à envoyer
+     * @throws IOException 
      */
-    public void sendToAllPlayers(String msg);
+    public void sendToAllPlayers(String msg) throws IOException;
     
     /**
      * Envoi un message à un joueur
      * @param msg Message à envoyer
+     * @throws IOException 
      */
-    public void sendToPlayer(String msg);
+    public void sendToPlayer(String msg) throws IOException;
     
     /**
      * Reçoit un message d'un joueur
@@ -48,6 +50,7 @@ public interface IJeu {
     
     /**
      * Lance le jeu
+     * @throws IOException 
      */
-    public void launchGame();
+    public void launchGame() throws IOException;
 }
