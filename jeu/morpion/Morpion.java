@@ -133,7 +133,6 @@ public class Morpion implements IJeu {
                 e.printStackTrace();
             }
             if(processMessage(msg)) {
-                sendToPlayer(":OK");
                 sendToAllPlayers(":" + msg);
                 changePlayer();
             }
@@ -147,6 +146,7 @@ public class Morpion implements IJeu {
         if(playersCount == 2) {
         	changePlayer();
             sendToAllPlayers(":" + players[player].getId() + ":WIN");
+            sendToAllPlayers(":END");
         }
         else {
         	sendToAllPlayers(":CANCEL");

@@ -30,7 +30,6 @@ public class ClientMorpion {
 	public ClientMorpion(String ip, int port) {
 		try {
 			this.ip = InetAddress.getByName(ip);
-			System.out.println(this.ip);
 			this.port = port;
 			this.clientSocket = new DatagramSocket();
 			this.grid = new char[3][3];
@@ -78,10 +77,10 @@ public class ClientMorpion {
 			this.clientId = receiveMessage().split(":")[0];
 		}
 		else if (message.equals(clientId + ":NAMELIST")) {
-			String[] splMsg = receiveMessage().split(":");
+			String[] splMsg = receiveMessage().trim().split(":");
 			while (!splMsg[1].equals("ENDLIST")) {
 				playersName.put(splMsg[1], splMsg[2]);
-				splMsg = receiveMessage().split(":");
+				splMsg = receiveMessage().trim().split(":");
 			}
 		}
 		else if (message.equals(clientId + ":START")) {		//Demande de saisie par le jeu
@@ -97,24 +96,28 @@ public class ClientMorpion {
 				this.symbole = (isFirstPlayer)?0:1;
 			}
 			
-			sendMessage(this.clientId + ":" + getUserEntry());
+			System.out.print("Saisie X: ");
+			String x = getUserEntry();
+			System.out.print("Saisie Y: ");
+			String y = getUserEntry();
+			sendMessage(this.clientId + ":" + x + "," + y);
 		}
 		else if (message.equals(clientId + ":ERROR")) {		//Si la saisie est incorrecte
 			System.out.println("Saisie incorrecte");
 		}
 		else if (message.equals(clientId + ":CANCEL")) {
-			System.out.println("Partie annulée");
+			System.out.println("Partie annulï¿½e");
 		}
 		else if (message.equals(clientId + ":END")) {
 			return ;
 		}
 		else { 
-			String[] splStr = message.split(":");
-			if( splStr.length == 2) { //Placement des symboles sur le plateau
-				int x = Integer.parseInt(splStr[1].split(",")[0].trim());
-				int y = Integer.parseInt(splStr[1].split(",")[1].trim());
+			String[] splStr = message.trim().split(":");
+			if( splStr.length == 3 && !splStr[2].equals("WIN")) { //Placement des symboles sur le plateau
+				int x = Integer.parseInt(splStr[2].split(",")[0]);
+				int y = Integer.parseInt(splStr[2].split(",")[1]);
 				
-				if ( splStr[0].equals(clientId)) {
+				if ( splStr[1].equals(clientId)) {
 					this.grid[x][y] = SYMBOLES[symbole];
 				} else {
 					this.grid[x][y] = SYMBOLES[(symbole+1)%2];
@@ -122,11 +125,7 @@ public class ClientMorpion {
 				
 				System.out.println(this);
 			} else if ( splStr.length == 3 && splStr[2].equals("WIN")) {	//Si un joueur a gagnï¿½
-				if ( splStr[1].equals(clientId)) {
-					System.out.println(SYMBOLES[symbole] + " gagne!");
-				} else {
-					System.out.println(SYMBOLES[(symbole+1)%2] + " gagne!");
-				}
+				System.out.println(playersName.get(splStr[1]) + " gagne!");
 			}
 		}
 	}
@@ -192,13 +191,14 @@ public class ClientMorpion {
 			try {
 				//Rï¿½cupï¿½ration et envoi du nom et rï¿½ception de l'id attribuï¿½ au client
 				cm.processMessage("gsName_gCid");	
+				
 				System.out.println(cm);
 				
 				String message = null;
 				do {
-					message = cm.receiveMessage();
+					message = cm.receiveMessage().trim();
 					cm.processMessage(message);
-				} while (!message.equals(cm.getClientId() + ":END") || !message.equals(cm.getClientId() + ":CANCEL"));
+				} while (!message.equals(cm.getClientId() + ":END") && !message.equals(cm.getClientId() + ":CANCEL"));
 				
 				cm.close();
 			} catch (IOException e) { e.printStackTrace(); }
