@@ -62,6 +62,8 @@ public class ClientMorpion {
 	 * @throws IOException
 	 */
 	public void processMessage(String message) throws IOException {
+		message = message.trim();
+
 		if (message.equals("gsName_gCid")) {
 			//R�cup�ration et envoi du nom du client
 			this.clientName = getUserEntry();
