@@ -17,36 +17,40 @@ public class ClientMorpion {
 	private String			clientName;
 	private String			clientId;
 	
-	private char[][]		plateau;
+	private char[][]		grid;
 	private int				symbole;
 	
 	/**
 	 * Constructeur du ClientMorpion
 	 * @param ip	IP du serveur
-	 * @param port	Port où le serveur écoute
+	 * @param port	Port oï¿½ le serveur ï¿½coute
 	 */
 	public ClientMorpion(String ip, int port) {
 		try {
 			this.ip = InetAddress.getByName(ip);
+			System.out.println(this.ip);
 			this.port = port;
 			this.clientSocket = new DatagramSocket();
-			this.plateau = new char[3][3];
+			this.grid = new char[3][3];
 			this.symbole = -1;
+			for ( int j = 0; j < grid.length; j++)
+				for ( int i = 0; i < grid[0].length; i++)
+					grid[i][j] = ' ';
 		} 
-		catch (UnknownHostException e) { System.out.println("Connexion à l'hote impossible!"); }
+		catch (UnknownHostException e) { System.out.println("Connexion Ã  l'hote impossible!"); }
 		catch (IOException e) { System.out.println("Erreur de flux"); }
 	}
 	
 	/**
-	 * Réception d'un message de la part du serveur
-	 * @return Message envoyé par le serveur
+	 * Rï¿½ception d'un message de la part du serveur
+	 * @return Message envoyï¿½ par le serveur
 	 * @throws IOException
 	 */
 	public String receiveMessage() throws IOException {
 		byte[] data = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		
-		//Récupération du message
+		//Rï¿½cupï¿½ration du message
 		this.clientSocket.receive(packet);
 		
 		return new String(packet.getData());
@@ -54,26 +58,26 @@ public class ClientMorpion {
 	
 	/**
 	 * Traitement d'un message
-	 * @param message Message à traiter
+	 * @param message Message ï¿½ traiter
 	 * @throws IOException
 	 */
 	public void processMessage(String message) throws IOException {
-		if (message.equals("getAndSendName")) {
-			//Récupération et envoi du nom du client
+		if (message.equals("gsName_gCid")) {
+			//Rï¿½cupï¿½ration et envoi du nom du client
 			this.clientName = getUserEntry();
 			sendMessage(this.clientName);
 			
-			//Récupération de l'id du client
+			//Rï¿½cupï¿½ration de l'id du client
 			this.clientId = receiveMessage().split(":")[0];
 		}
 		else if (message.equals(clientId + ":START")) {		//Demande de saisie par le jeu
-			//Symbole du joueur si non défini
+			//Symbole du joueur si non dï¿½fini
 			if ( symbole == -1 ) {
 				boolean isFirstPlayer = true;
 				
 				for (int i = 0; i < 3; i++)
 					for (int j = 0; j < 3; j++)
-						if (plateau[i][j] != ' ')
+						if (grid[i][j] != ' ')
 							isFirstPlayer = false;
 				
 				this.symbole = (isFirstPlayer)?0:1;
@@ -91,13 +95,13 @@ public class ClientMorpion {
 				int y = Integer.parseInt(splStr[1].split(",")[1].trim());
 				
 				if ( splStr[0].equals(clientId)) {
-					this.plateau[x][y] = SYMBOLES[symbole];
+					this.grid[x][y] = SYMBOLES[symbole];
 				} else {
-					this.plateau[x][y] = SYMBOLES[(symbole+1)%2];
+					this.grid[x][y] = SYMBOLES[(symbole+1)%2];
 				}
 				
 				System.out.println(this);
-			} else if ( splStr.length == 3 && splStr[2].equals("WIN")) {	//Si un joueur a gagné
+			} else if ( splStr.length == 3 && splStr[2].equals("WIN")) {	//Si un joueur a gagnï¿½
 				if ( splStr[1].equals(clientId)) {
 					System.out.println(SYMBOLES[symbole] + " gagne!");
 				} else {
@@ -109,7 +113,7 @@ public class ClientMorpion {
 	
 	/**
 	 * Envoi d'un message au serveur
-	 * @param message Message à envoyer
+	 * @param message Message ï¿½ envoyer
 	 * @throws IOException
 	 */
 	private void sendMessage(String message) throws IOException {
@@ -122,7 +126,7 @@ public class ClientMorpion {
 	}
 	
 	/**
-	 * Récupération d'une entrée utilisateur
+	 * Rï¿½cupï¿½ration d'une entrï¿½e utilisateur
 	 * @return Chaine saisie par l'utilisateur
 	 * @throws IOException 
 	 */
@@ -149,10 +153,13 @@ public class ClientMorpion {
 	@Override
 	public String toString() {
 		String str = "";
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++)
-				str += plateau[i][j];
-			str += "\n";
+		String sep = "______\n";
+		str += sep;
+		for ( int j = 0; j < grid.length; j++) {
+			str += "|";
+			for ( int i = 0; i < grid[0].length; i++)
+				str += grid[i][j] + "|";
+			str += "\n" + sep;
 		}
 		
 		return str;
@@ -163,7 +170,7 @@ public class ClientMorpion {
 			ClientMorpion cm = new ClientMorpion(args[0], Integer.parseInt(args[1]));
 			
 			try {
-				//Récupération et envoi du nom et réception de l'id attribué au client
+				//Rï¿½cupï¿½ration et envoi du nom et rï¿½ception de l'id attribuï¿½ au client
 				cm.processMessage("gsName_gCid");	
 				System.out.println(cm);
 				
