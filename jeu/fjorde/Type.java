@@ -1,9 +1,15 @@
 package jeu.fjorde;
 
 public enum Type {
-    TERRE_ARABLE,
-    MONTAGNE,
-    EAU;
+    TERRE_ARABLE("T"),
+    MONTAGNE("M"),
+    EAU("E");
+    
+    private String id;
+    
+    Type(String id){
+    	this.id = id;
+    }
 
     public static Type getTypeById (char id) {
         switch(id) {
@@ -16,5 +22,9 @@ public enum Type {
             default:
                 return null;
         }
+    }
+    
+    public String toString(){
+    	return this.id;
     }
 }
