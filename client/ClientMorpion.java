@@ -88,6 +88,9 @@ public class ClientMorpion {
 		else if (message.equals(clientId + ":ERROR")) {		//Si la saisie est incorrecte
 			System.out.println("Saisie incorrecte");
 		}
+		else if (message.equals(clientId + ":CANCEL") || message.equals(clientId + ":END")) {
+			return ;
+		}
 		else { 
 			String[] splStr = message.split(":");
 			if( splStr.length == 2) { //Placement des symboles sur le plateau
