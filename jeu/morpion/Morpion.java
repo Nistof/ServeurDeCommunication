@@ -1,6 +1,8 @@
 package jeu.morpion;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeoutException;
 
 import jeu.IJeu;
 import jeu.Player;
@@ -129,6 +131,9 @@ public class Morpion implements IJeu {
             try {
             	sendToPlayer(":START");
                 msg = receiveFromPlayer();
+            } catch (SocketTimeoutException e) {
+                playersCount--;
+                break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -154,7 +159,7 @@ public class Morpion implements IJeu {
     }
 
     @Override
-    public String receiveFromPlayer() throws IOException {
+    public String receiveFromPlayer() throws IOException, SocketTimeoutException {
         return server.receive();
     }
 

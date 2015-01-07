@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
@@ -134,7 +135,7 @@ public class Server {
      *             Si il est impossible de recevoir le message (Flux d'entrée
      *             fermé)
      */
-    public String receive() throws IOException {
+    public String receive() throws IOException, SocketTimeoutException {
         DatagramPacket dp = receivePacket();
         // Attente avant la réception d'un message
         try {
@@ -147,9 +148,10 @@ public class Server {
 
     
     
-    private DatagramPacket receivePacket() throws IOException {
+    private DatagramPacket receivePacket() throws IOException, SocketTimeoutException {
     	clear();
         DatagramPacket dp = new DatagramPacket(receivedData, receivedData.length);
+        
         serverSocket.receive(dp);
         return dp;
     }
@@ -157,7 +159,10 @@ public class Server {
     private void clear() {
 		for(int i = 0; i < receivedData.length; i++) {
 			receivedData[i] = 0;
-			sentData[i] = 0;
+			
+		}
+		for(int i = 0; i < sentData.length; i++) {
+		    sentData[i] = 0;
 		}
 	}
 
