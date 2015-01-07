@@ -9,11 +9,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class ClientMorpion {
+	private final static char[] SYMBOLES = { 'X', 'Y'};
+	
 	private InetAddress 	ip;
 	private int				port;
 	private DatagramSocket 	clientSocket;
 	private String			clientName;
 	private String			clientId;
+	
+	private char[][]		plateau;
+	private int				symbole;
 	
 	/**
 	 * Constructeur du ClientMorpion
@@ -25,6 +30,8 @@ public class ClientMorpion {
 			this.ip = InetAddress.getByName(ip);
 			this.port = port;
 			this.clientSocket = new DatagramSocket();
+			this.plateau = new char[3][3];
+			this.symbole = -1;
 		} 
 		catch (UnknownHostException e) { System.out.println("Connexion à l'hote impossible!"); }
 		catch (IOException e) { System.out.println("Erreur de flux"); }
@@ -59,19 +66,42 @@ public class ClientMorpion {
 			//Récupération de l'id du client
 			this.clientId = receiveMessage().split(":")[0];
 		}
-		else if (message.equals(clientId + ":START")) {				//Demande de saisie par le jeu
+		else if (message.equals(clientId + ":START")) {		//Demande de saisie par le jeu
+			//Symbole du joueur si non défini
+			if ( symbole == -1 ) {
+				boolean isFirstPlayer = true;
+				
+				for (int i = 0; i < 3; i++)
+					for (int j = 0; j < 3; j++)
+						if (plateau[i][j] != ' ')
+							isFirstPlayer = false;
+				
+				this.symbole = (isFirstPlayer)?0:1;
+			}
+			
 			sendMessage(this.clientId + ":" + getUserEntry());
 		}
-		else if (message.equals(clientId + ":ERROR")) {				//Si la saisie est incorrecte
+		else if (message.equals(clientId + ":ERROR")) {		//Si la saisie est incorrecte
 			System.out.println("Saisie incorrecte");
 		}
 		else { 
 			String[] splStr = message.split(":");
-			if ( splStr.length == 2 && splStr[1].equals("WIN")) {	//Si un joueur a gagné
+			if( splStr.length == 2) { //Placement des symboles sur le plateau
+				int x = Integer.parseInt(splStr[1].split(",")[0].trim());
+				int y = Integer.parseInt(splStr[1].split(",")[1].trim());
+				
 				if ( splStr[0].equals(clientId)) {
-					System.out.println("Vous avez gagné.");
+					this.plateau[x][y] = SYMBOLES[symbole];
 				} else {
-					System.out.println("Vous avez perdu.");
+					this.plateau[x][y] = SYMBOLES[(symbole+1)%2];
+				}
+				
+				System.out.println(this);
+			} else if ( splStr.length == 3 && splStr[2].equals("WIN")) {	//Si un joueur a gagné
+				if ( splStr[1].equals(clientId)) {
+					System.out.println(SYMBOLES[symbole] + " gagne!");
+				} else {
+					System.out.println(SYMBOLES[(symbole+1)%2] + " gagne!");
 				}
 			}
 		}
@@ -116,6 +146,18 @@ public class ClientMorpion {
 		this.clientSocket.close();
 	}
 	
+	@Override
+	public String toString() {
+		String str = "";
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++)
+				str += plateau[i][j];
+			str += "\n";
+		}
+		
+		return str;
+	}
+
 	public static void main(String[] args) {
 		if ( args.length == 2) {
 			ClientMorpion cm = new ClientMorpion(args[0], Integer.parseInt(args[1]));
@@ -123,7 +165,8 @@ public class ClientMorpion {
 			try {
 				//Récupération et envoi du nom et réception de l'id attribué au client
 				cm.processMessage("gsName_gCid");	
-	
+				System.out.println(cm);
+				
 				String message = null;
 				do {
 					message = cm.receiveMessage();
