@@ -103,10 +103,6 @@ public class Morpion implements IJeu {
     public void add(String name, String id) {
         players[playersCount].setName(name);
         players[playersCount++].setId(id);
-        System.out.println(server);
-        if(playersCount >= 2) {
-            server.disalowConnections();
-        }
     }
 
     @Override
@@ -116,7 +112,6 @@ public class Morpion implements IJeu {
 
     @Override
     public void sendToPlayer(String msg) throws IOException {
-       System.out.println(playersCount + " " +  players);
        server.sendToClient(players[player].getId(), msg);
     }
 
@@ -127,18 +122,18 @@ public class Morpion implements IJeu {
         while(!win() && canPlay() && playersCount == 2) {
             String msg = "";
             try {
-            	sendToPlayer(players[player].getId()+":START");
+            	sendToPlayer(":START");
                 msg = receiveFromPlayer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             if(processMessage(msg)) {
                 sendToPlayer(":OK");
-                sendToAllPlayers(msg);
+                sendToAllPlayers(":" + msg);
                 changePlayer();
             }
             else {
-                sendToPlayer(players[player].getId()+":ERROR");
+                sendToPlayer(":ERROR");
             }
             System.out.println(this.toString());
         }
@@ -146,7 +141,10 @@ public class Morpion implements IJeu {
         //Envoi du gagnant
         if(playersCount == 2) {
         	changePlayer();
-            sendToAllPlayers(players[player].getId()+":win");
+            sendToAllPlayers(":" + players[player].getId() + ":WIN");
+        }
+        else {
+        	sendToAllPlayers(":CANCEL");
         }
     }
 

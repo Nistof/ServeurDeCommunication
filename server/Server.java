@@ -117,14 +117,14 @@ public class Server {
      */
     public void sendToClient(String id, String msg) throws IOException {
         Client c = clients.get(id);
-        String data = id + ":" + msg;
+        String data = id + msg;
         sentData = data.getBytes();
         serverSocket.send(new DatagramPacket(sentData, sentData.length, c.getIp(), c.getPort()));
     }
 
     /**
-     * Attend la réception public void disalowConnections() {
-     * cm.toggleConnect(); }d'un message d'un client et renvoie une chaine de la
+     * Attend la réception 
+     * d'un message d'un client et renvoie une chaine de la
      * forme id:message
      * 
      * @param id
@@ -189,14 +189,13 @@ public class Server {
             c = new Client(datagramPacket.getAddress(),
                     datagramPacket.getPort());
             clients.put(c.getCid(), c);
-            System.out.println(new String(datagramPacket.getData()));
             jeu.add(new String(datagramPacket.getData()), c.getCid());
             sendToClient(c.getCid(), ":OK");
         }
         else {
             sendToClient(c.getCid(), ":ERROR");
         }
-    }                // TODO Auto-generated catch block
+    }                
 
     public void disalowConnections() {
         allowConnection = false;
@@ -216,7 +215,6 @@ public class Server {
                 try {
                     server.add(server.receivePacket());
                 } catch (Exception e) {
-                    e.printStackTrace();
                     server.disalowConnections();
                 }
             }
