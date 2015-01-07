@@ -119,6 +119,11 @@ public class Morpion implements IJeu {
     public void launchGame() throws IOException {
         //Tant que la partie n'est pas finie, que l'on peut encore jouer
         //et que le nombre de joueur est égal à 2
+    	sendToAllPlayers(":NAMELIST");
+    	for(int i = 0 ; i < players.length; i++)  {
+    		sendToAllPlayers(":" + players[i].getId() + ":" + players[i].getName() );
+    	}
+    	sendToAllPlayers(":ENDLIST");
         while(!win() && canPlay() && playersCount == 2) {
             String msg = "";
             try {
