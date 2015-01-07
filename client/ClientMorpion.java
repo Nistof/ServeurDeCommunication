@@ -7,15 +7,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 public class ClientMorpion {
-	private final static char[] SYMBOLES = { 'X', 'Y'};
+	private final static char[] SYMBOLES = { 'X', 'O'};
 	
 	private InetAddress 	ip;
 	private int				port;
 	private DatagramSocket 	clientSocket;
 	private String			clientName;
 	private String			clientId;
+	private HashMap<String, String> playersName;
 	
 	private char[][]		grid;
 	private int				symbole;
@@ -33,6 +35,9 @@ public class ClientMorpion {
 			this.clientSocket = new DatagramSocket();
 			this.grid = new char[3][3];
 			this.symbole = -1;
+			
+			this.playersName = new HashMap<String, String>();
+			
 			for ( int j = 0; j < grid.length; j++)
 				for ( int i = 0; i < grid[0].length; i++)
 					grid[i][j] = ' ';
@@ -72,6 +77,13 @@ public class ClientMorpion {
 			//Rï¿½cupï¿½ration de l'id du client
 			this.clientId = receiveMessage().split(":")[0];
 		}
+		else if (message.equals(clientId + ":NAMELIST")) {
+			String[] splMsg = receiveMessage().split(":");
+			while (!splMsg[1].equals("ENDLIST")) {
+				playersName.put(splMsg[1], splMsg[2]);
+				splMsg = receiveMessage().split(":");
+			}
+		}
 		else if (message.equals(clientId + ":START")) {		//Demande de saisie par le jeu
 			//Symbole du joueur si non dï¿½fini
 			if ( symbole == -1 ) {
@@ -90,7 +102,10 @@ public class ClientMorpion {
 		else if (message.equals(clientId + ":ERROR")) {		//Si la saisie est incorrecte
 			System.out.println("Saisie incorrecte");
 		}
-		else if (message.equals(clientId + ":CANCEL") || message.equals(clientId + ":END")) {
+		else if (message.equals(clientId + ":CANCEL")) {
+			System.out.println("Partie annulée");
+		}
+		else if (message.equals(clientId + ":END")) {
 			return ;
 		}
 		else { 
