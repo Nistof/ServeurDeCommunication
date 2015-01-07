@@ -145,13 +145,23 @@ public class Server {
         return new String(dp.getData());
     }
 
+    
+    
     private DatagramPacket receivePacket() throws IOException {
+    	clear();
         DatagramPacket dp = new DatagramPacket(receivedData, receivedData.length);
         serverSocket.receive(dp);
         return dp;
     }
 
-    /**
+    private void clear() {
+		for(int i = 0; i < receivedData.length; i++) {
+			receivedData[i] = 0;
+			sentData[i] = 0;
+		}
+	}
+
+	/**
      * Transmet un message à tout les clients
      * 
      * @param msg
