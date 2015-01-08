@@ -96,10 +96,12 @@ public class ClientMorpion {
 				this.symbole = (isFirstPlayer)?0:1;
 			}
 			
-			System.out.print("Saisie X: ");
-			String x = getUserEntry();
-			System.out.print("Saisie Y: ");
-			String y = getUserEntry();
+			int x = 0, y = 0;
+			do {
+				x = (int)(Math.random()*2);
+				y = (int)(Math.random()*2);
+			} while ( grid[x][y] != ' ');
+			
 			sendMessage(this.clientId + ":" + x + "," + y);
 		}
 		else if (message.equals(clientId + ":ERROR")) {		//Si la saisie est incorrecte
