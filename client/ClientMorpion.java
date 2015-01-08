@@ -141,7 +141,6 @@ public class ClientMorpion {
 		byte[] data = new byte[1024];
 		data = message.getBytes();
 		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
-		System.out.println(message);
 		//Envoi du message
 		this.clientSocket.send(packet);
 	}

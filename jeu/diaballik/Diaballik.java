@@ -1,5 +1,6 @@
 package jeu.diaballik;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import jeu.IJeu;
@@ -48,7 +49,12 @@ public class Diaballik implements IJeu{
 				this.plateau[6][i] = tabPlayer[1].getSupport(i);
 			}
 		}
-		this.server = new Server(this);
+		try {
+            this.server = new Server(this);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
 	public boolean moveB(String color, String dest){

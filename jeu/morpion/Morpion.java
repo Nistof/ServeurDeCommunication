@@ -1,5 +1,6 @@
 package jeu.morpion;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
@@ -37,7 +38,12 @@ public class Morpion implements IJeu {
 		for ( int j = 0; j < grid.length; j++)
 			for ( int i = 0; i < grid[0].length; i++)
 				grid[i][j] = ' ';	
-		this.server = new Server(this);
+		try {
+            this.server = new Server(this);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 	
 	/**
@@ -105,16 +111,19 @@ public class Morpion implements IJeu {
     public void add(String name, String id) {
         players[playersCount].setName(name);
         players[playersCount++].setId(id);
+        server.log("Ajout du joueur " + name + " avec l'id : " + id);
     }
 
     @Override
     public void sendToAllPlayers(String msg) throws IOException {
         server.sendToAllClient(msg);
+        server.log("Envoi du message : " + msg + " à tous les joueurs");
     }
 
     @Override
     public void sendToPlayer(String msg) throws IOException {
        server.sendToClient(players[player].getId(), msg);
+       server.log("Envoi du message : " + msg + " au joueur " + players[player].getId());
     }
 
     @Override
@@ -160,7 +169,9 @@ public class Morpion implements IJeu {
 
     @Override
     public String receiveFromPlayer() throws IOException, SocketTimeoutException {
-        return server.receive();
+        String s = server.receive();
+        server.log("Message reçu d'un client : " + s);
+        return s;
     }
 
     @Override

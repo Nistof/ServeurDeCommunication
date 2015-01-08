@@ -1,11 +1,15 @@
 package server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.HashMap;
 
 import jeu.IJeu;
@@ -21,6 +25,8 @@ import jeu.IJeu;
  */
 
 public class Server {
+    private File log;
+    private PrintWriter pw;
     private DatagramSocket serverSocket;
     private byte[] receivedData;
     private byte[] sentData;
@@ -35,11 +41,20 @@ public class Server {
      * serveur au port (5555 par défaut) défini dans le fichier "properties"
      * ainsi que le nombre maximum de connexion simultanées défini (4 par
      * défaut).
+     * @throws FileNotFoundException 
      */
-    public Server(IJeu jeu) {
+    public Server(IJeu jeu) throws FileNotFoundException {
         this.serverProperties = new ServerProperties("properties.xml");
         this.clients = new HashMap<String, Client>();
         this.jeu = jeu;
+        this.log = new File(new Date().toString() + ".log");
+        try {
+            log.createNewFile();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        this.pw = new PrintWriter(log);
         receivedData = new byte[1024];
         sentData = new byte[1024];
         try {
@@ -49,7 +64,7 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Serveur démarré à l'adresse : "
+        this.log("Serveur démarré à l'adresse : "
                 + this.getIPAdress() + ":" + this.getServerPort());
         this.cm = new ConnectionManager(this);
     }
@@ -73,6 +88,7 @@ public class Server {
     public void close() {
         this.serverProperties.save();
         this.serverSocket.close();
+        this.pw.close();
     }
 
     /**
@@ -216,6 +232,11 @@ public class Server {
         allowConnection = false;
     }
     
+    public void log(String req) {
+        System.out.println(req);
+        pw.println(req);
+    }
+    
     private class ConnectionManager extends Thread {
         private Server server;
         
@@ -240,4 +261,6 @@ public class Server {
             }
         }
     }
+    
+    
 }
