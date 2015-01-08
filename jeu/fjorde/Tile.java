@@ -1,8 +1,6 @@
 package jeu.fjorde;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import jeu.Player;
 
 public class Tile {
