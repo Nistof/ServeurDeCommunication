@@ -159,7 +159,7 @@ public class Morpion implements IJeu {
         //Envoi du gagnant
         if(playersCount == 2) {
         	changePlayer();
-            sendToAllPlayers(":" + players[player].getId() + ":WIN");
+            if (win()) sendToAllPlayers(":" + players[player].getId() + ":WIN");
             sendToAllPlayers(":END");
         }
         else {
