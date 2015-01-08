@@ -15,11 +15,15 @@ import jeu.Player;
 public class FjordePlayer extends Player {
 	private String color;
 	private Tile tile;
+	private int nbHutte;
+	private int nbChamp;
 	
-	public FjordePlayer( String nom, String couleur, Pick p ) {
+	public FjordePlayer( String nom, String couleur, PickClose p ) {
 		super(nom);
 		this.color = couleur;
 		this.tile = p.draw();
+		this.nbHutte = 4;
+		this.nbChamp = 20;
 	}
 	
 	/**
@@ -38,7 +42,23 @@ public class FjordePlayer extends Player {
 		return this.tile;
 	}
 	
-	public void put(Board board, Pick p){
+	public boolean putHutte(){
+		if(nbHutte>0){ 
+			this.nbHutte--;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean putChamp(){
+		if(nbChamp>0){ 
+			this.nbChamp--;
+			return true;
+		}
+		return false;
+	}
+	
+	public void put(Board board, PickClose p){
 		board.add(this.tile);
 		this.tile=p.draw();
 	}

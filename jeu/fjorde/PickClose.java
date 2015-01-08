@@ -15,53 +15,42 @@ import java.util.Scanner;
  * @version 0.1, 01-05-2015
  */
 
-public class Pick {
+public class PickClose {
 	
 	private ArrayList<Tile> alTiles;
-	private boolean hidden;
 	
 	/**
 	 * Constructeur
 	 * @param hidden Etat de la pioche
 	 */
-	public Pick(boolean hidden){
+	public PickClose(){
 		this.alTiles = new ArrayList<Tile>(); 
-		this.hidden = hidden;
-		
-		if(this.hidden==true){
-			String nomFichier = System.getProperty("user.dir");
-			nomFichier = nomFichier + "/Tuile.txt";
-			Scanner fichier = null;
-			String s;
 
-			try { // ouverture
-				fichier = new Scanner(new File(nomFichier));
+		String nomFichier = System.getProperty("user.dir");
+		nomFichier = nomFichier + "/Tuile.txt";
+		Scanner fichier = null;
+		String s;
 
-				// traitement
-				while (fichier.hasNext()) {
-					s = fichier.next();
-					if(s != null && s.split(":")[1].equals("F")){
-						this.alTiles.add(new Tile(s.split(":")[0],false));
-					}
-					
+		try { // ouverture
+			fichier = new Scanner(new File(nomFichier));
+
+			// traitement
+			while (fichier.hasNext()) {
+				s = fichier.next();
+				if(s != null && s.split(":")[1].equals("F")){
+					this.alTiles.add(new Tile(s.split(":")[0],false));
 				}
-
-				// fermeture
-				fichier.close();
-			} catch (Exception exc) {
-				System.out.println("Erreur fichier" + exc);
+				
 			}
-			
-			Collections.shuffle(this.alTiles);
+
+			// fermeture
+			fichier.close();
+		} catch (Exception exc) {
+			System.out.println("Erreur fichier" + exc);
 		}
-	}
+		
+		Collections.shuffle(this.alTiles);
 	
-	/**
-	 * Permet de savoir si la pioche est caché ou pas
-	 * @return boolean 
-	 */
-	public boolean isHidden() {
-		return hidden;
 	}
 	
 	/**

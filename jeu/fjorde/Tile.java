@@ -44,11 +44,59 @@ public class Tile {
     public boolean setItem (Item item, FjordePlayer p) {
         boolean b = false;
         if(this.item == null && item != null) {
-            this.item = item;
-            this.owner = p;
-            b = true;
+        	if(item.equals(Item.HUTTE) && setHutte(item,p)){ b=true; }
+        	if(item.equals(Item.CHAMP) && setChamp(item,p)){ b=true; }
         }
         return b;
+    }
+    
+    public boolean setHutte(Item item, FjordePlayer p){
+    	boolean b = false;
+    	
+    	if( !p.putHutte() )
+    		return b;
+    	
+    	if(!this.isStart()){
+	    	int cpt=0;
+	    	for(int i=0; i<this.types.length; i++){
+	    		if(this.types[i].equals(Type.MONTAGNE)){ cpt++; }
+	    	}
+	        if( cpt == 6 ) {
+	        	this.item = item;
+	        	this.owner = p;
+	        	b = true;
+	        }
+    	}
+    	return b;
+    }
+    
+    public boolean setChamp(Item item, FjordePlayer p){
+    	boolean b = false;
+    	
+    	if( !p.putChamp() )
+    		return b;
+    	
+    	for(int i=0; i<this.neighboors.length; i++){
+    		if(this.neighboors[i]!=null && this.neighboors[i].getItem()!=null && p==this.neighboors[i].getOwner()){
+    			if(i!=5){
+    				if(!this.types[i].equals(Type.MONTAGNE) && !this.types[i+1].equals(Type.MONTAGNE)
+    						|| !this.types[i].equals(Type.EAU) && !this.types[i+1].equals(Type.EAU)){
+    					this.item = item;
+    		        	this.owner = p;
+    		        	b = true;
+    				}
+    			}
+    			else{
+    				if(!this.types[i].equals(Type.MONTAGNE) && !this.types[0].equals(Type.MONTAGNE)
+    						|| !this.types[i].equals(Type.EAU) && !this.types[0].equals(Type.EAU)){
+    					this.item = item;
+    		        	this.owner = p;
+    		        	b = true;
+    				}
+    			}
+    		}
+    	}
+    	return b;
     }
     
     /**
