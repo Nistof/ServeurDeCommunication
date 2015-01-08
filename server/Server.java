@@ -136,6 +136,12 @@ public class Server {
         Client c = clients.get(id);
         String data = id + msg;
         sentData = data.getBytes();
+     // Attente avant la réception d'un message
+        try {
+            Thread.sleep(serverProperties.getTimeWait());
+        } catch (InterruptedException e) {
+
+        }
         serverSocket.send(new DatagramPacket(sentData, sentData.length, c.getIp(), c.getPort()));
     }
 
@@ -153,12 +159,6 @@ public class Server {
      */
     public String receive() throws IOException, SocketTimeoutException {
         DatagramPacket dp = receivePacket();
-        // Attente avant la réception d'un message
-        try {
-            Thread.sleep(serverProperties.getTimeWait());
-        } catch (InterruptedException e) {
-
-        }
         return new String(dp.getData());
     }
 

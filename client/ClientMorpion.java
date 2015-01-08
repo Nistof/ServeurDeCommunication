@@ -98,8 +98,8 @@ public class ClientMorpion {
 			
 			int x = 0, y = 0;
 			do {
-				x = (int)(Math.random()*2);
-				y = (int)(Math.random()*2);
+				x = (int)(Math.random()*3);
+				y = (int)(Math.random()*3);
 			} while ( grid[x][y] != ' ');
 			
 			sendMessage(this.clientId + ":" + x + "," + y);
