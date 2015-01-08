@@ -9,7 +9,7 @@ import jeu.Player;
  * @author Florian MARTIN
  * @author Thibaut QUENTIN
  * @author Sarah QULORE
- * @version 0.1, 12-03-2014
+ * @version 0.1, 01-05-2015
  */
 
 public class FjordePlayer extends Player {
@@ -30,6 +30,10 @@ public class FjordePlayer extends Player {
 		return this.color;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public Tile getTile() {
 		return this.tile;
 	}

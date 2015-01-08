@@ -3,6 +3,16 @@ package jeu.fjorde;
 import java.util.ArrayList;
 import jeu.Player;
 
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 01-05-2015
+ */
+
 public class Tile {
     
     private Type[] types;
@@ -41,18 +51,32 @@ public class Tile {
         return b;
     }
     
+    /**
+     * @return si la tuile est de départ ou pas
+     */
     public boolean isStart() {
 		return start;
 	}
 
+    /**
+     * @return le joueur a qui appartient la tuile
+     */
 	public FjordePlayer getOwner() {
 		return owner;
 	}
    
+	/**
+	 * @return l'item posé sur la tuile
+	 */
     public Item getItem() {
 		return item;
 	}
     
+    /**
+     * permet d'avoir les sommet correspondant à une id donnée
+     * @param id numéro de coté
+     * @return une arraylist de sommet
+     */
     public ArrayList<Type> getTypesById(int id){
     	ArrayList<Type> alT = new ArrayList<Type>();
     	for(int i=0; i<2; i++){
@@ -64,6 +88,11 @@ public class Tile {
     	return alT;
     }
     
+    /**
+     * verifie si c'est un voisin, et l'ajoute au tableau
+     * @param t une tuile
+     * @return boolean 
+     */
     public boolean setNeighboor (Tile t) {
         //boolean b = false;
     	for(int i=0; i<this.neighboors.length; i++){
@@ -83,6 +112,9 @@ public class Tile {
         return false;         
     }
     
+    /**
+     * @return la liste des voisins
+     */
 	public String getNeighboors() {
 		String s = "";
     	for(int i=0; i<this.neighboors.length; i++){	

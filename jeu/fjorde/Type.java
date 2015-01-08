@@ -1,5 +1,15 @@
 package jeu.fjorde;
 
+/**
+ * 
+ * @author Julien DELAFENESTRE
+ * @author Thomas MARECAL
+ * @author Florian MARTIN
+ * @author Thibaut QUENTIN
+ * @author Sarah QULORE
+ * @version 0.1, 01-05-2015
+ */
+
 public enum Type {
     TERRE_ARABLE("T"),
     MONTAGNE("M"),
