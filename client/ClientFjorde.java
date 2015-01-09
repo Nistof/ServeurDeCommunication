@@ -58,8 +58,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		// Plateau de jeu
 		this.grid = new GridFjorde();
 		this.grid.setBounds( 0, 0, screenSize.width, screenSize.height);
-		this.grid.createTest();
-		System.out.println(grid.getWidth() + ":" + grid.getHeight());
+		this.grid.initGrid();
 		this.grid.setAlignmentX(0.0f);
 		this.grid.setAlignmentY(0.0f);
 		this.panel.add(grid);
