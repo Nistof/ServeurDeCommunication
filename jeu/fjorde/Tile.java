@@ -49,7 +49,13 @@ public class Tile {
         }
         return b;
     }
-    
+
+    /**
+     * 
+     * @param item La hutte
+     * @param p le joueur jouant cette hutte
+     * @return si une hutte a Ã©tÃ© ajoutÃ©e par un joueur
+     */
     public boolean setHutte(Item item, FjordePlayer p){
     	boolean b = false;
     	
@@ -69,7 +75,13 @@ public class Tile {
     	}
     	return b;
     }
-    
+
+    /**
+     * 
+     * @param item Le champ
+     * @param p Le joueur jouant ce champ
+     * @return si un champ a Ã©tÃ© ajoutÃ© par un joueur
+     */
     public boolean setChamp(Item item, FjordePlayer p){
     	boolean b = false;
     	
@@ -100,7 +112,7 @@ public class Tile {
     }
     
     /**
-     * @return si la tuile est de départ ou pas
+     * @return si la tuile est de dï¿½part ou pas
      */
     public boolean isStart() {
 		return start;
@@ -114,15 +126,15 @@ public class Tile {
 	}
    
 	/**
-	 * @return l'item posé sur la tuile
+	 * @return l'item posï¿½ sur la tuile
 	 */
     public Item getItem() {
 		return item;
 	}
     
     /**
-     * permet d'avoir les sommet correspondant à une id donnée
-     * @param id numéro de coté
+     * permet d'avoir les sommet correspondant ï¿½ une id donnï¿½e
+     * @param id numï¿½ro de cotï¿½
      * @return une arraylist de sommet
      */
     public ArrayList<Type> getTypesById(int id){
@@ -142,7 +154,6 @@ public class Tile {
      * @return boolean 
      */
     public boolean setNeighboor (Tile t) {
-        //boolean b = false;
     	for(int i=0; i<this.neighboors.length; i++){
 	    	if(neighboors[i] == null) {
 	            for(int j=0; j<t.neighboors.length; j++){
@@ -166,9 +177,9 @@ public class Tile {
 	public String getNeighboors() {
 		String s = "";
     	for(int i=0; i<this.neighboors.length; i++){	
-    		System.out.println(this.neighboors[i]);
-    		//if(this.neighboors[i]!= null)
-    			//s += this.neighboors[i].toString(); 		
+    		//System.out.println(this.neighboors[i]);
+    		if(this.neighboors[i]!= null)
+    			s += i + " : " + this.neighboors[i].toString() + "\n"; 		
     	}
     	return s;
 	}
@@ -180,9 +191,27 @@ public class Tile {
      * @return vrai si la pose de la tuile a rÃ©ussi
      */
     public boolean setNeighboorById (int id, Tile t) {
-        boolean b = false;
-
-        return b;
+    	// Si l'id n'est pas bon
+    	if( id<0 || id>this.neighboors.length )
+        	return false;
+        
+    	// S'il y a dÃ©jÃ  une tuile
+        if( this.neighboors[id] != null )
+        	return false;
+        
+        
+        for( int i=0; i<this.types.length; i++ ) {
+        	for( int j=0; j<t.types.length; j++ ) {
+        		if(this.getTypesById(i).get(0)==t.getTypesById(j).get(0) && 
+    					this.getTypesById(i).get(1)==t.getTypesById(j).get(1)) {
+    				neighboors[i] = t;
+    				t.neighboors[j]=this;
+    				return true;
+    			}
+        	}
+        }
+        
+        return false;
     }
     
     /**
