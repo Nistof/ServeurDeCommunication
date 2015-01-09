@@ -134,6 +134,8 @@ public class Server {
      */
     public void sendToClient(String id, String msg) throws IOException {
         Client c = clients.get(id);
+        if(c == null)
+        	System.out.println("Null");
         String data = id + msg;
         sentData = data.getBytes();
      // Attente avant la réception d'un message
@@ -163,11 +165,9 @@ public class Server {
     }
 
     
-    
     private DatagramPacket receivePacket() throws IOException, SocketTimeoutException {
     	clear();
         DatagramPacket dp = new DatagramPacket(receivedData, receivedData.length);
-        
         serverSocket.receive(dp);
         return dp;
     }
@@ -249,6 +249,7 @@ public class Server {
             allowConnection = true;
             while (clients.size() < serverProperties.getClientMax() && allowConnection) {
                 try {
+                	System.out.println("Add");
                     server.add(server.receivePacket());
                 } catch (Exception e) {
                     server.disalowConnections();
