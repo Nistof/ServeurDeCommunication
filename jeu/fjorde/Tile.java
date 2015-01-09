@@ -201,14 +201,12 @@ public class Tile {
         
         
         for( int i=0; i<this.types.length; i++ ) {
-        	for( int j=0; j<t.types.length; j++ ) {
-        		if(this.getTypesById(i).get(0)==t.getTypesById(j).get(0) && 
-    					this.getTypesById(i).get(1)==t.getTypesById(j).get(1)) {
-    				neighboors[i] = t;
-    				t.neighboors[j]=this;
+        		if(this.getTypesById(id).get(0)==t.getTypesById(i).get(0) && 
+    					this.getTypesById(id).get(1)==t.getTypesById(i).get(1)) {
+    				neighboors[id] = t;
+    				t.neighboors[i]=this;
     				return true;
     			}
-        	}
         }
         
         return false;
