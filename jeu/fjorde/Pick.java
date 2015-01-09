@@ -15,7 +15,7 @@ import java.util.Scanner;
  * @version 0.1, 01-05-2015
  */
 
-public class PickClose {
+public class Pick implements Closed,Open {
 	
 	private ArrayList<Tile> alTiles;
 	
@@ -23,7 +23,8 @@ public class PickClose {
 	 * Constructeur
 	 * @param hidden Etat de la pioche
 	 */
-	public PickClose(){
+	public Pick(boolean hidden){
+		if(hidden) {
 		this.alTiles = new ArrayList<Tile>(); 
 
 		String nomFichier = System.getProperty("user.dir");
@@ -50,6 +51,10 @@ public class PickClose {
 		}
 		
 		Collections.shuffle(this.alTiles);
+		}
+		else {
+			this.alTiles = new ArrayList<Tile>(); 
+		}
 	
 	}
 	
@@ -67,15 +72,37 @@ public class PickClose {
 	 * Supprime une tuile de la pioche
 	 * @return Tile
 	 */
-	public Tile draw(){
-		return alTiles.remove(alTiles.size()-1);
-	}
+	
 	
 	/**
-	 * Ajoute à la pioche une tuile
-	 * @param t Tuile à ajouter
+	 * Ajoute ï¿½ la pioche une tuile
+	 * @param t Tuile ï¿½ ajouter
 	 */
 	public void add(Tile t){
 		alTiles.add(t);
+	}
+	
+	public Tile getTile(int i){
+		if(!this.isEmpty() && i>0 && i<this.alTiles.size()){
+			return this.alTiles.get(i);
+		}
+		return null;
+	}
+
+	/**
+	 * Supprime une tuile de la pioche
+	 * @return Tile
+	 */
+	public Tile draw(int i){
+		Tile t=null;
+		if(!this.isEmpty() && i>0 && i<this.alTiles.size()){
+			t = this.alTiles.get(i);
+			this.alTiles.remove(i);
+		}
+		return t;
+	}
+	
+	public Tile draw(){
+		return alTiles.remove(alTiles.size()-1);
 	}
 }

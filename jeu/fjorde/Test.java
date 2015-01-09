@@ -14,13 +14,13 @@ public class Test {
 	private Board board;
 	private FjordePlayer player1;
 	private FjordePlayer player2;
-	private PickClose pickClose;
-	private PickOpen pickOpen;
+	private Closed pickClose;
+	private Open pickOpen;
 	
 	public Test(){
 		board = new Board();
-		pickClose = new PickClose();
-		pickOpen = new PickOpen();
+		pickClose = new Pick(true);
+		pickOpen = new Pick(false);
 		
 		player1 = new FjordePlayer("PAUL","BLANC",pickClose);
 		player2 = new FjordePlayer("JACK","NOIR",pickClose);

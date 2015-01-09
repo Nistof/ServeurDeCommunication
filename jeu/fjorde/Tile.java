@@ -200,13 +200,13 @@ public class Tile {
         	return false;
         
         
-        for( int i=0; i<this.types.length; i++ ) {
-        		if(this.getTypesById(id).get(0)==t.getTypesById(i).get(0) && 
-    					this.getTypesById(id).get(1)==t.getTypesById(i).get(1)) {
-    				neighboors[id] = t;
-    				t.neighboors[i]=this;
-    				return true;
-    			}
+        for( int i=0; i<t.neighboors.length; i++ ) {
+    		if(this.getTypesById(id).get(0)==t.getTypesById(i).get(0) && 
+					this.getTypesById(id).get(1)==t.getTypesById(i).get(1)) {
+				neighboors[id] = t;
+				t.neighboors[i]=this;
+				return true;
+			}
         }
         
         return false;

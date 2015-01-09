@@ -18,7 +18,7 @@ public class FjordePlayer extends Player {
 	private int nbHutte;
 	private int nbChamp;
 	
-	public FjordePlayer( String nom, String couleur, PickClose p ) {
+	public FjordePlayer( String nom, String couleur, Closed p ) {
 		super(nom);
 		this.color = couleur;
 		this.tile = p.draw();
@@ -58,9 +58,9 @@ public class FjordePlayer extends Player {
 		return false;
 	}
 	
-	public void put(Board board, PickClose p){
+	public void put(Board board, Closed pickClose){
 		board.add(this.tile);
-		this.tile=p.draw();
+		this.tile=pickClose.draw();
 	}
 	
 }
