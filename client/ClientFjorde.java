@@ -3,6 +3,8 @@ package client;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +22,7 @@ import javax.swing.OverlayLayout;
 import client.Fjorde.GridFjorde;
 
 public class ClientFjorde extends JFrame implements ActionListener {
+	private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 	private InetAddress 	ip;
 	private int				port;
 	private DatagramSocket 	clientSocket;
@@ -77,8 +80,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	private void goFullScreen() {
 		if ( !this.isUndecorated())
 			this.setUndecorated(true);	
-		this.setExtendedState(MAXIMIZED_BOTH);
-		this.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+		device.setFullScreenWindow(this);
 	}
 	
 	@Override
