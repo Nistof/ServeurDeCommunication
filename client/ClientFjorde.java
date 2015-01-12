@@ -6,6 +6,10 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,6 +20,11 @@ import javax.swing.OverlayLayout;
 import client.Fjorde.GridFjorde;
 
 public class ClientFjorde extends JFrame implements ActionListener {
+	private InetAddress 	ip;
+	private int				port;
+	private DatagramSocket 	clientSocket;
+	private String			clientId;
+	
 	private JButton quitButton;
 	private GridFjorde grid;
 	
@@ -31,8 +40,6 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		this.setTitle("Fjorde");
 		this.setLocation(0, 0);
 		this.goFullScreen();
-		
-		//this.panel.setLayout(new OverlayLayout(panel));
 		this.setFrame();
 		c.add(panel, BorderLayout.CENTER);
 		
@@ -56,7 +63,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		this.panel.add(quitButton);
 		
 		// Plateau de jeu
-		this.grid = new GridFjorde();
+		this.grid = new GridFjorde(this);
 		this.grid.setBounds( 0, 0, screenSize.width, screenSize.height);
 		this.grid.initGrid();
 		this.grid.setAlignmentX(0.0f);
@@ -78,6 +85,55 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.quitButton)
 			System.exit(0);
+	}
+	
+	/**
+	 * R�ception d'un message de la part du serveur
+	 * @return Message envoy� par le serveur
+	 * @throws IOException
+	 */
+	public String receiveMessage() throws IOException {
+		byte[] data = new byte[1024];
+		DatagramPacket packet = new DatagramPacket(data, data.length);
+		
+		//R�cup�ration du message
+		this.clientSocket.receive(packet);
+		
+		return new String(packet.getData());
+	}
+	
+	/**
+	 * Envoi d'un message au serveur
+	 * @param message Message � envoyer
+	 * @throws IOException
+	 */
+	private void sendMessage(String message) throws IOException {
+		byte[] data = new byte[1024];
+		message = this.clientId + ":" + message;
+		data = message.getBytes();
+		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+		//Envoi du message
+		this.clientSocket.send(packet);
+	}
+	
+	/**
+	 * Traitement d'un message
+	 * @param message Message � traiter
+	 * @throws IOException
+	 */
+	public boolean processMessage(String message) throws IOException {
+		message = message.trim();
+		//OPICK:NOM_PIECE
+		//PICK
+		
+		if (message.split(":")[0].equals("OPICK")) {
+			System.out.println("OpenPick -> send");
+		}
+		else if (message.split(":")[0].equals("PICK")) {
+			System.out.println("ClosePick -> send");
+		}
+		
+		return false;
 	}
 	
 	public static void main(String[] args) {

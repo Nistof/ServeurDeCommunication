@@ -26,13 +26,15 @@ public class Tile extends JLabel {
 		this.xLocation = 0;
 		this.yLocation = 0;
 		
-		try {
-			this.defaultImage = ImageIO.read(new File("./client/Fjorde/images/" + type + ".png"));
-		} catch (IOException e) {
-			e.printStackTrace();
+		if ( !type.equals("")) {
+			try {
+				this.defaultImage = ImageIO.read(new File("./client/Fjorde/images/" + type + ".png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			this.setIcon(new ImageIcon(defaultImage));
 		}
-		
-		this.setIcon(new ImageIcon(defaultImage));
 	}	
 	
 	public int getX() { return this.xLocation; }

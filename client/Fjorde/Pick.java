@@ -2,64 +2,73 @@ package client.Fjorde;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JInternalFrame;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 
-public class Pick extends JLabel {
-	private Tile frontTile;
-	private ArrayList<Tile> tileList;
+
+public class Pick extends JLabel implements MouseListener, ActionListener {
+	GridFjorde grid;
+	
+	private LinkedHashMap<String, JLabel> tileList;
 	private boolean isOpen;
 	
 	private boolean isClose;//Rend la pioche inutilisable
+	private boolean isEmpty;//Indique si la pioche est vide
 	
 	private BufferedImage closedPick;
 	private BufferedImage nullPick;
 	
-	private Rectangle normalBounds;
 	private JPanel panelTiles;
 	private boolean panelTileIsOpen;
 	
-	public Pick(boolean isOpen) {
+	public Pick(GridFjorde grid, boolean isOpen) {
 		try {
 			this.closedPick = ImageIO.read(new File("./client/Fjorde/images/close.png"));
 			this.nullPick = ImageIO.read(new File("./client/Fjorde/images/null.png"));
 		} catch (IOException e) {}
 		
-		this.tileList = new ArrayList<Tile>();
+		this.grid = grid;
+		this.tileList = new LinkedHashMap<String, JLabel>();
 		this.isOpen = isOpen;
 		this.isClose = false;
+		this.isEmpty = true;
 		
 		this.panelTileIsOpen = false;
 		
-		this.setFrontTile(null);		
+		this.addTile(null);		
 	}
 	
 	public void close() { this.isClose = true; }
 	
-	public void setFrontTile(Tile tile) {
+	public void addTile(Tile tile) {
 		//Si la pioche a été vérouillée
 		if (isClose)
 			return ;
 		
 		//Si il s'agit d'une pioche ouverte
-		if (isOpen && tile != null)
-			this.tileList.add(tile);
-		this.frontTile = tile;
+		if (isOpen && tile != null) {
+			JLabel tmp = new JLabel(tile.getIcon());
+			tmp.addMouseListener(this);
+			this.tileList.put( tile.getType(), tmp);
+		}
 		
 		//Apparence de la pioche
 		if (tile != null) {
+			this.isEmpty = false;
 			if(isOpen) {
 				this.setIcon(tile.getIcon());
 			}
@@ -67,8 +76,29 @@ public class Pick extends JLabel {
 				this.setIcon(new ImageIcon(closedPick));
 			}
 		} else {
+			this.isEmpty = true;
 			this.setIcon(new ImageIcon(nullPick));
 		}
+	}
+	
+	public boolean removeTile (String tile) {
+		if (isClose || !isOpen)
+			return false;
+		
+		//Retrait de la tuile dans la pioche ouverte si elle existe
+		if (isOpen) {
+			if ( tileList.containsKey(tile)) {
+				tileList.remove(tile);
+				if (tileList.size() == 0)
+					this.setIcon(new ImageIcon(nullPick));
+				else
+					this.setIcon(new ArrayList<JLabel>(tileList.values()).get(tileList.size()-1).getIcon());
+				return true;
+			}
+				
+		}
+		
+		return false;
 	}
 	
 	public JPanel viewTiles() {
@@ -78,7 +108,6 @@ public class Pick extends JLabel {
 		
 		//Si il s'agit d'une pioche ouverte
 		if (isOpen && tileList.size() != 0) {
-			System.out.println("Open!");
 			// Dimensions de la fenêtre
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			int nbTileColumn = screenSize.width/Tile.IMG_WIDTH - 2;
@@ -86,16 +115,49 @@ public class Pick extends JLabel {
 			
 			for (nbLine = 0; nbLine*nbTileColumn < tileList.size(); nbLine++);
 			
-			panelTiles = new JPanel(new GridLayout(nbLine, nbTileColumn));
+			panelTiles = new JPanel();
+			
+			//Apparence de la fenêtre
+			JButton cancel = new JButton("Fermer");
+			JLabel title = new JLabel("Pioche ouverte");
+			
+			cancel.setBounds(nbTileColumn*Tile.IMG_WIDTH/2, 
+							0, 
+							nbTileColumn*Tile.IMG_WIDTH/2, 
+							25);
+			cancel.addActionListener(this);
+			title.setBounds(0, 
+							0, 
+							nbTileColumn*Tile.IMG_WIDTH/2, 
+							25);
+			title.setOpaque(true);
+			title.setBackground(new Color(0x9DD8DD));
+			
 			panelTiles.setBounds(screenSize.width/2-nbTileColumn*Tile.IMG_WIDTH/2, 
-								screenSize.height/2-nbLine*Tile.IMG_HEIGHT/2, 
+								(screenSize.height/2-nbLine*Tile.IMG_HEIGHT/2), 
 								nbTileColumn*Tile.IMG_WIDTH, 
-								nbLine*Tile.IMG_HEIGHT);
+								nbLine*Tile.IMG_HEIGHT+25);
 			
 			panelTiles.setBackground(new Color(0x7BC5DD));
 			
-			for (Tile t : tileList)
-				panelTiles.add(t);
+			panelTiles.add(cancel);
+			panelTiles.add(title);
+			
+			int ligne = 0,
+				colonne = 0;
+			JLabel tileTmp;
+			for (String str : tileList.keySet()) {
+				tileTmp = tileList.get(str);
+				tileTmp.setBounds( Tile.IMG_WIDTH*colonne, Tile.IMG_HEIGHT*ligne+25, 
+									Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
+				panelTiles.add(tileTmp);
+				
+				if (colonne%nbTileColumn == 0 && colonne != 0) {
+					++ligne;
+					colonne = 0;
+				}
+				++colonne;
+			}
 					
 			this.panelTileIsOpen = true;
 			return panelTiles;
@@ -107,12 +169,72 @@ public class Pick extends JLabel {
 	public boolean closeTileViewer(JPanel panelLocation) {
 		if (!panelTileIsOpen)
 			return false;
-		
 		panelLocation.remove(panelTiles);
 		this.panelTiles.invalidate();
 		this.panelTiles = null;
 		this.panelTileIsOpen = false;
 		
 		return true;
+	}
+	
+	public void setIsEmpty(boolean isEmpty) {
+		this.isEmpty = isEmpty;
+		if (isEmpty)
+			this.addTile(null);
+		else
+			this.addTile(new Tile("",0));
+	}
+	
+	public boolean isEmpty() { return this.isEmpty; }
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if (e.getSource() instanceof JLabel) {
+			JLabel tmp = (JLabel)e.getSource();
+			tmp.setOpaque(true);
+			tmp.setBackground(new Color(0xAA8080));
+			
+		}		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if (e.getSource() instanceof JLabel) {
+			JLabel tmp = (JLabel)e.getSource();
+			tmp.setBackground(null);
+		}		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.getSource() instanceof JLabel) {
+			JLabel tmp = (JLabel)e.getSource();
+			String str = getTileName(tmp);
+			tmp.setBackground(null);
+			if ( str != null)
+				grid.keepChoosenTile(str);
+		}
+	}
+	
+	private String getTileName(JLabel tile) {
+		for (String str : tileList.keySet())
+			if (tileList.get(str).equals(tile))
+				return str;
+		return null;				
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		grid.removeTileViewer();
 	}
 }
