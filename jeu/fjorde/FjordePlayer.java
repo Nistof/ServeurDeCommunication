@@ -60,7 +60,11 @@ public class FjordePlayer extends Player {
 	
 	public void put(Board board, Closed pickClose){
 		board.add(this.tile);
-		this.tile=pickClose.draw();
+		
+	}
+	
+	public void draw(Tile tile) {
+		this.tile = tile;
 	}
 	
 }

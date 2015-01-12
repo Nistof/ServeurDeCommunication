@@ -19,7 +19,7 @@ public class Board {
 	private ArrayList<Tile> alTiles;
 
 	/**
-	 * Constructeur récupère les tuiles de départ pour les placer sur le plateau
+	 * Constructeur rï¿½cupï¿½re les tuiles de dï¿½part pour les placer sur le plateau
 	 */
 	public Board(){
 		this.alTiles = new ArrayList<Tile>(); 
@@ -55,7 +55,7 @@ public class Board {
 	//public int 
 	
 	/**
-	 * Donne pour un joueur donné les hutte qu'il possède sur le plateau
+	 * Donne pour un joueur donnï¿½ les hutte qu'il possï¿½de sur le plateau
 	 * @param p joueur de la tuile
 	 * @return le nombre de hutte sur le plateau
 	 */
@@ -68,7 +68,7 @@ public class Board {
 	}
 	
 	/**
-	 * Ajoute unr tuile à la liste de tuiles présentent sur le plateau
+	 * Ajoute une tuile ï¿½ la liste de tuiles prï¿½sentent sur le plateau
 	 * @param t tuile a jouter
 	 */
 	public void add(Tile t){
@@ -76,8 +76,8 @@ public class Board {
 	}
 	
 	/**
-	 * Permets de voir l'état du plateau, les tuiles posées et leurs numéros
-	 * @return une chaine de caractère de l'avancé du jeu
+	 * Permets de voir l'Ã©tat du plateau, les tuiles posï¿½es et leurs numï¿½ros
+	 * @return une chaine de caractï¿½re de l'avancï¿½ du jeu
 	 */
 	public String boardDraw(){
 		String s = "";
