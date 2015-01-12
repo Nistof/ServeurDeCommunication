@@ -10,13 +10,14 @@ import jeu.Player;
  * @author Florian MARTIN
  * @author Thibaut QUENTIN
  * @author Sarah QULORE
- * @version 0.1, 01-05-2015
+ * @version 0.1, 05-01-2015
  */
 
 public class Tile {
     
     private Type[] types;
     private Tile[] neighboors;
+    private boolean[] possibilities;
     private boolean start; 
     private FjordePlayer owner;
     private Item item;
@@ -29,10 +30,12 @@ public class Tile {
     public Tile (String type, boolean start) {
         this.types = new Type[6];
         this.neighboors = new Tile[6];
+        this.possibilities = new boolean[6];
         this.start = start;
         this.item = null;
         this.owner = null;
         for(int i=0; i<type.length(); i++){ this.types[i] = Type.getTypeById(type.charAt(i)); }
+        
     }
 
 	/**
@@ -139,12 +142,8 @@ public class Tile {
      */
     public ArrayList<Type> getTypesById(int id){
     	ArrayList<Type> alT = new ArrayList<Type>();
-    	for(int i=0; i<2; i++){
-    		if(id+i==6){
-     			alT.add(this.types[0]);
-     		}
-    		else{alT.add(this.types[id+i]);}
-    	}
+    	alT.add(types[id]);
+    	alT.add(types[(id+1)%6]);
     	return alT;
     }
     
@@ -204,7 +203,11 @@ public class Tile {
     		if(this.getTypesById(id).get(0)==t.getTypesById(i).get(0) && 
 					this.getTypesById(id).get(1)==t.getTypesById(i).get(1)) {
 				neighboors[id] = t;
+				possibilities[id-1%6] = true;
+				possibilities[id+1%6] = true;
 				t.neighboors[i]=this;
+				t.possibilities[i-1%6] = true;
+				t.possibilities[i+1%6] = true;
 				return true;
 			}
         }
@@ -222,11 +225,26 @@ public class Tile {
         }
     }
     
+    public String getCode(){
+    	String s = "";
+    	for(int i = 0; i<types.length; i++){
+    		s += types[i];
+    	}
+    	return s;
+    }
+    
     public String toString(){
     	String s = "";
     	for(int i=0; i<this.types.length; i++){	
     		s += this.types[i].toString(); 		
     	}
+    	int cpt = 0;
+    	for(int a = 0; a <this.neighboors.length; a++){
+    		if(neighboors[a] != null) {
+    			cpt++;
+    		}
+    	}
+    	s +=  ":" + cpt;
     	return s;
     }
 }
