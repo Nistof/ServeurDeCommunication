@@ -18,6 +18,7 @@ public class ClientDiaballik {
 	private String clientName;
 	private String clientId;
 	private HashMap<String, String> playersName;
+	private String winner;
 
 	private char[][] grid;
 	private int symbole;
@@ -30,42 +31,15 @@ public class ClientDiaballik {
 	 * @param port
 	 *            Port o� le serveur �coute
 	 */
-	public ClientDiaballik(String ip, int port, boolean variante) {
+	public ClientDiaballik(String ip, int port) {
 		try {
 			this.ip = InetAddress.getByName(ip);
 			this.port = port;
 			this.clientSocket = new DatagramSocket();
 			this.grid = new char[7][7];
 			this.playersName = new HashMap<String, String>();
-			
-			for (int i = 0; i < grid.length; i++) {
-				for (int j = 0; j < grid.length; j++) {
-					this.grid[i][j] = ' ';
-				}
-			}
-			
-			if (variante) {
-				for (int i = 0; i < grid.length; i++) {
-					if (i == 1 || i == 5) {
-						this.grid[0][i] = SYMBOLS[1];
-						this.grid[6][i] = SYMBOLS[0];
-					} else {
-						this.grid[0][i] = SYMBOLS[0];
-						this.grid[6][i] = SYMBOLS[1];
-					}
-				}
-			} else {
-				for (int i = 0; i < grid.length; i++) {
-					if (i == 3) {
-						this.grid[0][i] = SYMBOLS[0];
-						this.grid[6][i] = SYMBOLS[1];
-					} else {
-						this.grid[0][i] = Character.toLowerCase(SYMBOLS[0]);
-						this.grid[6][i] = Character.toLowerCase(SYMBOLS[1]);
-					}
-					
-				}
-			}
+			this.clientId = "";
+			this.clearGrid();
 		} catch (UnknownHostException e) {
 			System.out.println("Connexion à l'hote impossible!");
 		} catch (IOException e) {
@@ -73,6 +47,15 @@ public class ClientDiaballik {
 		}
 	}
 
+	
+	public void clearGrid () {
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid.length; j++) {
+				this.grid[i][j] = ' ';
+			}
+		}
+	}
+	
 	/**
 	 * R�ception d'un message de la part du serveur
 	 * 
@@ -96,90 +79,47 @@ public class ClientDiaballik {
 	 *            Message � traiter
 	 * @throws IOException
 	 */
-	public void processMessage(String message) throws IOException {
+	public int processMessage(String message) throws IOException {
 		message = message.trim();
-
-		if (message.equals("gsName_gCid")) {
-			// R�cup�ration et envoi du nom du client
-			this.clientName = getUserEntry();
-			sendMessage(this.clientName);
-
-			// R�cup�ration de l'id du client
-			this.clientId = receiveMessage().split(":")[0];
-		} else if (message.equals(clientId + ":NAMELIST")) {
+		String parts[] = message.split(":");
+		if(parts[1].equals("OK")) {
+			this.clientId = parts[0];
+			return 127;
+		}
+		if(!parts[0].equals(clientId)) {
+			return -3;
+		} else if (parts[1].equals("NAMELIST")) {
 			String[] splMsg = receiveMessage().trim().split(":");
 			while (!splMsg[1].equals("ENDLIST")) {
 				playersName.put(splMsg[1], splMsg[2]);
 				splMsg = receiveMessage().trim().split(":");
 			}
-		} else if (message.equals(clientId + ":START")) { // Demande de saisie
-															// par le jeu
-			// Symbole du joueur si non d�fini
-			if (symbole == -1) {
-				boolean isFirstPlayer = true;
-
-				for (int i = 0; i < 3; i++)
-					for (int j = 0; j < 3; j++)
-						if (grid[i][j] != ' ')
-							isFirstPlayer = false;
-
-				this.symbole = (isFirstPlayer) ? 0 : 1;
+			return 127;
+		} else if (message.equals(clientId + ":POINTLIST")) {
+			String[] splMsg = receiveMessage().trim().split(":");
+			while (!splMsg[1].equals("ENDLIST")) {
+				String[] coords = splMsg[1].split(",");
+				grid[Integer.parseInt(coords[0])][Integer.parseInt(coords[1])] = splMsg[2].charAt(0);
+				splMsg = receiveMessage().trim().split(":");
 			}
-			int answer = 0;
-			do {
-				System.out.println("Action : ");
-				System.out.println("1.Deplacer la balle");
-				System.out.println("2.Deplacer un support");
-				System.out.println("3.Finir le tour");
-				answer = Integer.parseInt(getUserEntry());
-			} while(answer < 1 || answer > 3);
-			
-			String msg = "";
-			int x = 0, y = 0, x2 = 0, y2 = 0;
-			if(answer < 3) 
-			{
-				x = Integer.parseInt(getUserEntry());
-				y = Integer.parseInt(getUserEntry());
-				msg += ":" + x + "," + y;
-				if(answer == 2) {
-					x2 = Integer.parseInt(getUserEntry());
-					y2 = Integer.parseInt(getUserEntry());
-					msg += ":" + x2 + "," + y2;
-				}
-			}
-
-			sendMessage(this.clientId + ":" + ACTIONS[answer-1] + msg);
-		} else if (message.equals(clientId + ":ERROR")) { // Si la saisie est
-															// incorrecte
-			System.out.println("Saisie incorrecte");
-		} else if (message.equals(clientId + ":CANCEL")) {
-			System.out.println("Partie annulée");
-		} else if (message.equals(clientId + ":END")) {
-			return;
-		} else {
-			String[] splStr = message.trim().split(":");
-			if (splStr.length == 3 && !splStr[2].equals("WIN")) { // Placement
-																	// des
-																	// symboles
-																	// sur le
-																	// plateau
-				int x = Integer.parseInt(splStr[2].split(",")[0]);
-				int y = Integer.parseInt(splStr[2].split(",")[1]);
-
-				if (splStr[1].equals(clientId)) {
-					this.grid[x][y] = SYMBOLS[symbole];
-				} else {
-					this.grid[x][y] = SYMBOLS[(symbole + 1) % 2];
-				}
-
-				System.out.println(this);
-			} else if (splStr.length == 3 && splStr[2].equals("WIN")) { // Si un
-																		// joueur
-																		// a
-																		// gagn�
-				System.out.println(playersName.get(splStr[1]) + " gagne!");
-			}
+			return 3;
+		} else if (parts[1].equals("START")) { // Demande de saisie
+				return 0;
+		} else if (parts[1].equals("ERROR")) { // Si la saisie est
+			if(parts[2].equals("ID"))
+				return -2;
+			else //ERROR:ENTRY
+				return -1;
+		} else if (parts[1].equals("CANCEL")) {
+			return -3;
+		} else if (parts[1].equals("END")) {
+			winner = playersName.get(parts[2]);
+			return 2;
+		} else if (parts[1].equals("WIN")) {
+			winner = playersName.get(parts[2]);
+			return 1;
 		}
+		return -3;
 	}
 
 	/**
@@ -191,6 +131,8 @@ public class ClientDiaballik {
 	 */
 	private void sendMessage(String message) throws IOException {
 		byte[] data = new byte[1024];
+		if(!clientId.equals(""))
+			message = clientId + ":" + message;
 		data = message.getBytes();
 		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 		// Envoi du message
@@ -249,30 +191,97 @@ public class ClientDiaballik {
 
 	public static void main(String[] args) {
 		ClientDiaballik cm = null;
-		if (args.length == 3)
-			cm = new ClientDiaballik(args[0], Integer.parseInt(args[1]),
-					(args[2].equals("variante")));
-		else if (args.length == 2)
-			cm = new ClientDiaballik(args[0], Integer.parseInt(args[1]), false);
+		boolean endGame = false;
+		if (args.length == 2)
+			cm = new ClientDiaballik(args[0], Integer.parseInt(args[1]));
 		if (cm != null) {
 			try {
 				// R�cup�ration et envoi du nom et r�ception de l'id attribu� au
 				// client
-				cm.processMessage("gsName_gCid");
-
-				System.out.println(cm);
-
+				System.out.print("Saisie du nom : ");
+				String name = cm.getUserEntry();
+				cm.sendMessage(name);
+				cm.setName(name);
 				String message = null;
 				do {
+					
 					message = cm.receiveMessage().trim();
-					cm.processMessage(message);
-				} while (!message.equals(cm.getClientId() + ":END")
-						&& !message.equals(cm.getClientId() + ":CANCEL"));
+					int code = cm.processMessage(message);
+					switch(code) {
+						case -3: //CANCEL
+							System.out.println("Partie annulée");
+							endGame = true;
+							break;
+						case -2: //ERROR:ID
+							System.out.println("Vous n'êtes pas le joueur courant");
+							break;
+						case -1: //ERROR:ENTRY
+							System.out.println("Saisie incorrecte");
+							break;
+						case 0: //START
+							int answer = 0;
+							do {
+								System.out.println("Action : ");
+								System.out.println("1.Deplacer la balle");
+								System.out.println("2.Deplacer un support");
+								System.out.println("3.Finir le tour");
+								System.out.print("Entrez votre choix : ");
+								answer = Integer.parseInt(cm.getUserEntry());
+							} while(answer < 1 || answer > 3);
+							
+							String msg = "";
+							
+							int x = 0, y = 0, x2 = 0, y2 = 0;
+							if(answer < 3) {
+								System.out.print("Entrez le X : ");
+								x = Integer.parseInt(cm.getUserEntry());
+								System.out.print("Entrez le Y : ");
+								y = Integer.parseInt(cm.getUserEntry());
+								msg += ":" + x + "," + y;
+								if(answer == 2) {
+									System.out.print("Entrez la direction (NOSE) : ");
+									msg+= ":" + cm.getUserEntry();
+								}
+								else {
+									System.out.println("Entrez le X de destination : ");
+									x2 = Integer.parseInt(cm.getUserEntry());
+									System.out.println("Entrez le Y de destination : ");
+									y2 = Integer.parseInt(cm.getUserEntry());
+									msg += ":" + x2 + "," + y2;
+								}
+							}
+
+							cm.sendMessage(ACTIONS[answer-1] + msg);
+							break;
+						case 1: //WIN
+							System.out.println("Le gagnant est : "  + cm.getWinner());
+							endGame = true;
+							break;
+						case 2: //END -> Utilisé pour l'anti jeu
+							System.out.println("Le gagnant par anti-jeu est : " + cm.getWinner());
+							endGame = true;
+							break;
+						case 3:
+							System.out.println(cm);
+							break;
+						default:
+							break;
+					}
+					cm.clearGrid();	
+				} while (!endGame);
 
 				cm.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private String getWinner() {
+		return winner;
+	}
+
+	private void setName(String name) {
+		this.clientName = name;
 	}
 }

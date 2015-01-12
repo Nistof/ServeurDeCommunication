@@ -146,7 +146,7 @@ public class Morpion implements IJeu {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if(processMessage(msg)) {
+            if(processMessage(msg) == 1) {
                 sendToAllPlayers(":" + msg);
                 changePlayer();
             }
@@ -159,8 +159,7 @@ public class Morpion implements IJeu {
         //Envoi du gagnant
         if(playersCount == 2) {
         	changePlayer();
-            if (win()) sendToAllPlayers(":" + players[player].getId() + ":WIN");
-            sendToAllPlayers(":END");
+            sendToAllPlayers(":WIN:" + players[player].getId());
         }
         else {
         	sendToAllPlayers(":CANCEL");
@@ -175,28 +174,28 @@ public class Morpion implements IJeu {
     }
 
     @Override
-    public boolean processMessage(String msg) {
+    public int processMessage(String msg) {
         String[] action = msg.split(":");
         if(!players[player].getId().equals(action[0])) {
-            return false;
+            return 0;
         }
         if ( canPlay() ) {
             String[] pos = action[1].split(",");
             int x = 0, y = 0;
             if ( pos.length != 2)
-                return false;
+                return 0;
             
             
             x = Integer.parseInt(pos[0].trim());
             y = Integer.parseInt(pos[1].trim());
             
             if ( x < 0 || x > 2 || y < 0 || y > 2 || grid[x][y] == 'X' || grid[x][y] == 'O')
-                return false;
+                return 0;
             
             grid[x][y] = symbols[player];
-            return true;
+            return 1;
         }
         
-        return false;
+        return 0;
     }
 }

@@ -249,7 +249,6 @@ public class Server {
             allowConnection = true;
             while (clients.size() < serverProperties.getClientMax() && allowConnection) {
                 try {
-                	System.out.println("Add");
                     server.add(server.receivePacket());
                 } catch (Exception e) {
                     server.disalowConnections();

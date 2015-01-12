@@ -2,6 +2,7 @@ package jeu.diaballik;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 
 import jeu.IJeu;
 import server.Server;
@@ -18,6 +19,7 @@ import server.Server;
 
 public class Diaballik implements IJeu {
 	private Support[][] plateau;
+	private boolean[][] updates;
 	private DiaballikPlayer[] tabPlayer;
 	private int currentPlayer;
 	private Server server;
@@ -56,24 +58,25 @@ public class Diaballik implements IJeu {
 		}
 	}
 
-	public boolean moveB(String color, String dest) {
+	public boolean moveB(String color, String src, String dest) {
 		String[] s = dest.split(",");
+		String[] s2 = src.split(",");
 		int cpt = 0, x = 0, y = 0;
 		int[] p = new int[2];
+		int[] p2 = new int[2];
 		for (int i = 0; i < 2; i++) {
 			p[i] = Integer.parseInt(s[i]);
+			p2[i] = Integer.parseInt(s2[i]);
 		}
 
+		if (plateau[p2[0]][p2[1]] != null && plateau[p2[0]][p2[1]].getHaveBall()
+				&& plateau[p2[0]][p2[1]].getColor().equals(color)) {
+			x = p2[0];
+			y = p2[1];
+		} else 
+			return false;
+		
 		if (plateau[p[0]][p[1]] != null) {
-			for (int i = 0; i < plateau.length; i++) {
-				for (int j = 0; j < plateau.length; j++) {
-					if (plateau[i][j] != null && plateau[i][j].getHaveBall()
-							&& plateau[i][j].getColor().equals(color)) {
-						x = i;
-						y = j;
-					}
-				}
-			}
 			for (int i = 1; i < plateau.length; i++) {
 				if (x - i >= 0 && x - i < 7 && y - i >= 0 && y - i < 7
 						&& plateau[x - i][y - i] == plateau[p[0]][p[1]]
@@ -409,6 +412,19 @@ public class Diaballik implements IJeu {
 		return server.receive();
 	}
 
+	public HashMap<String, Character> getState() {
+		HashMap<String, Character> points = new HashMap<String, Character>();
+		for (int i = 0; i < plateau.length; i++) {
+			for (int j = 0; j < plateau[0].length; j++) {
+				if (plateau[i][j] != null) {
+					char sym = plateau[i][j].getColor().charAt(0);
+					points.put(i + "," + j, (plateau[i][j].getHaveBall())?Character.toLowerCase(sym):sym);
+				}
+			}
+		}
+		return points;
+	}
+
 	@Override
 	public void launchGame() throws IOException {
 		int countTurn = 0;
@@ -418,30 +434,61 @@ public class Diaballik implements IJeu {
 					+ tabPlayer[i].getName());
 		}
 		sendToAllPlayers(":ENDLIST");
+		HashMap<String, Character> points = getState();
+		sendToAllPlayers(":POINTLIST");
+		for(String k : points.keySet()) {
+			sendToAllPlayers(":" + k + ":" + points.get(k));
+		}
+		sendToAllPlayers(":ENDLIST");
 		while (!win() && nbJoueur == 2) {
-			if (endTurn) {
+			if(endTurn) {
 				changePlayer();
-				endTurn = !endTurn;
+				countTurn = 0;
+				endTurn = false;
 			}
 			String msg = "";
-			try {
-				sendToPlayer(":START");
-				msg = receiveFromPlayer();
-			} catch (IOException e) {
-				e.printStackTrace();
+			if(isBlocked(tabPlayer[currentPlayer])) {
+				break;
 			}
-			if (processMessage(msg)) {
-				countTurn++;
-				if (countTurn == 3)
-					finishTurn();
-				
-				sendToAllPlayers(":" + msg);
-				
-				System.out.println(toString());
-			
-			} else {
-				sendToPlayer(":ERROR");
+			sendToPlayer(":START");
+			msg = receiveFromPlayer();
+			int code = processMessage(msg);
+			switch(code) {
+				case -2:
+					sendToPlayer(":ERROR:ID");
+					break;
+				case -1:
+					sendToPlayer(":ERROR:ENTRY");
+					break;
+				case 0:
+					countTurn++;
+					if(countTurn == 3)
+						endTurn = true;
+					points = getState();
+					sendToAllPlayers(":POINTLIST");
+					for(String k : points.keySet()) {
+						sendToAllPlayers(":" + k + ":" + points.get(k));
+					}
+					sendToAllPlayers(":ENDLIST");
+					break;
+				case 1:
+					if(countTurn > 0)
+						endTurn = true;
+					else
+						sendToPlayer(":ERROR:ENTRY");
+					break;
 			}
+		}
+		if(nbJoueur == 2) {
+			if(win()) {
+				sendToAllPlayers(":WIN:" + tabPlayer[currentPlayer].getId());
+			}
+			else {
+				sendToAllPlayers(":END:" + tabPlayer[currentPlayer].getId());
+			}
+		}
+		else  {
+			sendToAllPlayers(":CANCEL");
 		}
 	}
 
@@ -449,24 +496,26 @@ public class Diaballik implements IJeu {
 		currentPlayer = 1 - currentPlayer;
 	}
 
-	private void finishTurn() {
-		endTurn = true;
-	}
-
 	@Override
-	public boolean processMessage(String msg) {
+	public int processMessage(String msg) {
 		System.out.println(msg);
 		String[] action = msg.trim().split(":");
-		boolean b = false;
+		if(!action[0].equals(tabPlayer[currentPlayer].getId()))
+			return -2;
 		if (action[1].equals("MOVEB")) {
-			b = moveB(tabPlayer[currentPlayer].getColor(), action[2]);
+			if(moveB(tabPlayer[currentPlayer].getColor(), action[2], action[3]))
+				return 0;
+			else
+				return -1;
 		} else if (action[1].equals("MOVES")) {
-			b = moveS(tabPlayer[currentPlayer].getColor(), action[2], action[3]);
+			if(moveS(tabPlayer[currentPlayer].getColor(), action[2], action[3]))
+				return 0;
+			else
+				return -1;
 		} else if (action[1].equals("ENDTURN")) {
-			b = false;
-			finishTurn();
+			return 1;
 		}
-		return b;
+		return -1;
 	}
 
 }

@@ -46,7 +46,7 @@ public interface IJeu {
      * @param msg Message à traiter
      * @return Vrai quand le message est valide
      */
-    public boolean processMessage(String msg);
+    public int processMessage(String msg);
     
     /**
      * Lance le jeu
