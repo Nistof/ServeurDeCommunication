@@ -1,8 +1,11 @@
 package jeu.diaballik;
 
+import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import jeu.IJeu;
 import server.Server;
@@ -19,14 +22,13 @@ import server.Server;
 
 public class Diaballik implements IJeu {
 	private Support[][] plateau;
-	private boolean[][] updates;
 	private DiaballikPlayer[] tabPlayer;
 	private int currentPlayer;
 	private Server server;
 	private int nbJoueur;
 	private boolean endTurn;
-
-	public Diaballik(boolean variante) {
+	
+	public Diaballik() {
 		this.tabPlayer = new DiaballikPlayer[2];
 		this.tabPlayer[0] = new DiaballikPlayer("Joueur 1", "Blanc");
 		this.tabPlayer[1] = new DiaballikPlayer("Joueur 2", "Noir");
@@ -34,24 +36,66 @@ public class Diaballik implements IJeu {
 		this.nbJoueur = 0;
 
 		this.plateau = new Support[7][7];
+		
+		try {
+			this.server = new Server(this);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public Diaballik(boolean variante) {
+		this();
+		
 		if (variante) {
 			for (int i = 0; i < plateau.length; i++) {
 				if (i == 1 || i == 5) {
-					this.plateau[0][i] = tabPlayer[1].getSupport(i);
-					this.plateau[6][i] = tabPlayer[0].getSupport(i);
+					this.plateau[0][i] = new Support(tabPlayer[1].getColor(), false);
+					this.plateau[6][i] = new Support(tabPlayer[0].getColor(), false);
 				} else {
-					this.plateau[0][i] = tabPlayer[0].getSupport(i);
-					this.plateau[6][i] = tabPlayer[1].getSupport(i);
+					this.plateau[0][i] = new Support(tabPlayer[0].getColor(), false);
+					this.plateau[6][i] = new Support(tabPlayer[1].getColor(), false);
 				}
 			}
 		} else {
 			for (int i = 0; i < plateau.length; i++) {
-				this.plateau[0][i] = tabPlayer[0].getSupport(i);
-				this.plateau[6][i] = tabPlayer[1].getSupport(i);
+				this.plateau[0][i] = new Support(tabPlayer[0].getColor(), false);
+				this.plateau[6][i] = new Support(tabPlayer[1].getColor(), false);
 			}
 		}
+		this.plateau[0][3].toggleHaveBall();
+		this.plateau[6][3].toggleHaveBall();
+	}
+	
+	public Diaballik(String file) {
+		this();
+		
 		try {
-			this.server = new Server(this);
+			Scanner sc = new Scanner(new FileReader(file));
+			while(sc.hasNext()) {
+				String line = sc.nextLine();
+				String[] coord = line.split(",");
+		
+				switch(coord[2].charAt(0)) {
+					case 'B':
+						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[0].getColor(), false);
+						break;
+					
+					case 'N':
+						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[1].getColor(), false);
+						break;
+						
+					case 'b':
+						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[0].getColor(), true);
+						break;
+					
+					case 'n':
+						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[1].getColor(), true);
+						break;
+				}
+				
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,7 +128,7 @@ public class Diaballik implements IJeu {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
 						if (x - i + j < x
-								&& y - i + j < y
+								&& y - i + j < y && plateau[x - i + j][y - i + j]!=null 
 								&& !plateau[x - i + j][y - i + j].getColor()
 										.equals(color)) {
 							cpt++;
@@ -101,7 +145,7 @@ public class Diaballik implements IJeu {
 						&& plateau[x - i][y].getColor().equals(color)) {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
-						if (x - i + j < x
+						if (x - i + j < x && plateau[x - i + j][y]!=null 
 								&& !plateau[x - i + j][y].getColor().equals(
 										color)) {
 							cpt++;
@@ -119,7 +163,7 @@ public class Diaballik implements IJeu {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
 						if (x - i + j < x
-								&& y + i - j > y
+								&& y + i - j > y && plateau[x - i + j][y + i - j]!=null 
 								&& !plateau[x - i + j][y + i - j].getColor()
 										.equals(color)) {
 							cpt++;
@@ -137,7 +181,7 @@ public class Diaballik implements IJeu {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
 						if (y - i + j < y
-								&& !plateau[x][y - i + j].getColor().equals(
+								&& plateau[x][y - i + j]!=null && !plateau[x][y - i + j].getColor().equals(
 										color)) {
 							cpt++;
 						}
@@ -153,7 +197,7 @@ public class Diaballik implements IJeu {
 						&& plateau[x][y + i].getColor().equals(color)) {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
-						if (y + i - j > y
+						if (y + i - j > y && plateau[x][y + i - j]!=null 
 								&& !plateau[x][y + i - j].getColor().equals(
 										color)) {
 							cpt++;
@@ -171,7 +215,7 @@ public class Diaballik implements IJeu {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
 						if (x + i - j > x
-								&& y - i + j < y
+								&& y - i + j < y && plateau[x + i - j][y - i + j]!=null 
 								&& !plateau[x + i - j][y - i + j].getColor()
 										.equals(color)) {
 							cpt++;
@@ -188,7 +232,7 @@ public class Diaballik implements IJeu {
 						&& plateau[x + i][y].getColor().equals(color)) {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
-						if (x + i - j > x
+						if (x + i - j > x && plateau[x + i - j][y]!=null 
 								&& !plateau[x + i - j][y].getColor().equals(
 										color)) {
 							cpt++;
@@ -206,7 +250,7 @@ public class Diaballik implements IJeu {
 					cpt = 0;
 					for (int j = 1; j < plateau.length; j++) {
 						if (x + i - j > x
-								&& y + i - j > y
+								&& y + i - j > y && plateau[x + i - j][y + i - j]!=null 
 								&& !plateau[x + i - j][y + i - j].getColor()
 										.equals(color)) {
 							cpt++;
@@ -408,7 +452,7 @@ public class Diaballik implements IJeu {
 		server.sendToClient(tabPlayer[currentPlayer].getId(), action);
 	}
 
-	public String receiveFromPlayer() throws IOException {
+	public String receiveFromPlayer() throws IOException,SocketTimeoutException {
 		return server.receive();
 	}
 
@@ -427,6 +471,7 @@ public class Diaballik implements IJeu {
 
 	@Override
 	public void launchGame() throws IOException {
+		boolean ballPlayed = false;
 		int countTurn = 0;
 		sendToAllPlayers(":NAMELIST");
 		for (int i = 0; i < tabPlayer.length; i++) {
@@ -445,14 +490,28 @@ public class Diaballik implements IJeu {
 				changePlayer();
 				countTurn = 0;
 				endTurn = false;
+				ballPlayed = false;
 			}
 			String msg = "";
 			if(isBlocked(tabPlayer[currentPlayer])) {
 				break;
 			}
 			sendToPlayer(":START");
-			msg = receiveFromPlayer();
-			int code = processMessage(msg);
+			try {
+				msg = receiveFromPlayer();
+			} catch(SocketTimeoutException e) {
+				nbJoueur--;
+				break;
+			}
+			
+			String[] action = msg.trim().split(":");
+			int code;
+			
+			if( action[1].equals("MOVEB") && ballPlayed )
+				code = -1;
+			else
+				code = processMessage(msg);
+			
 			switch(code) {
 				case -2:
 					sendToPlayer(":ERROR:ID");
@@ -461,6 +520,8 @@ public class Diaballik implements IJeu {
 					sendToPlayer(":ERROR:ENTRY");
 					break;
 				case 0:
+					ballPlayed = true;
+				case 1:
 					countTurn++;
 					if(countTurn == 3)
 						endTurn = true;
@@ -471,7 +532,7 @@ public class Diaballik implements IJeu {
 					}
 					sendToAllPlayers(":ENDLIST");
 					break;
-				case 1:
+				case 2:
 					if(countTurn > 0)
 						endTurn = true;
 					else
@@ -509,11 +570,11 @@ public class Diaballik implements IJeu {
 				return -1;
 		} else if (action[1].equals("MOVES")) {
 			if(moveS(tabPlayer[currentPlayer].getColor(), action[2], action[3]))
-				return 0;
+				return 1;
 			else
 				return -1;
 		} else if (action[1].equals("ENDTURN")) {
-			return 1;
+			return 2;
 		}
 		return -1;
 	}

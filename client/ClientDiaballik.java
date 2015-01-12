@@ -243,9 +243,9 @@ public class ClientDiaballik {
 									msg+= ":" + cm.getUserEntry();
 								}
 								else {
-									System.out.println("Entrez le X de destination : ");
+									System.out.print("Entrez le X de destination : ");
 									x2 = Integer.parseInt(cm.getUserEntry());
-									System.out.println("Entrez le Y de destination : ");
+									System.out.print("Entrez le Y de destination : ");
 									y2 = Integer.parseInt(cm.getUserEntry());
 									msg += ":" + x2 + "," + y2;
 								}

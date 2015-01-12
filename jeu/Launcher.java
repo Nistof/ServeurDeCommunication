@@ -25,6 +25,9 @@ public class Launcher {
         else if(args[0].equals("diaballik_variante")) {
             new Diaballik(true);
         }
+        else if(args[0].equals("diaballik_modif")) {
+        	new Diaballik("./jeu/diaballik/initGrid.txt");
+        }
         else if (args[0].equals("morpion")) {
             new Morpion();
         }
