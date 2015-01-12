@@ -99,7 +99,11 @@ public class ClientDiaballik {
 			String[] splMsg = receiveMessage().trim().split(":");
 			while (!splMsg[1].equals("ENDLIST")) {
 				String[] coords = splMsg[1].split(",");
-				grid[Integer.parseInt(coords[0])][Integer.parseInt(coords[1])] = splMsg[2].charAt(0);
+				int x = Integer.parseInt(coords[0]), y = Integer.parseInt(coords[1]);
+				if(splMsg.length == 3)
+				    grid[x][y] = splMsg[2].charAt(0);
+				else
+				    grid[x][y] = ' ';
 				splMsg = receiveMessage().trim().split(":");
 			}
 			return 3;
@@ -267,7 +271,6 @@ public class ClientDiaballik {
 						default:
 							break;
 					}
-					cm.clearGrid();	
 				} while (!endGame);
 
 				cm.close();

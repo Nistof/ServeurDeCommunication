@@ -23,6 +23,7 @@ import server.Server;
 public class Diaballik implements IJeu {
 	private Support[][] plateau;
 	private DiaballikPlayer[] tabPlayer;
+	private boolean[][] updates;
 	private int currentPlayer;
 	private Server server;
 	private int nbJoueur;
@@ -34,7 +35,7 @@ public class Diaballik implements IJeu {
 		this.tabPlayer[1] = new DiaballikPlayer("Joueur 2", "Noir");
 		this.currentPlayer = 0;
 		this.nbJoueur = 0;
-
+		this.updates = new boolean[7][7];
 		this.plateau = new Support[7][7];
 		
 		try {
@@ -52,16 +53,22 @@ public class Diaballik implements IJeu {
 			for (int i = 0; i < plateau.length; i++) {
 				if (i == 1 || i == 5) {
 					this.plateau[0][i] = new Support(tabPlayer[1].getColor(), false);
+					this.updates[0][i] = true;
 					this.plateau[6][i] = new Support(tabPlayer[0].getColor(), false);
+					this.updates[6][i] = true;
 				} else {
 					this.plateau[0][i] = new Support(tabPlayer[0].getColor(), false);
+					this.updates[0][i] = true;
 					this.plateau[6][i] = new Support(tabPlayer[1].getColor(), false);
+					this.updates[6][i] = true;
 				}
 			}
 		} else {
 			for (int i = 0; i < plateau.length; i++) {
 				this.plateau[0][i] = new Support(tabPlayer[0].getColor(), false);
+				this.updates[0][i] = true;
 				this.plateau[6][i] = new Support(tabPlayer[1].getColor(), false);
+				this.updates[6][i] = true;
 			}
 		}
 		this.plateau[0][3].toggleHaveBall();
@@ -80,18 +87,19 @@ public class Diaballik implements IJeu {
 				switch(coord[2].charAt(0)) {
 					case 'B':
 						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[0].getColor(), false);
+						this.updates[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = true;
 						break;
-					
 					case 'N':
 						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[1].getColor(), false);
-						break;
-						
+						this.updates[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = true;
+						break;	
 					case 'b':
 						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[0].getColor(), true);
+						this.updates[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = true;
 						break;
-					
 					case 'n':
 						this.plateau[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = new Support(tabPlayer[1].getColor(), true);
+						this.updates[Integer.parseInt(coord[0])][Integer.parseInt(coord[1])] = true;
 						break;
 				}
 				
@@ -111,8 +119,11 @@ public class Diaballik implements IJeu {
 		for (int i = 0; i < 2; i++) {
 			p[i] = Integer.parseInt(s[i]);
 			p2[i] = Integer.parseInt(s2[i]);
-		}
 
+			
+		}
+        this.updates[p[0]][p[1]] = true;
+        this.updates[p2[0]][p2[1]] = true;
 		if (plateau[p2[0]][p2[1]] != null && plateau[p2[0]][p2[1]].getHaveBall()
 				&& plateau[p2[0]][p2[1]].getColor().equals(color)) {
 			x = p2[0];
@@ -274,6 +285,7 @@ public class Diaballik implements IJeu {
 		for (int i = 0; i < 2; i++) {
 			p[i] = Integer.parseInt(j[i]);
 		}
+		this.updates[p[0]][p[1]] = true;
 		if (plateau[p[0]][p[1]].getHaveBall()) {
 			return false;
 		}
@@ -281,6 +293,7 @@ public class Diaballik implements IJeu {
 				&& plateau[p[0]][p[1]].getColor().equals(color)
 				&& plateau[p[0] - 1][p[1]] == null) {
 			plateau[p[0] - 1][p[1]] = plateau[p[0]][p[1]];
+			this.updates[p[0] - 1][p[1]] = true;
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
@@ -288,6 +301,7 @@ public class Diaballik implements IJeu {
 				&& plateau[p[0]][p[1]].getColor().equals(color)
 				&& plateau[p[0] + 1][p[1]] == null) {
 			plateau[p[0] + 1][p[1]] = plateau[p[0]][p[1]];
+			this.updates[p[0] + 1][p[1]] = true;
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
@@ -295,6 +309,7 @@ public class Diaballik implements IJeu {
 				&& plateau[p[0]][p[1]].getColor().equals(color)
 				&& plateau[p[0]][p[1] + 1] == null) {
 			plateau[p[0]][p[1] + 1] = plateau[p[0]][p[1]];
+			this.updates[p[0]][p[1]+1] = true;
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
@@ -302,6 +317,7 @@ public class Diaballik implements IJeu {
 				&& plateau[p[0]][p[1]].getColor().equals(color)
 				&& plateau[p[0]][p[1] - 1] == null) {
 			plateau[p[0]][p[1] - 1] = plateau[p[0]][p[1]];
+			this.updates[p[0]][p[1]-1] = true;
 			plateau[p[0]][p[1]] = null;
 			return true;
 		}
@@ -439,6 +455,7 @@ public class Diaballik implements IJeu {
 
 	@Override
 	public void add(String name, String id) {
+	    server.log("Ajout du joueur " + name + " avec l'id " + id);
 		tabPlayer[nbJoueur].setName(name);
 		tabPlayer[nbJoueur++].setId(id);
 	}
@@ -449,20 +466,31 @@ public class Diaballik implements IJeu {
 	}
 
 	public void sendToPlayer(String action) throws IOException {
+	    server.log("Message envoyé au joueur " + tabPlayer[currentPlayer].getName() +  " : " + action);
 		server.sendToClient(tabPlayer[currentPlayer].getId(), action);
 	}
 
 	public String receiveFromPlayer() throws IOException,SocketTimeoutException {
-		return server.receive();
+	    String s = server.receive();
+	    server.log("Message reçu d'un joueur : " + s);
+		return s;
 	}
 
 	public HashMap<String, Character> getState() {
 		HashMap<String, Character> points = new HashMap<String, Character>();
 		for (int i = 0; i < plateau.length; i++) {
 			for (int j = 0; j < plateau[0].length; j++) {
-				if (plateau[i][j] != null) {
-					char sym = plateau[i][j].getColor().charAt(0);
-					points.put(i + "," + j, (plateau[i][j].getHaveBall())?Character.toLowerCase(sym):sym);
+				if (updates[i][j]) {
+				    System.out.println("Updated");
+					char sym;
+				    if(plateau[i][j]==null)
+					    sym = ' ';
+				    else {
+					    sym = (plateau[i][j].getColor().charAt(0));
+					    sym = (plateau[i][j].getHaveBall())?Character.toLowerCase(sym):sym;
+				    }
+					updates[i][j] = false;
+					points.put(i + "," + j, sym);
 				}
 			}
 		}
@@ -473,6 +501,7 @@ public class Diaballik implements IJeu {
 	public void launchGame() throws IOException {
 		boolean ballPlayed = false;
 		int countTurn = 0;
+		System.out.println(this);
 		sendToAllPlayers(":NAMELIST");
 		for (int i = 0; i < tabPlayer.length; i++) {
 			sendToAllPlayers(":" + tabPlayer[i].getId() + ":"
