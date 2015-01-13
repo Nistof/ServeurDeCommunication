@@ -20,6 +20,11 @@ public class Tile extends JLabel {
 	private BufferedImage defaultImage;
 	private BufferedImage transformedImage;
 	
+	/**
+	 * Initialise un objet de type Tuile 
+	 * @param type type de la tuile (Nom du fichier image a charger,...)
+	 * @param orientation orientation de la tuile
+	 */
 	public Tile(String type, int orientation) {
 		this.type = type;
 		this.orientation = orientation;
@@ -37,18 +42,39 @@ public class Tile extends JLabel {
 		}
 	}	
 	
+	/**
+	 * Position X de la tuile
+	 * @return Position X de la tuile
+	 */
 	public int getX() { return this.xLocation; }
+	
+	/**
+	 * Position Y de la tuile
+	 * @return Position Y de la tuile
+	 */
 	public int getY() { return this.yLocation; }
 	
+	/**
+	 * Position absolue de la tuile
+	 */
 	public void setLocation(int x, int y) {
 		this.xLocation = x;
 		this.yLocation = y;
 	}
 	
+	/**
+	 * Type de la tuile
+	 * @return Type de la tuile
+	 */
 	public String getType() {
 		return this.type;
 	}
 	
+	/**
+	 * Position de la tuile par rapport a une autre
+	 * @param tile tuile a cote de laquelle placer
+	 * @param position cote sur lequel la tuile doit etre placee
+	 */
 	public void setLocationWithTile(Tile tile, int position) {
 		if ( position == 1 || position == 4) {
 			this.xLocation = tile.getX()+(position == 1?IMG_WIDTH:-IMG_WIDTH);

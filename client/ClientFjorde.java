@@ -23,6 +23,7 @@ import client.Fjorde.GridFjorde;
 
 public class ClientFjorde extends JFrame implements ActionListener {
 	private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+	
 	private InetAddress 	ip;
 	private int				port;
 	private DatagramSocket 	clientSocket;
@@ -33,6 +34,9 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	
 	private JPanel panel;
 
+	/**
+	 * Initialisation du client (Fenetre et dependances a la communication avec le serveur)
+	 */
 	public ClientFjorde() {
 		Container c = this.getContentPane();
 		c.setLayout(new BorderLayout());
@@ -52,10 +56,10 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Ajoute les diffï¿½rents ï¿½lï¿½ments ï¿½ la fenï¿½tre
+	 * Ajoute les différents éléments à la fenêtre
 	 */
 	private void setFrame() {
-		// Dimensions de la fenï¿½tre
+		// Dimensions de la fenêtre
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		// Bouton quitter
@@ -75,7 +79,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Passe la fenï¿½tre en mode plein ï¿½cran
+	 * Passe la fenetre en mode plein ecran
 	 */
 	private void goFullScreen() {
 		if ( !this.isUndecorated())
@@ -83,22 +87,16 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		device.setFullScreenWindow(this);
 	}
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this.quitButton)
-			System.exit(0);
-	}
-	
 	/**
-	 * Rï¿½ception d'un message de la part du serveur
-	 * @return Message envoyï¿½ par le serveur
+	 * Reeption d'un message de la part du serveur
+	 * @return Message envoye par le serveur
 	 * @throws IOException
 	 */
 	public String receiveMessage() throws IOException {
 		byte[] data = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		
-		//Rï¿½cupï¿½ration du message
+		//Recuperation du message
 		this.clientSocket.receive(packet);
 		
 		return new String(packet.getData());
@@ -106,7 +104,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	
 	/**
 	 * Envoi d'un message au serveur
-	 * @param message Message ï¿½ envoyer
+	 * @param message Message a envoyer
 	 * @throws IOException
 	 */
 	private void sendMessage(String message) throws IOException {
@@ -120,22 +118,36 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	
 	/**
 	 * Traitement d'un message
-	 * @param message Message ï¿½ traiter
+	 * @param message Message a traiter
 	 * @throws IOException
 	 */
-	public boolean processMessage(String message) throws IOException {
+	public int processMessage(String message) throws IOException {
 		message = message.trim();
-		//OPICK:NOM_PIECE
-		//PICK
 		
-		if (message.split(":")[0].equals("OPICK")) {
-			System.out.println("OpenPick -> send");
+		//START
+		if (message.split(":")[1].equals("START")) {
+			return 0;
 		}
+		//OPICK:NOM_PIECE
+		else if (message.split(":")[0].equals("OPICK")) {
+			System.out.println("OpenPick -> send");
+			//return -1; //Erreur d'entree
+			return 127; //OK
+		}
+		//PICK
 		else if (message.split(":")[0].equals("PICK")) {
 			System.out.println("ClosePick -> send");
+			//return -1; //Erreur d'entree
+			return 127; //OK
 		}
 		
-		return false;
+		return 0;
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == this.quitButton)
+			System.exit(0);
 	}
 	
 	public static void main(String[] args) {

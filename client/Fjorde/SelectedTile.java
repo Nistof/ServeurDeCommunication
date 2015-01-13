@@ -13,6 +13,9 @@ public class SelectedTile extends JPanel {
 	private String type;
 	private JLabel tile;
 	
+	/**
+	 * Initialise un composant indiquant la tuile selectionnee
+	 */
 	public SelectedTile() {
 		this.setBackground(new Color(0x7BC5DD));
 		this.setLayout(null);
@@ -33,6 +36,10 @@ public class SelectedTile extends JPanel {
 		this.add(tile);
 	}
 	
+	/**
+	 * Définie la tuile selectionnee
+	 * @param tile Tuile a selectionner
+	 */
 	public void setSelectedTile(Tile tile) {
 		if ( tile != null) {
 			this.type = tile.getType();
@@ -43,5 +50,15 @@ public class SelectedTile extends JPanel {
 		}
 	}
 	
+	/**
+	 * Renvoie le status de la selection : si oui ou non une selection est faite
+	 * @return Vrai si une tuile est selectionnee
+	 */
 	public boolean hasSelection() { return tile.getIcon()!=null; }
+	
+	/**
+	 * Renvoie le bouton d'envoi a la pioche ouverte
+	 * @return Bouton d'envoi a la pioche ouverte
+	 */
+	public JButton getToOpenPickButton() { return toOpenPick; }
 }

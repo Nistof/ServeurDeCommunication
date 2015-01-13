@@ -35,6 +35,11 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 	private JPanel panelTiles;
 	private boolean panelTileIsOpen;
 	
+	/**
+	 * Initialisation de la pioche
+	 * @param grid Liaison au plateau de jeu pour communications
+	 * @param isOpen Pioche ouverte ou fermee
+	 */
 	public Pick(GridFjorde grid, boolean isOpen) {
 		try {
 			this.closedPick = ImageIO.read(new File("./client/Fjorde/images/close.png"));
@@ -52,10 +57,17 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 		this.addTile(null);		
 	}
 	
+	/**
+	 * Ferme l'acces a la pioche
+	 */
 	public void close() { this.isClose = true; }
 	
+	/**
+	 * Ajout d'une tuile dans la pioche
+	 * @param tile Tuile a ajouter
+	 */
 	public void addTile(Tile tile) {
-		//Si la pioche a ï¿½tï¿½ vï¿½rouillï¿½e
+		//Si la pioche a été vérouillée
 		if (isClose)
 			return ;
 		
@@ -81,6 +93,11 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 		}
 	}
 	
+	/**
+	 * Retrait d'une tuile de la pioche
+	 * @param tile Nom de la tuile a retirer
+	 * @return Vrai si la tuile a ete retiree
+	 */
 	public boolean removeTile (String tile) {
 		if (isClose || !isOpen)
 			return false;
@@ -102,13 +119,13 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 	}
 	
 	public JPanel viewTiles() {
-		//Si la pioche a ï¿½tï¿½ vï¿½rouillï¿½e
+		//Si la pioche a été vérouillée
 		if (isClose || panelTileIsOpen)
 			return null;
 		
 		//Si il s'agit d'une pioche ouverte
 		if (isOpen && tileList.size() != 0) {
-			// Dimensions de la fenï¿½tre
+			// Dimensions de la fenêtre
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			int nbTileColumn = screenSize.width/Tile.IMG_WIDTH - 2;
 			int nbLine;
@@ -117,7 +134,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 			
 			panelTiles = new JPanel();
 			
-			//Apparence de la fenï¿½tre
+			//Apparence de la fenêtre
 			JButton cancel = new JButton("Fermer");
 			JLabel title = new JLabel("Pioche ouverte");
 			
@@ -143,6 +160,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 			panelTiles.add(cancel);
 			panelTiles.add(title);
 			
+			//Affichage des tuiles dans la fenêtre
 			int ligne = 0,
 				colonne = 0;
 			JLabel tileTmp;
@@ -166,6 +184,11 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 		return null;
 	}
 	
+	/**
+	 * Ferme le TileViewer si celui-ci a ete ouvert 
+	 * @param panelLocation Composant ou a ete ajoute le TileViewer
+	 * @return Vrai si le TileViewer a ete retire
+	 */
 	public boolean closeTileViewer(JPanel panelLocation) {
 		if (!panelTileIsOpen)
 			return false;
@@ -177,6 +200,10 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 		return true;
 	}
 	
+	/**
+	 * Définie si une pioche est vide ou non
+	 * @param isEmpty Vrai si la pioche doit apparaitre vide
+	 */
 	public void setIsEmpty(boolean isEmpty) {
 		this.isEmpty = isEmpty;
 		if (isEmpty)
@@ -185,7 +212,23 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 			this.addTile(new Tile("",0));
 	}
 	
+	/**
+	 * Retourne l'etat de la pioche (si elle est vide ou non)
+	 * @return Vrai si la pioche est vide
+	 */
 	public boolean isEmpty() { return this.isEmpty; }
+	
+	/**
+	 * Renvoie le nom de la tuile dont le JLabel est passe en parametre
+	 * @param tile JLabel de la tuile dont on souhaite recuperer le nom
+	 * @return nom de la tuile
+	 */
+	private String getTileName(JLabel tile) {
+		for (String str : tileList.keySet())
+			if (tileList.get(str).equals(tile))
+				return str;
+		return null;				
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -194,6 +237,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		//Selection des tuiles dans le TileViewer
 		if (e.getSource() instanceof JLabel) {
 			JLabel tmp = (JLabel)e.getSource();
 			tmp.setOpaque(true);
@@ -203,6 +247,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 	}
 	@Override
 	public void mouseExited(MouseEvent e) {
+		//Selection des tuiles dans le TileViewer
 		if (e.getSource() instanceof JLabel) {
 			JLabel tmp = (JLabel)e.getSource();
 			tmp.setBackground(null);
@@ -217,24 +262,21 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		//Selection des tuiles dans le TileViewer
 		if (e.getSource() instanceof JLabel) {
 			JLabel tmp = (JLabel)e.getSource();
 			String str = getTileName(tmp);
 			tmp.setBackground(null);
+			
+			//Si le choix n'est pas nul, envoi au plateau pour traitement
 			if ( str != null)
 				grid.keepChoosenTile(str);
 		}
 	}
-	
-	private String getTileName(JLabel tile) {
-		for (String str : tileList.keySet())
-			if (tileList.get(str).equals(tile))
-				return str;
-		return null;				
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//Appui sur le bouton annuler du TileViewer
 		grid.removeTileViewer();
 	}
 }
