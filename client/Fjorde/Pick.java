@@ -160,7 +160,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 			panelTiles.add(cancel);
 			panelTiles.add(title);
 			
-			//Affichage des tuiles dans la fenêtre
+			//Affichage des tuiles dans la fenetre
 			int ligne = 0,
 				colonne = 0;
 			JLabel tileTmp;

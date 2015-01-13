@@ -50,6 +50,10 @@ public class SelectedTile extends JPanel {
 		}
 	}
 	
+	public String getType() {
+		return type;
+	}
+	
 	/**
 	 * Renvoie le status de la selection : si oui ou non une selection est faite
 	 * @return Vrai si une tuile est selectionnee

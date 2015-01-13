@@ -209,12 +209,19 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//Si il s'agit du bouton d'envoi à la pioche ouverte
-		if ( e.getSource() == selected.getToOpenPickButton()) {
+		//Si il s'agit du bouton d'envoi a la pioche ouverte
+		if ( e.getSource() == selected.getToOpenPickButton() && selected.hasSelection()) {
 			//Demande au serveur si il est possible d'envoyer à la pioche ouverte
+			int returnedValue = -1;
 			try {
-				this.client.processMessage("SEND_TO_OPICK");
+				returnedValue = this.client.processMessage("SEND_TO_OPICK");
 			} catch (IOException ex) { ex.printStackTrace(); }
+			
+			//Si le serveur a accepte le placement dans la pioche ouverte
+			if ( returnedValue == 127 ) {
+				openPick.addTile(new Tile(selected.getType(), 0));
+				selected.setSelectedTile(null);
+			}
 		}
 			
 	}

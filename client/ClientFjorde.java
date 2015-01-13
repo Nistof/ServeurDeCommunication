@@ -122,21 +122,27 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	 * @throws IOException
 	 */
 	public int processMessage(String message) throws IOException {
-		message = message.trim();
+		String splStr[] = message.trim().split(":");
 		
 		//START
-		if (message.split(":")[1].equals("START")) {
+		if (splStr.length == 2 && splStr[1].equals("START")) {
 			return 0;
 		}
 		//OPICK:NOM_PIECE
-		else if (message.split(":")[0].equals("OPICK")) {
+		else if (splStr.length == 2 && splStr[0].equals("OPICK")) {
 			System.out.println("OpenPick -> send");
 			//return -1; //Erreur d'entree
 			return 127; //OK
 		}
 		//PICK
-		else if (message.split(":")[0].equals("PICK")) {
+		else if (splStr.length == 1 && splStr[0].equals("PICK")) {
 			System.out.println("ClosePick -> send");
+			//return -1; //Erreur d'entree
+			return 127; //OK
+		}
+		//SEND_TO_OPICK
+		else if (splStr.length == 1 && splStr[0].equals("SEND_TO_OPICK")) {
+			System.out.println("SelectedTile -> send");
 			//return -1; //Erreur d'entree
 			return 127; //OK
 		}
