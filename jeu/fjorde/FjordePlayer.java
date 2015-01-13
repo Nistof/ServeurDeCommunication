@@ -21,7 +21,7 @@ public class FjordePlayer extends Player {
 	public FjordePlayer( String nom, String couleur, Closed p ) {
 		super(nom);
 		this.color = couleur;
-		this.tile = p.draw();
+		//this.tile = p.draw();
 		this.nbHutte = 4;
 		this.nbChamp = 20;
 	}
@@ -58,13 +58,14 @@ public class FjordePlayer extends Player {
 		return false;
 	}
 	
-	public void put(Board board, Closed pickClose){
-		board.add(this.tile);
-		
-	}
-	
 	public void draw(Tile tile) {
 		this.tile = tile;
+	}
+
+	public Tile removeFromHand() {
+		Tile tmp = this.tile;
+		tile = null;
+		return tmp;
 	}
 	
 }

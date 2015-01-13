@@ -11,6 +11,7 @@ package jeu.fjorde;
  */
 
 public class Test {
+	private Fjorde fjorde;
 	private Board board;
 	private FjordePlayer player1;
 	private FjordePlayer player2;
@@ -27,11 +28,11 @@ public class Test {
 	}
 	
 	public String display(){
-		return board.boardDraw();
+		return board.toString();
 	}
 	
 	public void tourD(){
-		player1.put(board,pickClose);
+		fjorde.play(0, 1);
 	}
 	
 	public void tourC(){
@@ -42,7 +43,12 @@ public class Test {
 		Test t = new Test();
 		
 		System.out.println(t.display());
-		for(int i=0; i<2; i++){ t.tourD();System.out.println(t.display()); }
+		//for(int i=0; i<2; i++){ 
+			t.tourD();
+			System.out.println(t.display()); 
+		//}
+		System.out.println(t.display());
+		
 	}
 
 }

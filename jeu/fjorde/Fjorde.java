@@ -21,6 +21,11 @@ public class Fjorde implements IJeu {
 		players[currentPlayer].draw(pickOpen.draw(i));
 	}
 	
+	public boolean play(int id, int side) {
+		this.board.add(id, side, players[currentPlayer].removeFromHand());
+		return true;
+	}
+	
 	@Override
 	public void add(String name, String id) {
 		

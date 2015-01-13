@@ -1,6 +1,8 @@
 package jeu.fjorde;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import jeu.Player;
 
 /**
@@ -23,6 +25,11 @@ public class Tile {
     private Item item;
     
     
+    public Tile(){
+    	this.types = new Type[6];
+        this.neighboors = new Tile[6];
+    }
+    
     /**Retourne l'etat de la pioche
      * Construit une tuile
      * @param start Détermine si c'est une tuile de départ
@@ -35,6 +42,7 @@ public class Tile {
         this.item = null;
         this.owner = null;
         for(int i=0; i<type.length(); i++){ this.types[i] = Type.getTypeById(type.charAt(i)); }
+        for(int i=0; i<neighboors.length; i++){ this.neighboors[i] = new Tile(); }
         
     }
 
@@ -152,7 +160,7 @@ public class Tile {
      * @param t une tuile
      * @return boolean 
      */
-    public boolean setNeighboor (Tile t) {
+    /*public boolean setNeighboor (Tile t) {
     	for(int i=0; i<this.neighboors.length; i++){
 	    	if(neighboors[i] == null) {
 	            for(int j=0; j<t.neighboors.length; j++){
@@ -168,7 +176,7 @@ public class Tile {
 	        }
     	}
         return false;         
-    }
+    }*/
     
     /**
      * @return la liste des voisins
@@ -200,14 +208,18 @@ public class Tile {
         
         
         for( int i=0; i<t.neighboors.length; i++ ) {
-    		if(this.getTypesById(id).get(0)==t.getTypesById(i).get(0) && 
-					this.getTypesById(id).get(1)==t.getTypesById(i).get(1)) {
+    		if(this.getTypesById(id).get(0)==t.getTypesById(i).get(1) && 
+					this.getTypesById(id).get(1)==t.getTypesById(i).get(0)) {
 				neighboors[id] = t;
-				possibilities[id-1%6] = true;
-				possibilities[id+1%6] = true;
-				t.neighboors[i]=this;
-				t.possibilities[i-1%6] = true;
-				t.possibilities[i+1%6] = true;
+				possibilities[id%6] = true;
+				possibilities[(id+1)%6] = true;
+				if(!t.isStart()){
+					if(isValid(typePossibilities())){
+						t.neighboors[i]=this;
+						t.possibilities[i%6] = true;
+						t.possibilities[(i+1)%6] = true;
+					}
+				}
 				return true;
 			}
         }
@@ -223,6 +235,36 @@ public class Tile {
         for(int i = 0; i < types.length() ; i++) {
             this.types[i] = Type.getTypeById(types.charAt(i));
         }
+    }
+    
+    public boolean isValid(ArrayList<Type> alT){
+    	int cpt=0, j=0;
+    	for(int i=0; i<this.types.length; i++){
+    		if(this.types[i].equals(alT.get(0))){
+    			for(Type t : alT){
+    				if(t.equals(this.types[i+j])){
+    					cpt++;
+    					j++;
+    				} else { 
+    					cpt=0;
+    				}
+    				
+    				if(i+j==5){ j=-i; }
+    			}
+    		}
+    	}
+    	if(cpt==alT.size()){ return true; } 
+    	return false;
+    }
+    
+    public ArrayList<Type> typePossibilities(){
+    	ArrayList<Type> alT = new ArrayList<Type>();
+    	for(int i = 0; i < this.neighboors.length ; i++){
+    		if(this.neighboors[i] != null ){
+    			alT.add(this.neighboors[i].getTypesById(i).get(0));
+    		}
+    	}
+    	return alT;
     }
     
     public String getCode(){
