@@ -37,7 +37,7 @@ public class SelectedTile extends JPanel {
 	}
 	
 	/**
-	 * Définie la tuile selectionnee
+	 * Dï¿½finie la tuile selectionnee
 	 * @param tile Tuile a selectionner
 	 */
 	public void setSelectedTile(Tile tile) {
@@ -49,11 +49,10 @@ public class SelectedTile extends JPanel {
 			this.tile.setIcon(null);
 		}
 	}
-	
+
 	public String getType() {
 		return type;
 	}
-	
 	/**
 	 * Renvoie le status de la selection : si oui ou non une selection est faite
 	 * @return Vrai si une tuile est selectionnee

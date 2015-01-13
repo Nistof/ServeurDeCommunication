@@ -45,12 +45,13 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	 */
 	public void initGrid() {
 		if (!isInit) {
-			//Pioche fermée
+		    //Pioche fermee
 			this.panelClose = new JPanel(null);
 			this.panelClose.setBounds( this.getWidth()-Tile.IMG_WIDTH-20, 25 + Tile.IMG_HEIGHT, Tile.IMG_WIDTH+20, Tile.IMG_HEIGHT+25);
 			this.panelClose.setBackground(new Color(0x7BC5DD));
 			
-			JLabel titleClose = new JLabel("Pioche Fermée");
+
+			JLabel titleClose = new JLabel("Pioche Fermee");
 			titleClose.setOpaque(true);
 			titleClose.setBackground(new Color(0x9DD8DD));
 			titleClose.setBounds(0, 0, Tile.IMG_WIDTH+20, 25);
@@ -108,7 +109,9 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		this.tiles.add(new Tile("MMTMTT", 2));
 		
 		tiles.get(0).setLocation(this.getWidth()/2, this.getHeight()/2);
+		tiles.get(0).setItem('H');
 		tiles.get(1).setLocationWithTile(tiles.get(0), 0);
+		tiles.get(1).setItem('F');
 		tiles.get(2).setLocationWithTile(tiles.get(1), 4);
 		
 		openPick.addTile(tiles.get(3));
@@ -176,7 +179,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 				this.add(tileViewer, 0);
 				this.client.repaint();
 			}
-		//Piocher une pièce dans la pioche fermée
+		//Piocher une piece dans la pioche fermee
 		} else if ( e.getSource() == this.closePick && !this.closePick.isEmpty() && tileViewer == null) {
 			try { client.processMessage("PICK"); } catch ( IOException ex) { ex.printStackTrace(); }
 		}
@@ -211,7 +214,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	public void actionPerformed(ActionEvent e) {
 		//Si il s'agit du bouton d'envoi a la pioche ouverte
 		if ( e.getSource() == selected.getToOpenPickButton() && selected.hasSelection()) {
-			//Demande au serveur si il est possible d'envoyer à la pioche ouverte
+			//Demande au serveur si il est possible d'envoyer ï¿½ la pioche ouverte
 			int returnedValue = -1;
 			try {
 				returnedValue = this.client.processMessage("SEND_TO_OPICK");

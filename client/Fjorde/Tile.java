@@ -1,5 +1,6 @@
 package client.Fjorde;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,22 @@ public class Tile extends JLabel {
 			this.setIcon(new ImageIcon(defaultImage));
 		}
 	}	
+	
+	/**
+	 * Dessine l'item sur l'image de la tuile (H = Hutte, F = Champ)
+	 * @param item L'item à mettre
+	 */
+	public void setItem (char item) {
+	    Graphics g = this.defaultImage.getGraphics();
+	    int center = (IMG_WIDTH-15)/2;
+	    if(item == 'H') {
+	        g.fillRect(center, center, 15, 15);
+	        g.fillPolygon(new int[]{center-7, center+7, center+22}, new int[]{center, center-7, center}, 3);
+	    }
+	    else if(item == 'F') {
+	        g.fillOval(center, center, 15, 15);
+	    }
+	}
 	
 	/**
 	 * Position X de la tuile

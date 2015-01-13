@@ -67,7 +67,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 	 * @param tile Tuile a ajouter
 	 */
 	public void addTile(Tile tile) {
-		//Si la pioche a été vérouillée
+		//Si la pioche a ï¿½tï¿½ vï¿½rouillï¿½e
 		if (isClose)
 			return ;
 		
@@ -119,13 +119,13 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 	}
 	
 	public JPanel viewTiles() {
-		//Si la pioche a été vérouillée
+		//Si la pioche a ï¿½tï¿½ vï¿½rouillï¿½e
 		if (isClose || panelTileIsOpen)
 			return null;
 		
 		//Si il s'agit d'une pioche ouverte
 		if (isOpen && tileList.size() != 0) {
-			// Dimensions de la fenêtre
+			// Dimensions de la fenï¿½tre
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			int nbTileColumn = screenSize.width/Tile.IMG_WIDTH - 2;
 			int nbLine;
@@ -134,7 +134,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 			
 			panelTiles = new JPanel();
 			
-			//Apparence de la fenêtre
+			//Apparence de la fenï¿½tre
 			JButton cancel = new JButton("Fermer");
 			JLabel title = new JLabel("Pioche ouverte");
 			
@@ -201,7 +201,7 @@ public class Pick extends JLabel implements MouseListener, ActionListener {
 	}
 	
 	/**
-	 * Définie si une pioche est vide ou non
+	 * Dï¿½finie si une pioche est vide ou non
 	 * @param isEmpty Vrai si la pioche doit apparaitre vide
 	 */
 	public void setIsEmpty(boolean isEmpty) {

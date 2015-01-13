@@ -56,10 +56,10 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Ajoute les différents éléments à la fenêtre
+	 * Ajoute les diffï¿½rents ï¿½lï¿½ments ï¿½ la fenï¿½tre
 	 */
 	private void setFrame() {
-		// Dimensions de la fenêtre
+		// Dimensions de la fenï¿½tre
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		// Bouton quitter
