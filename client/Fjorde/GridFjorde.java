@@ -28,6 +28,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	private JPanel tileViewer;
 	
 	private boolean isInit;
+	private boolean canPlay;
 	
 	/**
 	 * Initialisation du plateau de jeu
@@ -120,8 +121,6 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		openPick.addTile(tiles.get(6));
 		openPick.addTile(tiles.get(7));
 		
-		//selected.setSelectedTile(tiles.get(8));
-		
 		for (int i = 0; i < 3; i++) {
 			tiles.get(i).setBounds(tiles.get(i).getX(), tiles.get(i).getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			this.add(tiles.get(i));
@@ -169,7 +168,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		if (isInit && tile != null)
 			this.tiles.add(tile);
 	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		//Afficher le contenu de la pioche ouverte

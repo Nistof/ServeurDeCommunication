@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -15,8 +16,8 @@ import java.net.InetAddress;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 import javax.swing.OverlayLayout;
 
 import client.Fjorde.GridFjorde;
@@ -33,33 +34,56 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	private GridFjorde grid;
 	
 	private JPanel panel;
+	private JPanel wait;
 
 	/**
 	 * Initialisation du client (Fenetre et dependances a la communication avec le serveur)
 	 */
 	public ClientFjorde() {
-		Container c = this.getContentPane();
-		c.setLayout(new BorderLayout());
+		this.goFullScreen();
 		
 		this.panel = new JPanel();
 		this.panel.setLayout(new OverlayLayout(panel));
+		this.panel.setBounds(0, 0, this.getWidth(), this.getHeight());
+		
+		//Ecran d'attente
+		JLabel textWait = new JLabel("En attente du serveur...");
+		textWait.setForeground(Color.black);
+		textWait.setBounds( (this.getWidth()/2)-25, this.getHeight()/2-10,
+							this.getWidth(), 20);
+		
+		this.wait = new JPanel();
+		this.wait.setLayout(null);
+		this.wait.setBounds(0, 0, this.getWidth(), this.getHeight());
+		this.wait.setOpaque(true);
+		this.wait.setBackground(new Color(0x7BC5DDAA, true));
+		this.wait.add(textWait);
 		
 		this.setTitle("Fjorde");
 		this.setLocation(0, 0);
-		this.goFullScreen();
 		this.setFrame();
-		c.add(panel, BorderLayout.CENTER);
+		this.add(panel);
 		
 		this.setVisible(true);
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.playerWait(true);
+	}
+	
+	public void playerWait(boolean isWaiting) {
+		if (isWaiting) {
+			this.add(wait,0);
+			this.repaint();
+		} else {
+			this.remove(wait);
+		}
 	}
 	
 	/**
-	 * Ajoute les diff�rents �l�ments � la fen�tre
+	 * Ajoute les differents elements a la fenetre
 	 */
 	private void setFrame() {
-		// Dimensions de la fen�tre
+		// Dimensions de la fenetre
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		// Bouton quitter
@@ -88,7 +112,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Reeption d'un message de la part du serveur
+	 * Reception d'un message de la part du serveur
 	 * @return Message envoye par le serveur
 	 * @throws IOException
 	 */
