@@ -170,7 +170,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		//Afficher le contenu de la pioche ouverte
-		if ( e.getSource() == this.openPick && tileViewer == null) {
+		if ( e.getSource() == this.openPick && tileViewer == null && !this.selected.hasSelection()) {
 			this.tileViewer = this.openPick.viewTiles();
 			if (this.tileViewer != null) {
 				this.add(tileViewer, 0);
