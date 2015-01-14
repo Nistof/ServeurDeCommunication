@@ -90,7 +90,7 @@ public class Board {
 	 */
 	public void setScore() {
 		for( Tile t : this.alTiles ) {
-			if( t.getItem()!=null)
+			if( t.getItem()!=null && t.getItem()==Item.CHAMP)
 				t.getOwner().setScore(1);
 		}
 	}
@@ -113,6 +113,20 @@ public class Board {
 			return this.alTiles.get(i);
 		
 		return null;
+	}
+	
+	/**
+	 * 
+	 * @param code Le code de la tuile
+	 * @return Le numero de la tuile dans l'ArrayList correspondant au code
+	 */
+	public int getTileByCode( String code ) {
+		for( int i=0; i<this.alTiles.size(); i++ ) {
+			if( this.alTiles.get(i).getCode().equals(code))
+				return i;
+		}
+		
+		return -1;
 	}
 
 	/**

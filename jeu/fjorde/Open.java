@@ -5,4 +5,5 @@ public interface Open {
 	public Tile draw(int i);
 	public int getSize();
 	public void add(Tile t);
+	public int getTileByCode(String code);
 }

@@ -52,6 +52,23 @@ public class FjordePlayer extends Player {
 		return this.score;
 	}
 	
+	
+	/**
+	 * 
+	 * @return Le nombre de champ que possede le joueur en main
+	 */
+	public int getNbChamp() {
+		return this.nbChamp;
+	}
+	
+	/**
+	 * 
+	 * @return Le nombre de hutte que possede le joueur en main
+	 */
+	public int getNbHutte() {
+		return this.nbHutte;
+	}
+	
 	/**
 	 * 
 	 * @param score Le score que le joueur gagne au cours d'une manche

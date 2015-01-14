@@ -28,6 +28,7 @@ public class Tile {
 
 	/**
 	 * Retourne l'etat de la pioche Construit une tuile
+	 * 
 	 * @param start Determine si c'est une tuile de départ
 	 */
 	public Tile(String type, boolean start) {
@@ -47,40 +48,16 @@ public class Tile {
 	}
 
 	/**
-	 * Permet de poser un item sur une tuile
+	 * Permet de poser un item sur une tuile 
 	 * @param item L'item à poser
 	 * @param p Le joueur détenant l'item
-	 * @return vrai si la pose de l'item a reussi
+	 * @return Si la pose de l'item a reussi
 	 */
 	public boolean setItem(Item item, FjordePlayer p) {
 		boolean b = false;
 		if (this.item == null && item != null) {
-			if (item.equals(Item.HUTTE) && setHutte(item, p)) {
-				b = true;
-			}
-			if (item.equals(Item.CHAMP) && setChamp(item, p)) {
-				b = true;
-			}
-		}
-		return b;
-	}
-
-	
-
-	private boolean setHutte(Item item, FjordePlayer p) {
-		boolean b = false;
-
-		if (!p.putHutte())
-			return b;
-
-		if (!this.isStart()) {
-			int cpt = 0;
-			for (int i = 0; i < this.types.length; i++) {
-				if (this.types[i].equals(Type.MONTAGNE)) {
-					cpt++;
-				}
-			}
-			if (cpt != 6) {
+			if (item.equals(Item.HUTTE) && putHutteIsValid(p)
+					|| item.equals(Item.CHAMP) && putChampIsValid(p)) {
 				this.item = item;
 				this.owner = p;
 				b = true;
@@ -91,14 +68,13 @@ public class Tile {
 
 	/**
 	 * 
-	 * @param item Le champ
-	 * @param p Le joueur jouant ce champ
-	 * @return si un champ a ete ajoute par un joueur
+	 * @param p Joueur qui demande si le placement d'un champ est possible
+	 * @return Si le placement du champ est possible
 	 */
-	private boolean setChamp(Item item, FjordePlayer p) {
+	public boolean putChampIsValid(FjordePlayer p) {
 		boolean b = false;
 
-		if (!p.putChamp())
+		if (p.getNbChamp() == 0)
 			return b;
 
 		for (int i = 0; i < this.neighboors.length; i++) {
@@ -109,11 +85,35 @@ public class Tile {
 						&& !this.types[(i + 1) % 6].equals(Type.MONTAGNE)
 						|| !this.types[i].equals(Type.EAU)
 						&& !this.types[(i + 1) % 6].equals(Type.EAU)) {
-					this.item = item;
-					this.owner = p;
 					b = true;
 				}
 			}
+		}
+		return b;
+	}
+
+	/**
+	 * 
+	 * @param p Joueur qui demande si le placement d'une hutte est possible
+	 * @return Si le placement d'une hutte est possible
+	 */
+	public boolean putHutteIsValid(FjordePlayer p) {
+		boolean b = false;
+
+		if (p.getNbHutte() == 0)
+			return b;
+
+		// On ne peut pas poser une hutte sur les tuiles de depart
+		if (!this.isStart()) {
+			int cpt = 0; // Nombre de somments montagne sur la tuile
+			for (int i = 0; i < this.types.length; i++) {
+				if (this.types[i].equals(Type.MONTAGNE))
+					cpt++;
+			}
+
+			// Si la tuile n'est pas recouverte entierement de montagne
+			if (cpt != 6)
+				b = true;
 		}
 		return b;
 	}
@@ -141,7 +141,9 @@ public class Tile {
 
 	/**
 	 * permet d'avoir les sommet correspondant � une id donn�e
-	 * @param id numero de cote
+	 * 
+	 * @param id
+	 *            numero de cote
 	 * @return une arraylist de sommet
 	 */
 	public ArrayList<Type> getTypesById(int id) {
@@ -153,7 +155,9 @@ public class Tile {
 
 	/**
 	 * verifie si c'est un voisin, et l'ajoute au tableau
-	 * @param t une tuile
+	 * 
+	 * @param t
+	 *            une tuile
 	 * @return boolean
 	 */
 	/*
@@ -180,8 +184,11 @@ public class Tile {
 
 	/**
 	 * Place une tuile voisine
-	 * @param id Cote a utiliser
-	 * @param t Tuile a placer
+	 * 
+	 * @param id
+	 *            Cote a utiliser
+	 * @param t
+	 *            Tuile a placer
 	 * @return vrai si la pose de la tuile a reussi
 	 */
 	public boolean setNeighboorById(int id, Tile t) {
@@ -215,7 +222,9 @@ public class Tile {
 
 	/**
 	 * Permet de fixer les 6 types de la tuile
-	 * @param types La chaine a utiliser pour definir les types
+	 * 
+	 * @param types
+	 *            La chaine a utiliser pour definir les types
 	 */
 	public void setTypes(String types) {
 		for (int i = 0; i < types.length(); i++) {
