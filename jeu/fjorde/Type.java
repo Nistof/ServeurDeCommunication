@@ -11,13 +11,13 @@ package jeu.fjorde;
  */
 
 public enum Type {
-    TERRE_ARABLE("T"),
-    MONTAGNE("M"),
-    EAU("E");
+    TERRE_ARABLE('T'),
+    MONTAGNE('M'),
+    EAU('E');
     
-    private String id;
+    private char id;
     
-    Type(String id){
+    Type(char id){
     	this.id = id;
     }
 
@@ -35,6 +35,10 @@ public enum Type {
     }
     
     public String toString(){
-    	return this.id;
+    	return "" + this.id;
+    }
+
+    public char getCode() {
+        return this.id;
     }
 }

@@ -12,26 +12,18 @@ package jeu.fjorde;
 
 public class Test {
 	private Fjorde fjorde;
-	private Board board;
-	private FjordePlayer player1;
-	private FjordePlayer player2;
-	private Closed pickClose;
-	private Open pickOpen;
+	
 	
 	public Test(){
-		board = new Board();
-		pickClose = new Pick(true);
-		pickOpen = new Pick(false);
-		
-		player1 = new FjordePlayer("PAUL","BLANC",pickClose);
-		player2 = new FjordePlayer("JACK","NOIR",pickClose);
+	    fjorde = new Fjorde();
 	}
 	
 	public String display(){
-		return board.toString();
+		return fjorde.toString();
 	}
 	
 	public void tourD(){
+	    fjorde.draw();
 		fjorde.play(0, 1);
 	}
 	

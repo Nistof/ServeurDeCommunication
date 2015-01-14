@@ -39,7 +39,7 @@ public class Pick implements Closed,Open {
 				while (fichier.hasNext()) {
 					s = fichier.next();
 					if(s != null && s.split(":")[1].equals("F")){
-						this.alTiles.add(new Tile(s.split(":")[0],false));
+						this.alTiles.add(new Tile(s.split(":")[0],false,false));
 					}
 					
 				}

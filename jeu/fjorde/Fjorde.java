@@ -23,14 +23,16 @@ public class Fjorde implements IJeu {
 		this.pickClose = new Pick(true);
 		this.pickOpen = new Pick(false);
 		this.players = new FjordePlayer[2];
+		this.players[0] = new FjordePlayer("SARAH", "MARRON");
+		this.players[0] = new FjordePlayer("FLORIAN", "ROUGE");
 		this.currentPlayer = 0;
 		this.nbPlayer = 0;
 
-		try {
+		/*try {
 			this.server = new Server(this);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	/**
@@ -73,9 +75,7 @@ public class Fjorde implements IJeu {
 	 */
 	public boolean play(int id, int side) {
 		
-		return (id >= 0)?this.board
-				.add(id, side, players[currentPlayer].removeFromHand())
-				:false;
+		return (id >= 0)?this.board.add(players[currentPlayer].removeFromHand(), side, id):false;
 	}
 
 	/**
@@ -273,6 +273,13 @@ public class Fjorde implements IJeu {
 			round++;
 		}
 	}
+
+    @Override
+    public String toString() {
+        return board.toString();
+    }
+	
+	
 }
 		
 			

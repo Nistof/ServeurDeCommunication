@@ -19,10 +19,9 @@ public class FjordePlayer extends Player {
 	private int nbChamp;
 	private int score;
 	
-	public FjordePlayer( String nom, String couleur, Closed p ) {
+	public FjordePlayer( String nom, String couleur ) {
 		super(nom);
 		this.color = couleur;
-		//this.tile = p.draw();
 		this.nbHutte = 4;
 		this.nbChamp = 20;
 		this.score = 0;
@@ -121,6 +120,7 @@ public class FjordePlayer extends Player {
 	public Tile removeFromHand() {
 		Tile tmp = this.tile;
 		tile = null;
+		System.out.println(tmp);
 		return tmp;
 	}
 	

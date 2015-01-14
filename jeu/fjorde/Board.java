@@ -1,6 +1,7 @@
 package jeu.fjorde;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -17,13 +18,13 @@ import java.util.Scanner;
 
 public class Board {
 	private static int CURRENT_ID = 0;
-	private HashMap<Integer,Tile> hmTiles;
+	private ArrayList<Tile> alTiles;
 
 	/**
 	 * Constructeur recupere les tuiles de depart pour les placer sur le plateau
 	 */
 	public Board(){
-		this.hmTiles = new HashMap<Integer,Tile>(); 
+		this.alTiles = new ArrayList<Tile>();
 
 		String nomFichier = System.getProperty("user.dir");
 		nomFichier = nomFichier + "/Tuile.txt";
@@ -37,22 +38,20 @@ public class Board {
 			while (fichier.hasNext()) {
 			    s = fichier.next();
 				if(s != null && s.split(":")[1].equals("S")){
-					this.hmTiles.put(CURRENT_ID++, new Tile(s.split(":")[0],true));
+				    Tile t = new Tile(s.split(":")[0],true,false);
+				    t.generateGhosts();
+					this.alTiles.add(t);
 				}
 			}
 
 			// fermeture
 			fichier.close();
-		} catch (Exception exc) {
+		} catch (FileNotFoundException exc) {
 			System.out.println("Erreur fichier" + exc);
 		}
 		
-		hmTiles.get(0).setNeighboorById(2,hmTiles.get(1));
-		hmTiles.get(0).setNeighboorById(3,hmTiles.get(2));
-		hmTiles.get(1).setNeighboorById(5,hmTiles.get(0));
-		hmTiles.get(1).setNeighboorById(4,hmTiles.get(2));
-		hmTiles.get(2).setNeighboorById(0,hmTiles.get(0));
-		hmTiles.get(2).setNeighboorById(1,hmTiles.get(1));
+		alTiles.get(0).setNeighboorById(alTiles.get(1),2);
+		alTiles.get(1).setNeighboorById(alTiles.get(2),4);
 		/*for(int i=0; i<alTiles.size(); i++){
 			//alTiles.get(i-1).setNeighboor(alTiles.get(i));
 			System.out.println(alTiles.get(i).getNeighboors());
@@ -66,8 +65,7 @@ public class Board {
 	 */
 	public int getNbHut(FjordePlayer p){
 		int cpt = 0;
-		for(Integer i : hmTiles.keySet()){
-			Tile t = hmTiles.get(i);
+		for(Tile t : alTiles){
 			if(t.getOwner()==p && t.getItem()==Item.HUTTE){cpt++;}
 		}
 		return cpt;
@@ -77,9 +75,9 @@ public class Board {
 	 * Ajoute une tuile a la liste de tuiles presentent sur le plateau
 	 * @param t Tuile a ajouter
 	 */
-	public boolean add(int id, int side, Tile t){
-		if(t.setNeighboorById(side, hmTiles.get(id))){
-			hmTiles.put(CURRENT_ID++,t);
+	public boolean add(Tile t, int side, int id){
+		if(alTiles.get(id).setNeighboorById(t, side)){
+			alTiles.add(t);
 			return true;
 		}
 		return false;
@@ -135,15 +133,8 @@ public class Board {
 	 */
 	public String toString(){
 		String s = "";
-		for(int i=0;i<hmTiles.size(); i++){
-			if(!hmTiles.get(i).isStart()){ s += "    "+ i +"   "; }
-			else { s+= "         "; }
-			
-		}
-		for(int i=0; i<hmTiles.size(); i++){
-			//alTiles.get(i-1).setNeighboor(alTiles.get(i));
-			System.out.println(hmTiles.get(i).getNeighboors());
-			//System.out.println(alTiles.get(i).typePossibilities());
+		for(Tile t: alTiles) {
+		    s += t + ",";
 		}
 		return s;
 	}
