@@ -67,7 +67,7 @@ public class Tile {
      * @param p le joueur jouant cette hutte
      * @return si une hutte a été ajoutée par un joueur
      */
-    public boolean setHutte(Item item, FjordePlayer p){
+    private boolean setHutte(Item item, FjordePlayer p){
     	boolean b = false;
     	
     	if( !p.putHutte() )
@@ -78,7 +78,7 @@ public class Tile {
 	    	for(int i=0; i<this.types.length; i++){
 	    		if(this.types[i].equals(Type.MONTAGNE)){ cpt++; }
 	    	}
-	        if( cpt == 6 ) {
+	        if( cpt != 6 ) {
 	        	this.item = item;
 	        	this.owner = p;
 	        	b = true;
@@ -93,7 +93,7 @@ public class Tile {
      * @param p Le joueur jouant ce champ
      * @return si un champ a été ajouté par un joueur
      */
-    public boolean setChamp(Item item, FjordePlayer p){
+    private boolean setChamp(Item item, FjordePlayer p){
     	boolean b = false;
     	
     	if( !p.putChamp() )

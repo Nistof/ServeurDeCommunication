@@ -25,34 +25,33 @@ public class Pick implements Closed,Open {
 	 */
 	public Pick(boolean hidden){
 		if(hidden) {
-		this.alTiles = new ArrayList<Tile>(); 
-
-		String nomFichier = System.getProperty("user.dir");
-		nomFichier = nomFichier + "/Tuile.txt";
-		Scanner fichier = null;
-		String s;
-
-		try { // ouverture
-			fichier = new Scanner(new File(nomFichier));
-
-			// traitement
-			while (fichier.hasNext()) {
-				s = fichier.next();
-				if(s != null && s.split(":")[1].equals("F")){
-					this.alTiles.add(new Tile(s.split(":")[0],false));
+			this.alTiles = new ArrayList<Tile>(); 
+	
+			String nomFichier = System.getProperty("user.dir");
+			nomFichier = nomFichier + "/Tuile.txt";
+			Scanner fichier = null;
+			String s;
+	
+			try { // ouverture
+				fichier = new Scanner(new File(nomFichier));
+	
+				// traitement
+				while (fichier.hasNext()) {
+					s = fichier.next();
+					if(s != null && s.split(":")[1].equals("F")){
+						this.alTiles.add(new Tile(s.split(":")[0],false));
+					}
+					
 				}
-				
+	
+				// fermeture
+				fichier.close();
+			} catch (Exception exc) {
+				System.out.println("Erreur fichier" + exc);
 			}
-
-			// fermeture
-			fichier.close();
-		} catch (Exception exc) {
-			System.out.println("Erreur fichier" + exc);
-		}
-		
-		Collections.shuffle(this.alTiles);
-		}
-		else {
+			
+			Collections.shuffle(this.alTiles);
+		} else {
 			this.alTiles = new ArrayList<Tile>(); 
 		}
 	
@@ -63,35 +62,34 @@ public class Pick implements Closed,Open {
 	 * @return boolean 
 	 */
 	public boolean isEmpty() {
-		if(this.alTiles.size() == 0 ){ return true; }
+		if(this.alTiles.isEmpty() )
+			return true;
+		
 		return false;
-	}
-
-
-	/**
-	 * Supprime une tuile de la pioche
-	 * @return Tile
-	 */
-	
+	}	
 	
 	/**
-	 * Ajoute � la pioche une tuile
-	 * @param t Tuile � ajouter
+	 * Ajoute a la pioche une tuile
+	 * @param t Tuile a ajouter
 	 */
 	public void add(Tile t){
 		alTiles.add(t);
 	}
 	
+	/**
+	 * @param i Indice de la tuile
+	 * @return Une tuile a un indice donne (pioche ouverte)
+	 */
 	public Tile getTile(int i){
-		if(!this.isEmpty() && i>0 && i<this.alTiles.size()){
+		if(!this.isEmpty() && i>0 && i<this.alTiles.size())
 			return this.alTiles.get(i);
-		}
+		
 		return null;
 	}
 
 	/**
-	 * Supprime une tuile de la pioche
-	 * @return Tile
+	 * @param i Indice de la tuile
+	 * @return Tile Une tuile de la pioche a un indice donne (pioche ouverte)
 	 */
 	public Tile draw(int i){
 		Tile t=null;
@@ -102,6 +100,9 @@ public class Pick implements Closed,Open {
 		return t;
 	}
 	
+	/**
+	 * @return La derniere tuile de la pioche (pioche ferme)
+	 */
 	public Tile draw(){
 		return alTiles.remove(alTiles.size()-1);
 	}

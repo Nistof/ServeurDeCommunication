@@ -84,12 +84,21 @@ public class Board {
 		}
 		return false;
 	}
+	
+	/**
+	 * Attributs les scores aux joueurs
+	 */
+	public void setScore() {
+		for( Tile t : this.alTiles ) {
+			if( t.getItem()!=null)
+				t.getOwner().setScore(1);
+		}
+	}
 
 	/**
 	 * Permets de voir l'état du plateau, les tuiles pos�es et leurs num�ros
 	 * @return une chaine de caract�re de l'avanc� du jeu
 	 */
-	
 	public String toString(){
 		String s = "";
 		for(int i=0;i<hmTiles.size(); i++){
