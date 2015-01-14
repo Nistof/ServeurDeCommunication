@@ -34,7 +34,7 @@ public class Tile extends JLabel {
 		
 		if ( !type.equals("")) {
 			try {
-				this.defaultImage = ImageIO.read(new File("./client/Fjorde/images/" + type + ".png"));
+				this.defaultImage = RotatedTile.getImage(type, orientation, IMG_WIDTH, IMG_HEIGHT);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

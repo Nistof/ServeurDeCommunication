@@ -1,14 +1,16 @@
 package client;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,10 +21,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
+import javax.swing.event.MouseInputListener;
 
 import client.Fjorde.GridFjorde;
 
-public class ClientFjorde extends JFrame implements ActionListener {
+public class ClientFjorde extends JFrame implements ActionListener, MouseListener, FocusListener {
 	private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 	
 	private InetAddress 	ip;
@@ -56,8 +59,12 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		this.wait.setLayout(null);
 		this.wait.setBounds(0, 0, this.getWidth(), this.getHeight());
 		this.wait.setOpaque(true);
-		this.wait.setBackground(new Color(0x7BC5DDAA, true));
+		this.wait.setBackground(new Color(0xAA7BC5DD, true));
 		this.wait.add(textWait);
+		
+		//Rendre le panel bloquant (Le joueur ne peut ainsi effectuer aucune action)
+		this.wait.addFocusListener(this);
+		this.wait.addMouseListener(this);
 		
 		this.setTitle("Fjorde");
 		this.setLocation(0, 0);
@@ -67,12 +74,15 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		this.setVisible(true);
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.playerWait(true);
+		this.repaint();
+		//this.playerWait(true);
 	}
 	
 	public void playerWait(boolean isWaiting) {
 		if (isWaiting) {
 			this.add(wait,0);
+			this.remove(quitButton);
+			this.add(quitButton, 0);
 			this.repaint();
 		} else {
 			this.remove(wait);
@@ -91,7 +101,7 @@ public class ClientFjorde extends JFrame implements ActionListener {
 		this.quitButton.addActionListener(this);
 		this.quitButton.setAlignmentX(0.0f);
 		this.quitButton.setAlignmentY(0.0f);
-		this.panel.add(quitButton);
+		this.panel.add(quitButton,0);
 		
 		// Plateau de jeu
 		this.grid = new GridFjorde(this);
@@ -178,6 +188,48 @@ public class ClientFjorde extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.quitButton)
 			System.exit(0);
+	}
+
+	@Override
+	public void focusGained(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void focusLost(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public static void main(String[] args) {
