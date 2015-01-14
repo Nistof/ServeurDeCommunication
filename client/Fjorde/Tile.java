@@ -2,10 +2,7 @@ package client.Fjorde;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -19,7 +16,6 @@ public class Tile extends JLabel {
 	private int yLocation;
 	
 	private BufferedImage defaultImage;
-	private BufferedImage transformedImage;
 	
 	/**
 	 * Initialise un objet de type Tuile 
@@ -33,12 +29,7 @@ public class Tile extends JLabel {
 		this.yLocation = 0;
 		
 		if ( !type.equals("")) {
-			try {
-				this.defaultImage = RotatedTile.getImage(type, orientation, IMG_WIDTH, IMG_HEIGHT);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
+			this.defaultImage = RotatedTile.getImage(type, orientation, IMG_WIDTH, IMG_HEIGHT);
 			this.setIcon(new ImageIcon(defaultImage));
 		}
 	}	

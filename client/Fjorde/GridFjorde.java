@@ -1,6 +1,7 @@
 package client.Fjorde;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -17,6 +18,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	private ClientFjorde client;
 	
 	private ArrayList<Tile> tiles;
+	private ArrayList<PlacementTile> placement;
 	
 	private Pick closePick;
 	private JPanel panelClose;
@@ -38,7 +40,12 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		this.client = client;
 		this.isInit = false;
 		this.setLayout(null);
+		
+		//Tuiles
 		this.tiles = new ArrayList<Tile>();
+		
+		//Tuiles de placement
+		this.placement = new ArrayList<PlacementTile>();
 	}
 	
 	/**
@@ -83,9 +90,11 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.panelOpen.add(openPick);
 			
 			//Selection
-			this.selected = new SelectedTile();
+			this.selected = new SelectedTile(this);
 			this.selected.setLocation(this.getWidth()-Tile.IMG_WIDTH*2, this.getHeight()-Tile.IMG_HEIGHT*2-50);
 			this.selected.getToOpenPickButton().addActionListener(this);
+			this.selected.getRotateRightButton().addActionListener(this);
+			this.selected.getRotateLeftButton().addActionListener(this);
 			
 			this.add(selected);
 			this.add(panelClose);
@@ -121,6 +130,19 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		openPick.addTile(tiles.get(6));
 		openPick.addTile(tiles.get(7));
 		
+		this.addPlacementTile(tiles.get(0), 1, 0);
+		this.addPlacementTile(tiles.get(0), 2, 1);
+		this.addPlacementTile(tiles.get(0), 3, 2);
+		this.addPlacementTile(tiles.get(0), 4, 3);
+		this.addPlacementTile(tiles.get(1), 0, 1);
+		this.addPlacementTile(tiles.get(1), 1, 2);
+		this.addPlacementTile(tiles.get(1), 2, 3);
+		this.addPlacementTile(tiles.get(1), 5, 0);
+		this.addPlacementTile(tiles.get(2), 0, 3);
+		this.addPlacementTile(tiles.get(2), 3, 1);
+		this.addPlacementTile(tiles.get(2), 4, 2);
+		this.addPlacementTile(tiles.get(2), 5, 0);
+		
 		for (int i = 0; i < 3; i++) {
 			tiles.get(i).setBounds(tiles.get(i).getX(), tiles.get(i).getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			this.add(tiles.get(i));
@@ -142,8 +164,10 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		//Si la tuile peut etre prise
 		if ( keep == 127 && removeTileViewer()) {
 			//on la retire de la pioche ouverte
-			if ( openPick.removeTile(tileName))
-				selected.setSelectedTile(new Tile(tileName,0));; //On la place en tant que tuile selectionnee
+			if ( openPick.removeTile(tileName)) {
+				selected.setSelectedTile(tileName);; //On la place en tant que tuile selectionnee
+				updatePlacementTile(); //Affichage des PlacementTile
+			}
 		}
 	}
 	
@@ -169,6 +193,55 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.tiles.add(tile);
 	}
 	
+	/**
+	 * Cree une PlacementTile a cote de la tuile passee en parametre
+	 * @param neighboor Voisin de la PlacementTile
+	 * @param position Cote ou est lie la PlacementTile
+	 */
+	public void addPlacementTile(Tile neighboor, int position, int orientation) {
+		if (neighboor != null) {
+			PlacementTile pt = new PlacementTile(neighboor, position, orientation);
+			pt.setBounds(pt.getX(), pt.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
+			pt.setVisible(false);
+			this.placement.add(pt);
+			this.add(pt);
+		}
+	}
+	
+	/**
+	 * Permet de supprimer toutes les PlacementTile visibles
+	 */
+	private void purgeVisiblePlacementTile() {
+		for (PlacementTile t : placement)
+				t.setVisible(false);
+	}
+	
+	/**
+	 * Met a jour l'affichage des tuiles de placement
+	 */
+	public void updatePlacementTile() {
+		this.purgeVisiblePlacementTile();
+		for (PlacementTile t : placement) {
+			System.out.println(t.getOrientation()+":"+selected.getOrientation());
+			if ( t.getOrientation() == selected.getOrientation()) {
+				System.out.println("set visible a PlacementTile!");
+				t.setVisible(true);
+			}
+		}
+	}
+	
+	/**
+	 * Retire toutes les PlacementTile ajoutees
+	 */
+	private void removeAllPlacementTile() {
+		while ( placement.size() != 0) {
+			this.remove(placement.get(0));
+			placement.remove(0);
+		}
+		System.out.println(placement);
+		client.repaint();
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		//Afficher le contenu de la pioche ouverte
@@ -186,34 +259,22 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mousePressed(MouseEvent e) {}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseReleased(MouseEvent e) {}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//Si il s'agit du bouton d'envoi a la pioche ouverte
 		if ( e.getSource() == selected.getToOpenPickButton() && selected.hasSelection()) {
-			//Demande au serveur si il est possible d'envoyer � la pioche ouverte
+			//Demande au serveur si il est possible d'envoyer a la pioche ouverte
 			int returnedValue = -1;
 			try {
 				returnedValue = this.client.processMessage("SEND_TO_OPICK");
@@ -221,10 +282,16 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			
 			//Si le serveur a accepte le placement dans la pioche ouverte
 			if ( returnedValue == 127 ) {
-				openPick.addTile(new Tile(selected.getType(), 0));
-				selected.setSelectedTile(null);
+				this.openPick.addTile(new Tile(selected.getType(), 0));
+				this.selected.setSelectedTile(null);
+				this.removeAllPlacementTile();
 			}
 		}
+		//Si il s'agit d'un bouton de rotation
+		/*else if (e.getSource() == selected.getRotateRightButton() ||
+				 e.getSource() == selected.getRotateLeftButton()) {
+			this.updatePlacementTile();
+		}*/
 			
 	}
 }

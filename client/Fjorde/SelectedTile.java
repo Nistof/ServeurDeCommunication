@@ -3,7 +3,6 @@ package client.Fjorde;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -11,6 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class SelectedTile extends JPanel implements ActionListener {
+	private GridFjorde grid;
+	
 	private JLabel title;
 	private JButton toOpenPick;
 	
@@ -24,7 +25,9 @@ public class SelectedTile extends JPanel implements ActionListener {
 	/**
 	 * Initialise un composant indiquant la tuile selectionnee
 	 */
-	public SelectedTile() {
+	public SelectedTile(GridFjorde grid) {
+		this.grid = grid;
+		
 		this.orientation = 0;
 		
 		this.setBackground(new Color(0x7BC5DD));
@@ -61,12 +64,12 @@ public class SelectedTile extends JPanel implements ActionListener {
 	
 	/**
 	 * Definie la tuile selectionnee
-	 * @param tile Tuile a selectionner
+	 * @param type Tuile a selectionner
 	 */
-	public void setSelectedTile(Tile tile) {
-		if ( tile != null) {
-			this.type = tile.getType();
-			this.tile.setIcon(tile.getIcon());
+	public void setSelectedTile(String type) {
+		if ( type != null) {
+			this.type = type;
+			this.tile.setIcon(new ImageIcon(RotatedTile.getImage(type, orientation, Tile.IMG_WIDTH, Tile.IMG_HEIGHT)));
 			this.toOpenPick.setEnabled(true);
 			this.rotateLeft.setVisible(true);
 			this.rotateRight.setVisible(true);
@@ -116,18 +119,18 @@ public class SelectedTile extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//Changement de l'orientation de la pièce
-		try {
-			//Rotation gauche
-			if ( e.getSource() == this.rotateLeft) {
-				orientation = ((orientation-1)%6+6)%6;
-				this.tile.setIcon(new ImageIcon( RotatedTile.getImage(type, orientation, Tile.IMG_WIDTH, Tile.IMG_WIDTH)));
-				
-			}
-			//Rotation droite
-			else if ( e.getSource() == this.rotateRight) {
-				orientation = ((orientation+1)%6+6)%6;
-				this.tile.setIcon(new ImageIcon( RotatedTile.getImage(type, orientation, Tile.IMG_WIDTH, Tile.IMG_WIDTH)));
-			}
-		} catch (IOException ex) { }
+		//Rotation gauche
+		if ( e.getSource() == this.rotateLeft) {
+			orientation = ((orientation-1)%6+6)%6;
+			this.tile.setIcon(new ImageIcon( RotatedTile.getImage(type, orientation, Tile.IMG_WIDTH, Tile.IMG_WIDTH)));
+			
+		}
+		//Rotation droite
+		else if ( e.getSource() == this.rotateRight) {
+			orientation = ((orientation+1)%6+6)%6;
+			this.tile.setIcon(new ImageIcon( RotatedTile.getImage(type, orientation, Tile.IMG_WIDTH, Tile.IMG_WIDTH)));
+		}
+		
+		grid.updatePlacementTile();
 	}
 }

@@ -21,7 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
-import javax.swing.event.MouseInputListener;
 
 import client.Fjorde.GridFjorde;
 
@@ -78,6 +77,10 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		//this.playerWait(true);
 	}
 	
+	/**
+	 * Mettre ou retirer l'attente au joueur
+	 * @param isWaiting Etat de l'attente
+	 */
 	public void playerWait(boolean isWaiting) {
 		if (isWaiting) {
 			this.add(wait,0);
@@ -191,46 +194,25 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	}
 
 	@Override
-	public void focusGained(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void focusGained(FocusEvent arg0) {}
 
 	@Override
-	public void focusLost(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void focusLost(FocusEvent arg0) {}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseClicked(MouseEvent arg0) {}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseEntered(MouseEvent arg0) {}
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseExited(MouseEvent arg0) {}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mousePressed(MouseEvent arg0) {}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseReleased(MouseEvent arg0) {}
 	
 	public static void main(String[] args) {
 		new ClientFjorde();

@@ -5,12 +5,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.swing.ImageIcon;
 
 public abstract class RotatedTile {
-	public static BufferedImage getImage(String type, int orientation, int width, int height) throws IOException {
+	public static BufferedImage getImage(String type, int orientation, int width, int height) {
 		if (type.length() != 6)
 			return null;
 		
@@ -52,16 +49,19 @@ public abstract class RotatedTile {
 			//Couleur du triangle
 			Color c;
 			switch (typeC[i]) {
-				case 'E':
+				case 'E':	//Eau
 					c = new Color(0x146b7d);
 					break;
-				case 'T':
+				case 'T':	//Terre Arable
 					c = new Color(0x61a533);
 					break;
-				case 'M':
+				case 'M':	//Montagne
 					c = new Color(0x79695d);
 					break;
-				case 'P':
+				case 'P':	//PlacementTile
+					c = new Color(0x5565c60a, true);
+					break;
+				case 'S':	//PlacementTile selected
 					c = new Color(0xAA65c60a, true);
 					break;
 				default:
@@ -87,8 +87,11 @@ public abstract class RotatedTile {
 			centerColor = new Color(0x61a533);
 		else if ( type.contains("E"))
 			centerColor = new Color(0x146b7d);
-		else
+		else if ( type.contains("M"))
 			centerColor = new Color(0x79695d);
+		else
+			centerColor = new Color(0x65c60a);
+		
 		g.setColor(centerColor);
 		g.fillOval(center.x-width/6, center.y-height/6, width/3, height/3);
 		
