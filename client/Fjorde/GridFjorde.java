@@ -30,7 +30,6 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	private JPanel tileViewer;
 	
 	private boolean isInit;
-	private boolean canPlay;
 	
 	/**
 	 * Initialisation du plateau de jeu
@@ -57,7 +56,6 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.panelClose = new JPanel(null);
 			this.panelClose.setBounds( this.getWidth()-Tile.IMG_WIDTH-20, 25 + Tile.IMG_HEIGHT, Tile.IMG_WIDTH+20, Tile.IMG_HEIGHT+25);
 			this.panelClose.setBackground(new Color(0x7BC5DD));
-			
 
 			JLabel titleClose = new JLabel("Pioche Fermee");
 			titleClose.setOpaque(true);
@@ -134,14 +132,20 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		this.addPlacementTile(tiles.get(0), 2, 1);
 		this.addPlacementTile(tiles.get(0), 3, 2);
 		this.addPlacementTile(tiles.get(0), 4, 3);
+		this.addPlacementTile(tiles.get(0), 1, 4);
+		this.addPlacementTile(tiles.get(0), 2, 5);
 		this.addPlacementTile(tiles.get(1), 0, 1);
 		this.addPlacementTile(tiles.get(1), 1, 2);
 		this.addPlacementTile(tiles.get(1), 2, 3);
 		this.addPlacementTile(tiles.get(1), 5, 0);
+		this.addPlacementTile(tiles.get(1), 0, 4);
+		this.addPlacementTile(tiles.get(1), 1, 5);
 		this.addPlacementTile(tiles.get(2), 0, 3);
-		this.addPlacementTile(tiles.get(2), 3, 1);
-		this.addPlacementTile(tiles.get(2), 4, 2);
-		this.addPlacementTile(tiles.get(2), 5, 0);
+		this.addPlacementTile(tiles.get(2), 3, 0);
+		this.addPlacementTile(tiles.get(2), 4, 1);
+		this.addPlacementTile(tiles.get(2), 5, 2);
+		this.addPlacementTile(tiles.get(2), 3, 4);
+		this.addPlacementTile(tiles.get(2), 4, 5);
 		
 		for (int i = 0; i < 3; i++) {
 			tiles.get(i).setBounds(tiles.get(i).getX(), tiles.get(i).getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
@@ -189,8 +193,11 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	 * @param tile tuile a placer
 	 */
 	public void addTile(Tile tile) {
-		if (isInit && tile != null)
+		if (isInit && tile != null) {
+			tile.setBounds(tile.getX(), tile.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			this.tiles.add(tile);
+			this.add(tile);
+		}
 	}
 	
 	/**
@@ -203,6 +210,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			PlacementTile pt = new PlacementTile(neighboor, position, orientation);
 			pt.setBounds(pt.getX(), pt.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			pt.setVisible(false);
+			pt.addMouseListener(this);
 			this.placement.add(pt);
 			this.add(pt);
 		}
@@ -221,13 +229,9 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	 */
 	public void updatePlacementTile() {
 		this.purgeVisiblePlacementTile();
-		for (PlacementTile t : placement) {
-			System.out.println(t.getOrientation()+":"+selected.getOrientation());
-			if ( t.getOrientation() == selected.getOrientation()) {
-				System.out.println("set visible a PlacementTile!");
+		for (PlacementTile t : placement) 
+			if ( t.getOrientation() == selected.getOrientation()) 
 				t.setVisible(true);
-			}
-		}
 	}
 	
 	/**
@@ -238,7 +242,6 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.remove(placement.get(0));
 			placement.remove(0);
 		}
-		System.out.println(placement);
 		client.repaint();
 	}
 	
@@ -265,7 +268,21 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	public void mouseExited(MouseEvent e) {}
 
 	@Override
-	public void mousePressed(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {
+		if ( e.getSource() instanceof PlacementTile) {
+			//Creation et initialisation de la tuile
+			PlacementTile pt = (PlacementTile)e.getSource();
+			Tile tile = new Tile(selected.getType(), pt.getOrientation());
+			tile.setLocation(pt.getX(), pt.getY());
+			
+			this.addTile(tile);	//Ajout au plateau
+			this.removeAllPlacementTile(); //Retrait des PlacementTile
+			this.selected.setSelectedTile(null); //Retrait de la selection
+			
+			//Envoi du placement au serveur
+			try { client.processMessage("???:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { ex.printStackTrace(); }
+		}
+	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {}
@@ -286,12 +303,6 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 				this.selected.setSelectedTile(null);
 				this.removeAllPlacementTile();
 			}
-		}
-		//Si il s'agit d'un bouton de rotation
-		/*else if (e.getSource() == selected.getRotateRightButton() ||
-				 e.getSource() == selected.getRotateLeftButton()) {
-			this.updatePlacementTile();
-		}*/
-			
+		}			
 	}
 }
