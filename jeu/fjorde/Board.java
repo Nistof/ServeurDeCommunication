@@ -20,7 +20,7 @@ public class Board {
 	private HashMap<Integer,Tile> hmTiles;
 
 	/**
-	 * Constructeur r�cupere les tuiles de d�part pour les placer sur le plateau
+	 * Constructeur recupere les tuiles de depart pour les placer sur le plateau
 	 */
 	public Board(){
 		this.hmTiles = new HashMap<Integer,Tile>(); 
@@ -60,7 +60,7 @@ public class Board {
 	}
 	
 	/**
-	 * Donne pour un joueur donn� les hutte qu'il poss�de sur le plateau
+	 * Donne pour un joueur donne les hutte qu'il possede sur le plateau
 	 * @param p joueur de la tuile
 	 * @return le nombre de hutte sur le plateau
 	 */
@@ -74,8 +74,8 @@ public class Board {
 	}
 	
 	/**
-	 * Ajoute une tuile � la liste de tuiles pr�sentent sur le plateau
-	 * @param t tuile a jouter
+	 * Ajoute une tuile a la liste de tuiles presentent sur le plateau
+	 * @param t Tuile a ajouter
 	 */
 	public boolean add(int id, int side, Tile t){
 		if(t.setNeighboorById(side, hmTiles.get(id))){
@@ -95,10 +95,19 @@ public class Board {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return Le nombre de tuiles poser sur la table
+	 */
 	public int getSize(){
 		return this.alTiles.size();
 	}
 	
+	/**
+	 * 
+	 * @param i Indice de la tuile voulu
+	 * @return Une tuile a un indice donne
+	 */
 	public Tile getTile(int i) {
 		if( i>=0 && i<this.alTiles.size())
 			return this.alTiles.get(i);
@@ -107,8 +116,8 @@ public class Board {
 	}
 
 	/**
-	 * Permets de voir l'état du plateau, les tuiles pos�es et leurs num�ros
-	 * @return une chaine de caract�re de l'avanc� du jeu
+	 * Permets de voir l'etat du plateau, les tuiles posees et leurs numeros
+	 * @return une chaine de caractere de l'avance du jeu
 	 */
 	public String toString(){
 		String s = "";

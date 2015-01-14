@@ -69,26 +69,13 @@ public class Fjorde implements IJeu {
 	}
 	
 	/**
-	 * Permet de poser une hutte
-	 * @param i Indice de la tuile dans l'ArrayList
-	 * @return Si la hutte a ete poser
-	 */
-	public boolean putHutte(int i){
-		if(i>=0 && i<this.board.getSize()){
-			this.board.getTile(i).setItem(Item.HUTTE, players[currentPlayer]);
-			return true;
-		}
-		return false;
-	}
-	
-	/**
 	 * Permet de poser un champ
 	 * @param i Indice de la tuile dans l'ArrayList
 	 * @return Si le champ a ete poser
 	 */
-	public boolean putChamp(int i){
+	public boolean putItem(int i, char c){
 		if(i>=0 && i<this.board.getSize()){
-			this.board.getTile(i).setItem(Item.CHAMP, players[currentPlayer]);
+			this.board.getTile(i).setItem(Item.getItemById(c), players[currentPlayer]);
 			return true;
 		}
 		return false;
@@ -132,7 +119,7 @@ public class Fjorde implements IJeu {
 	    server.log("Message reçu d'un joueur : " + s);
 		return s;
 	}
-
+	
 	@Override
 	public int processMessage(String msg) {
 		// TODO Auto-generated method stub
@@ -141,7 +128,6 @@ public class Fjorde implements IJeu {
 
 	@Override
 	public void launchGame() throws IOException {
-		// TODO Auto-generated method stub
 		
 	}
 
