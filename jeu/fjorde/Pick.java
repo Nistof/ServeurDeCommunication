@@ -66,7 +66,11 @@ public class Pick implements Closed,Open {
 			return true;
 		
 		return false;
-	}	
+	}
+	
+	public int getSize() {
+		return this.alTiles.size();
+	}
 	
 	/**
 	 * Ajoute a la pioche une tuile

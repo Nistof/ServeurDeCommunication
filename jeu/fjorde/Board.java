@@ -20,7 +20,7 @@ public class Board {
 	private HashMap<Integer,Tile> hmTiles;
 
 	/**
-	 * Constructeur r�cup�re les tuiles de d�part pour les placer sur le plateau
+	 * Constructeur r�cupere les tuiles de d�part pour les placer sur le plateau
 	 */
 	public Board(){
 		this.hmTiles = new HashMap<Integer,Tile>(); 
@@ -93,6 +93,17 @@ public class Board {
 			if( t.getItem()!=null)
 				t.getOwner().setScore(1);
 		}
+	}
+	
+	public int getSize(){
+		return this.alTiles.size();
+	}
+	
+	public Tile getTile(int i) {
+		if( i>=0 && i<this.alTiles.size())
+			return this.alTiles.get(i);
+		
+		return null;
 	}
 
 	/**
