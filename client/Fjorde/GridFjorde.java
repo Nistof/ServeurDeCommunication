@@ -206,15 +206,16 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * @param tileName Nom de la tuile
 	 */
 	public void keepChoosenTile(String tileName) {
-		int keep = -1;
+		int returnedValue = -1;
 		
 		//Envoi de la demande au serveur
 		try { 
-			keep = client.processMessage("OPICK:" + tileName); 
-		} catch ( IOException ex) { ex.printStackTrace(); }
+			client.sendMessage("OPICK:" + tileName); 
+		} catch ( IOException ex) {  System.out.println("Failed!");  }
+		//TODO : Reception de la reponse et traitement
 		
 		//Si la tuile peut etre prise
-		if ( keep == 127 && removeTileViewer()) {
+		if ( returnedValue == 127 && removeTileViewer()) {
 			//on la retire de la pioche ouverte
 			if ( openPick.removeTile(tileName)) {
 				selected.setSelectedTile(tileName);; //On la place en tant que tuile selectionnee
@@ -259,7 +260,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		
 		//Demande au client
 		try { client.sendMessage("REQUEST_PLACEMENT:"+selected.getOrientation()); }
-		catch( IOException ex ) {}
+		catch( IOException ex ) { System.out.println("Failed!"); }
 	}
 	
 	/**
@@ -348,7 +349,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		}
 		//Piocher une piece dans la pioche fermee
 		else if ( e.getSource() == this.closePick && !this.closePick.isEmpty() && tileViewer == null) {
-			try { client.processMessage("PICK"); } catch ( IOException ex) { ex.printStackTrace(); }
+			try { client.sendMessage("PICK"); } catch ( IOException ex) { ex.printStackTrace(); }
 		}
 	}
 
@@ -371,7 +372,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.selected.setSelectedTile(null); //Retrait de la selection
 			
 			//Envoi du placement au serveur
-			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { ex.printStackTrace(); }
+			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { System.out.println("Failed!");  }
 		}
 		//Placement d'un champ
 		else if ( e.getSource() instanceof Tile) {
@@ -379,7 +380,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			int returnedValue = -1;
 			
 			//Envoi du placement au serveur
-			try { client.sendMessage("FIELD:"+ t.getType()); } catch ( IOException ex) { ex.printStackTrace(); }
+			try { client.sendMessage("FIELD:"+ t.getType()); } catch ( IOException ex) {  System.out.println("Failed!");  }
 			//TODO : Reception de la reponse et traitement
 			
 			if ( returnedValue == 127) {
@@ -429,7 +430,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			if ( button.getText().equals("Oui")) {
 				try {
 					this.client.sendMessage("HUT:YES");
-				} catch (IOException ex) { ex.printStackTrace(); }
+				} catch (IOException ex) {  System.out.println("Failed!");  }
 				this.tiles.get(tiles.size()-1).setItem('H',client.getNumPlayer());
 				this.hutWindow.setVisible(false);
 				this.nbHut--;
@@ -439,7 +440,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			else {
 				try {
 					this.client.sendMessage("HUT:NO");
-				} catch (IOException ex) { ex.printStackTrace(); }
+				} catch (IOException ex) {  System.out.println("Failed!");  }
 				this.hutWindow.setVisible(false);
 			}
 		}

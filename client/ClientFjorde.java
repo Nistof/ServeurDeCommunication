@@ -215,6 +215,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	public void sendMessage(String message) throws IOException {
 		byte[] data = new byte[1024];
 		message = this.clientId + ":" + message;
+		System.out.println(message);
 		data = message.getBytes();
 		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 		//Envoi du message
