@@ -1,6 +1,7 @@
 package jeu;
 
 import jeu.diaballik.Diaballik;
+import jeu.fjorde.Fjorde;
 import jeu.morpion.Morpion;
 
 /**
@@ -30,6 +31,9 @@ public class Launcher {
         }
         else if (args[0].equals("morpion")) {
             new Morpion();
+        }
+        else if (args[0].equals("fjorde")) {
+            new Fjorde();
         }
         else {
             System.out.println("Jeu inconnu");
