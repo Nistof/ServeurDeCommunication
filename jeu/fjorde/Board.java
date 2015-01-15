@@ -80,7 +80,6 @@ public class Board {
 	 * @param t Tuile a ajouter
 	 */
 	public boolean add(Tile t, int side, int id) {
-		System.out.println(getPossibilities(t));
 		if (alTiles.get(id).setNeighboorById(t, side)) {
 			alTiles.add(t);
 			alTiles.get(alTiles.size() - 1).generateGhosts();

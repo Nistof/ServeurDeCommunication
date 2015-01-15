@@ -96,8 +96,11 @@ public class Fjorde implements IJeu {
 	 */
 	public boolean play(int id, int side) {
 
-		return (id >= 0) ? this.board.add(
-				players[currentPlayer].removeFromHand(), side, id) : false;
+		if (id >= 0)
+            return this.board.add(
+            		players[currentPlayer].removeFromHand(), side, id);
+        else
+            return false;
 	}
 
 	/**
@@ -279,7 +282,7 @@ public class Fjorde implements IJeu {
 			else
 				return -4;
 			
-		} else if (action[1].equals("RQUEST_PLACEMENT")) {
+		} else if (action[1].equals("REQUEST_PLACEMENT")) { //Ajouter l'orientation
 			if(players[currentPlayer].getTile()!=null)
 				return 6;
 			else
