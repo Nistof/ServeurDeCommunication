@@ -1,7 +1,6 @@
 package client.Fjorde;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -9,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -28,6 +28,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	private SelectedTile selected;
 	
 	private JPanel tileViewer;
+	private JPanel hutWindow;
 	
 	private boolean isInit;
 	
@@ -94,9 +95,30 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.selected.getRotateRightButton().addActionListener(this);
 			this.selected.getRotateLeftButton().addActionListener(this);
 			
+			//Confirmation de placement de hutte
+			this.hutWindow = new JPanel(null);
+			this.hutWindow.setBounds(this.getWidth()/2-this.getWidth()/8, this.getHeight()/2-25,
+									 this.getWidth()/4, 50);
+			this.hutWindow.setBackground(new Color(0x7BC5DD));
+			JLabel hutTitle = new JLabel("Placer une hutte?");
+			hutTitle.setBounds(0, 0, this.getWidth()/3, 25);
+			hutTitle.setOpaque(true);
+			hutTitle.setBackground(new Color(0x9DD8DD));
+			this.hutWindow.add(hutTitle);
+			JButton valid = new JButton("Oui");
+			JButton deny = new JButton("Non");
+			valid.setBounds(hutWindow.getWidth()/2-75, 25, 75, 25);
+			deny.setBounds(hutWindow.getWidth()/2, 25, 75, 25);
+			valid.addActionListener(this);
+			deny.addActionListener(this);
+			this.hutWindow.add(valid);
+			this.hutWindow.add(deny);
+			this.hutWindow.setVisible(false);
+			
 			this.add(selected);
 			this.add(panelClose);
 			this.add(panelOpen);
+			this.add(hutWindow);
 			
 			this.createTest();
 		}
@@ -245,6 +267,14 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		client.repaint();
 	}
 	
+	public void setHutWindowVisible( boolean isVisible) {
+		if (isVisible) {
+			this.hutWindow.setVisible(true);
+		} else {
+			this.hutWindow.setVisible(false);
+		}
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		//Afficher le contenu de la pioche ouverte
@@ -303,6 +333,24 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 				this.selected.setSelectedTile(null);
 				this.removeAllPlacementTile();
 			}
-		}			
+		}
+		//Si il s'agit des bouttons de validation pour la hutte
+		else if( e.getSource() instanceof JButton) {
+			JButton button = (JButton)e.getSource();
+			if ( button.getText().equals("Oui")) {
+				try {
+					this.client.processMessage("???:true");
+				} catch (IOException ex) { ex.printStackTrace(); }
+				this.tiles.get(tiles.size()-1).setItem('H');
+				this.hutWindow.setVisible(false);
+				client.repaint();
+			}
+			else {
+				try {
+					this.client.processMessage("???:false");
+				} catch (IOException ex) { ex.printStackTrace(); }
+				this.hutWindow.setVisible(false);
+			}
+		}
 	}
 }
