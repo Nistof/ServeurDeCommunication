@@ -1,5 +1,6 @@
 package client.Fjorde;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -9,6 +10,8 @@ import javax.swing.JLabel;
 public class Tile extends JLabel {
 	public final static int IMG_WIDTH = 69;
 	public final static int IMG_HEIGHT = 69;
+	public final static Color[] PLAYER_COLORS = { new Color(0xd1791b), 
+												  new Color(0xdebf9e) };
 	
 	private String type;
 	private int orientation;
@@ -38,13 +41,19 @@ public class Tile extends JLabel {
 	 * Dessine l'item sur l'image de la tuile (H = Hutte, F = Champ)
 	 * @param item L'item à mettre
 	 */
-	public void setItem (char item) {
+	public void setItem (char item, int player) {
+		if (player != 0 && player != 1)
+			return ;
+		
 	    Graphics g = this.defaultImage.getGraphics();
+	    g.setColor(PLAYER_COLORS[player]);
 	    int center = (IMG_WIDTH-15)/2;
+	    //Hutte
 	    if(item == 'H') {
 	        g.fillRect(center, center, 15, 15);
-	        g.fillPolygon(new int[]{center-7, center+7, center+22}, new int[]{center, center-7, center}, 3);
+	        g.fillPolygon(new int[]{center-7, center+7, center+22}, new int[]{center, center-14, center}, 3);
 	    }
+	    //Champ
 	    else if(item == 'F') {
 	        g.fillOval(center, center, 15, 15);
 	    }

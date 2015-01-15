@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -14,11 +15,16 @@ import javax.swing.JPanel;
 
 import client.ClientFjorde;
 
-public class GridFjorde extends JPanel implements MouseListener, ActionListener {
+public class GridFjorde extends JPanel implements MouseMotionListener, MouseListener, ActionListener {
 	private ClientFjorde client;
 	
 	private ArrayList<Tile> tiles;
 	private ArrayList<PlacementTile> placement;
+	
+	private JPanel board;
+	private boolean isBoardSelected;
+	private int cX;
+	private int cY;
 	
 	private Pick closePick;
 	private JPanel panelClose;
@@ -29,8 +35,10 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	
 	private JPanel tileViewer;
 	private JPanel hutWindow;
+	private JLabel labelHut;
 	
 	private boolean isInit;
+	private int nbHut;
 	
 	/**
 	 * Initialisation du plateau de jeu
@@ -39,6 +47,8 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	public GridFjorde(ClientFjorde client) {
 		this.client = client;
 		this.isInit = false;
+		this.isBoardSelected = false;
+		this.nbHut = 4;
 		this.setLayout(null);
 		
 		//Tuiles
@@ -53,6 +63,12 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	 */
 	public void initGrid() {
 		if (!isInit) {
+			//Plateau de jeu (La ou les tuiles sont placees)
+			this.board = new JPanel(null);
+			this.board.setBounds( -this.getWidth()/2, -this.getHeight()/2, this.getWidth()*2, this.getHeight()*2);
+			this.board.addMouseListener(this);
+			this.board.addMouseMotionListener(this);
+			
 		    //Pioche fermee
 			this.panelClose = new JPanel(null);
 			this.panelClose.setBounds( this.getWidth()-Tile.IMG_WIDTH-20, 25 + Tile.IMG_HEIGHT, Tile.IMG_WIDTH+20, Tile.IMG_HEIGHT+25);
@@ -95,6 +111,12 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.selected.getRotateRightButton().addActionListener(this);
 			this.selected.getRotateLeftButton().addActionListener(this);
 			
+			//Nombre de hutte restant au joueur
+			this.labelHut = new JLabel("Nombre de hutte : " + nbHut);
+			this.labelHut.setBounds( this.getWidth()/2-this.getWidth()/12, 0, this.getWidth()/6, 25);
+			this.labelHut.setOpaque(true);
+			this.labelHut.setBackground(new Color(0x9DD8DD));
+			
 			//Confirmation de placement de hutte
 			this.hutWindow = new JPanel(null);
 			this.hutWindow.setBounds(this.getWidth()/2-this.getWidth()/8, this.getHeight()/2-25,
@@ -118,7 +140,9 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.add(selected);
 			this.add(panelClose);
 			this.add(panelOpen);
+			this.add(labelHut);
 			this.add(hutWindow);
+			this.add(board);
 			
 			this.createTest();
 		}
@@ -138,10 +162,10 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		this.tiles.add(new Tile("MMMTTM", 1));
 		this.tiles.add(new Tile("MMTMTT", 2));
 		
-		tiles.get(0).setLocation(this.getWidth()/2, this.getHeight()/2);
-		tiles.get(0).setItem('H');
+		tiles.get(0).setLocation(this.board.getWidth()/2, this.board.getHeight()/2);
+		tiles.get(0).setItem('H',0);
 		tiles.get(1).setLocationWithTile(tiles.get(0), 0);
-		tiles.get(1).setItem('F');
+		tiles.get(1).setItem('F',1);
 		tiles.get(2).setLocationWithTile(tiles.get(1), 4);
 		
 		openPick.addTile(tiles.get(3));
@@ -171,8 +195,10 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		
 		for (int i = 0; i < 3; i++) {
 			tiles.get(i).setBounds(tiles.get(i).getX(), tiles.get(i).getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
-			this.add(tiles.get(i));
+			this.board.add(tiles.get(i));
 		}
+		
+		//this.setColonisationPhase();
 	}
 	
 	/**
@@ -218,7 +244,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 		if (isInit && tile != null) {
 			tile.setBounds(tile.getX(), tile.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			this.tiles.add(tile);
-			this.add(tile);
+			this.board.add(tile);
 		}
 	}
 	
@@ -234,7 +260,7 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			pt.setVisible(false);
 			pt.addMouseListener(this);
 			this.placement.add(pt);
-			this.add(pt);
+			this.board.add(pt);
 		}
 	}
 	
@@ -261,18 +287,38 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 	 */
 	private void removeAllPlacementTile() {
 		while ( placement.size() != 0) {
-			this.remove(placement.get(0));
+			this.board.remove(placement.get(0));
 			placement.remove(0);
 		}
 		client.repaint();
 	}
 	
+	/**
+	 * Rend la fenetre du choix de placement de hutte visible ou non
+	 * @param isVisible Etat de la fenetre
+	 */
 	public void setHutWindowVisible( boolean isVisible) {
 		if (isVisible) {
 			this.hutWindow.setVisible(true);
 		} else {
 			this.hutWindow.setVisible(false);
 		}
+	}
+	
+	/**
+	 * Cache tout les elements ne servant pas lors de la phase de colonisation
+	 * et ajoute des MouseListener sur les tuiles afin de pouvoir placer les champs
+	 */
+	public void setColonisationPhase() {
+		this.panelClose.setVisible(false);
+		this.panelOpen.setVisible(false);
+		this.labelHut.setVisible(false);
+		this.selected.setVisible(false);
+		
+		for (Tile t : tiles)
+			t.addMouseListener(this);
+		
+		client.repaint();
 	}
 	
 	@Override
@@ -284,11 +330,11 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 				this.add(tileViewer, 0);
 				this.client.repaint();
 			}
+		}
 		//Piocher une piece dans la pioche fermee
-		} else if ( e.getSource() == this.closePick && !this.closePick.isEmpty() && tileViewer == null) {
+		else if ( e.getSource() == this.closePick && !this.closePick.isEmpty() && tileViewer == null) {
 			try { client.processMessage("PICK"); } catch ( IOException ex) { ex.printStackTrace(); }
 		}
-		
 	}
 
 	@Override
@@ -310,12 +356,38 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			this.selected.setSelectedTile(null); //Retrait de la selection
 			
 			//Envoi du placement au serveur
-			try { client.processMessage("???:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { ex.printStackTrace(); }
+			try { client.processMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { ex.printStackTrace(); }
+		}
+		//Placement d'un champ
+		else if ( e.getSource() instanceof Tile) {
+			Tile t = (Tile)e.getSource();
+			int returnedValue = -1;
+			
+			//Envoi du placement au serveur
+			try { returnedValue = client.processMessage("FIELD:"+ t.getType()); } catch ( IOException ex) { ex.printStackTrace(); }
+			
+			if ( returnedValue == 127) {
+				t.setItem('F',client.getNumPlayer());
+				t.removeMouseListener(this);
+				client.repaint();
+			}
+		}
+		//Clic sur une zone du plateau
+		else if ( e.getSource() == this.board) {
+			this.isBoardSelected = true;
+			//Position de la souris au clic
+			this.cX = e.getX();
+			this.cY = e.getY();
 		}
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		//Clic relache sur le plateau
+		if ( e.getSource() == this.board) {
+			this.isBoardSelected = false;
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -339,18 +411,38 @@ public class GridFjorde extends JPanel implements MouseListener, ActionListener 
 			JButton button = (JButton)e.getSource();
 			if ( button.getText().equals("Oui")) {
 				try {
-					this.client.processMessage("???:true");
+					this.client.processMessage("HUT:TRUE");
 				} catch (IOException ex) { ex.printStackTrace(); }
-				this.tiles.get(tiles.size()-1).setItem('H');
+				this.tiles.get(tiles.size()-1).setItem('H',client.getNumPlayer());
 				this.hutWindow.setVisible(false);
+				this.nbHut--;
+				this.labelHut.setText("Nombre de hutte : " + nbHut);
 				client.repaint();
 			}
 			else {
 				try {
-					this.client.processMessage("???:false");
+					this.client.processMessage("HUT:FALSE");
 				} catch (IOException ex) { ex.printStackTrace(); }
 				this.hutWindow.setVisible(false);
 			}
 		}
 	}
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		//Deplacement du plateau
+		if(arg0.getSource() == this.board && isBoardSelected) {
+			arg0.translatePoint(arg0.getComponent().getLocation().x-cX, arg0.getComponent().getLocation().y-cY);
+			//On ne change la position du plateau que si il ne sort pas de l'ecran
+			if ( arg0.getX() < 0  && arg0.getY() < 0 &&
+				 arg0.getX() + board.getWidth() > this.getWidth() &&
+				 arg0.getY() + board.getHeight() > this.getHeight()) {
+				this.board.setLocation(arg0.getX(), arg0.getY());
+				client.repaint();
+			}
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {}
 }

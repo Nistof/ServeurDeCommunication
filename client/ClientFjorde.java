@@ -37,11 +37,14 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	
 	private JPanel panel;
 	private JPanel wait;
+	
+	private int numPlayer;
 
 	/**
 	 * Initialisation du client (Fenetre et dependances a la communication avec le serveur)
 	 */
 	public ClientFjorde() {
+		this.numPlayer = 1;
 		this.goFullScreen();
 		
 		this.panel = new JPanel();
@@ -73,8 +76,8 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.setVisible(true);
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.repaint();
 		//this.playerWait(true);
+		this.repaint();
 	}
 	
 	/**
@@ -161,10 +164,18 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	public int processMessage(String message) throws IOException {
 		String splStr[] = message.trim().split(":");
 		
+		/* MESSAGES RECUS PAR LE CLIENT */
 		//START
 		if (splStr.length == 2 && splStr[1].equals("START")) {
+			this.playerWait(false);
 			return 0;
 		}
+		//ENDTURN
+		else if (splStr.length == 2 && splStr[1].equals("ENDTURN")) {
+			this.playerWait(true);
+			return 0;
+		}
+		/* MESSAGES A ENVOYER AU SERVEUR */
 		//OPICK:NOM_PIECE
 		else if (splStr.length == 2 && splStr[0].equals("OPICK")) {
 			System.out.println("OpenPick -> send");
@@ -183,8 +194,29 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			//return -1; //Erreur d'entree
 			return 127; //OK
 		}
+		//POSET
+		else if (splStr.length == 3 && splStr[0].equals("POSET")) {
+			return 127;
+		}
+		//HUT
+		else if (splStr.length == 2 && splStr[0].equals("HUT")) {
+			return 127;
+		}
+		//FIELD
+		else if (splStr.length == 2 && splStr[0].equals("FIELD")) {
+			return 127;
+		}
 		
-		return 0;
+		
+		return -1;
+	}
+	
+	/**
+	 * Retourne le numero du joueur (0 ou 1)
+	 * @return Numero du joueur
+	 */
+	public int getNumPlayer() {
+		return this.numPlayer;
 	}
 	
 	@Override
