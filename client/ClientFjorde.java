@@ -30,7 +30,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 	
 	private InetAddress 	ip;
-	private int				port;
+	private short			port;
 	private DatagramSocket 	clientSocket;
 	private String			clientId;
 	
@@ -159,20 +159,20 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	
 	/**
 	 * Initialise la connexion au serveur
-	 * @return Vrai si la connexion a ete effectuee
+	 * @return Vrai si la connexion a ete effectuee ( Avec un numero de port positif)
 	 * @throws IOException
 	 */
 	private boolean initConnexion() throws IOException {	
 		try {
 			this.ip = InetAddress.getByName(this.serverIp.getText());
-			this.port = Integer.parseInt(this.serverPort.getText());
+			this.port = Short.parseShort(this.serverPort.getText());
 		} 
 		catch (UnknownHostException ex) { throw new IOException(); }
 		catch (NumberFormatException ex) { throw new IOException(); }
 		
 		this.clientSocket = new DatagramSocket();
-		
-		return true;
+				
+		return (this.port > 0);
 	}
 	
 	/**
