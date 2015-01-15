@@ -1,8 +1,5 @@
 package jeu.fjorde;
 
-import java.util.ArrayList;
-
-import sun.font.Type1Font;
 
 /**
  * 
@@ -18,7 +15,6 @@ public class Tile {
 
     private Type[] types;
     private Tile[] neighboors;
-    private boolean[] possibilities;
     private boolean fake;
     private boolean start;
     private FjordePlayer owner;

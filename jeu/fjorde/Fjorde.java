@@ -1,6 +1,6 @@
 package jeu.fjorde;
 
-import java.io.FileNotFoundException;
+//import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
@@ -16,6 +16,11 @@ public class Fjorde implements IJeu {
 	private Closed pickClose;
 	private Open pickOpen;
 	private Server server;
+	private boolean putTile;
+
+	private String tileInTheBoard;
+	private int side;
+	private int orientation;
 
 	public Fjorde() {
 		this.board = new Board();
@@ -46,7 +51,7 @@ public class Fjorde implements IJeu {
 				players[currentPlayer].draw(pickClose.draw());
 				b = true;
 			} else if (this.players[currentPlayer].getTile() != null) {
-				if (putInPickOpen()) {
+				if (putInOpenPick()) {
 					players[currentPlayer].draw(pickClose.draw());
 					b = true;
 				}
@@ -71,7 +76,7 @@ public class Fjorde implements IJeu {
 				players[currentPlayer].draw(pickOpen.draw(i));
 				b = true;
 			} else if (this.players[currentPlayer].getTile() != null) {
-				if (putInPickOpen()) {
+				if (putInOpenPick()) {
 					players[currentPlayer].draw(pickOpen.draw(i));
 					b = true;
 				}
@@ -80,18 +85,7 @@ public class Fjorde implements IJeu {
 		return b;
 	}
 
-	/**
-	 * 
-	 * @return Si le joueur peut se deffausser
-	 */
-	public boolean discardTile() {
-		if (players[currentPlayer].getTile() != null) { // AJOUTER UN TEST
-			this.pickOpen.add(players[currentPlayer].removeFromHand());
-			return true;
-		}
 
-		return false;
-	}
 
 	/**
 	 * 
@@ -123,9 +117,12 @@ public class Fjorde implements IJeu {
 		return false;
 	}
 
-	public boolean putInPickOpen() {
-		// A modifie : Test si la personne ne peut pas jouer
-		if (this.players[currentPlayer].getTile() != null) {
+	/**
+	 * 
+	 * @return Si le joueur ne peut pas jouer, il pace la tuile dans 
+	 */
+	public boolean putInOpenPick() {
+		if (this.players[currentPlayer].getTile() != null && board.getPossibilities(this.players[currentPlayer].getTile()).isEmpty()) {
 			this.pickOpen.add(players[currentPlayer].removeFromHand());
 			return true;
 		}
@@ -157,11 +154,27 @@ public class Fjorde implements IJeu {
 	 * @return l'id du joueur gagnant
 	 */
 	public int win() {
-		if (this.players[currentPlayer].getScore() > this.players[1 - currentPlayer]
-				.getScore()) {
-			return currentPlayer;
+		if (this.players[0].getScore() > this.players[1].getScore()) {
+			return 0;
+		} else if (this.players[1].getScore() > this.players[0].getScore()) {
+			return 1;
+		} else {
+			if (this.players[0].getWinRound() > this.players[1].getWinRound()) {
+				return 0;
+			} else if (this.players[1].getWinRound() > this.players[0]
+					.getWinRound()) {
+				return 1;
+			}
 		}
-		return (1 - currentPlayer);
+		return -1;
+	}
+
+	public void setRound() {
+		if (players[0].getScore() > players[1].getScore())
+			players[0].setWinRound();
+		else if (players[1].getScore() > players[0].getScore())
+			players[1].setWinRound();
+		// Sinon egalite
 	}
 
 	/**
@@ -223,42 +236,56 @@ public class Fjorde implements IJeu {
 			return -2;
 		if (action[1].equals("POSET")) {
 			if (play(this.board.getTileByCode(action[2]),
-					Integer.parseInt(action[3])))
+					Integer.parseInt(action[3]))) {
+				this.tileInTheBoard = action[2];
+				this.side = Integer.parseInt(action[3]);
+				this.orientation = Integer.parseInt(action[4]);
 				return 0;
-			else
+			} else
 				return -1;
 
-		} else if (action[1].equals("HUT") ) {
-			if (action[2].equals("TRUE"))
-				putItem(this.board.getTileByCode(board.getTile(board.getSize()-1).getCode()), 'H');
-			return 1;
+			// On ne peut pas poser une hutte avant d'avoir piocher
+		} else if (action[1].equals("HUT") && this.putTile) {
+			if (action[2].equals("YES"))
+				putItem(this.board.getTileByCode(board.getTile(
+						board.getSize() - 1).getCode()), 'H');
+			return 1; // Pose d'une hutte
 
 		} else if (action[1].equals("FIELD")) {
-			if (putItem(this.board.getTileByCode(action[2]), 'C'))
-				return 2;
-			else
+			if (putItem(this.board.getTileByCode(action[2]), 'C')) {
+				this.tileInTheBoard = action[2];
+				return 2; // Pose d'un champ
+			} else
 				return -1;
 
-		} else if (action[1].equals("PICK")) {
+			// On ne peut pas piocher apres avoir poser une tuile
+		} else if (action[1].equals("PICK") && !putTile) {
 			if (draw())
-				return 3;
+				return 3; // Pioche dans la pioche ferme
 			else
 				return -1;
 
-		} else if (action[1].equals("OPICK")) {
+			// On ne peut pas piocher apres avoir poser une tuile
+		} else if (action[1].equals("OPICK") && !putTile) {
 			if (draw(this.pickOpen.getTileByCode(action[2])))
-				return 4;
+				return 4; // Piche dans la pioche ouverte
 			else
-				return -1;
+				return -3;
 
 		} else if (action[1].equals("SEND_TO_OPICK")) {
-			if (discardTile())
-				return 5;
+			if (putInOpenPick())
+				return 5; // Defausse
+			else
+				return -4;
+			
+		} else if (action[1].equals("RQUEST_PLACEMENT")) {
+			if(players[currentPlayer].getTile()!=null)
+				return 6;
 			else
 				return -1;
 
 		} else if (action[1].equals("ENDTURN")) {
-			return 6;
+			return 7; // Fin du tour
 		}
 		return -1;
 	}
@@ -267,9 +294,8 @@ public class Fjorde implements IJeu {
 	public void launchGame() throws IOException {
 		boolean endTurn = false;
 		int round = 0;
-		int playerStartColonization;
+		int playerStartColonization = 0;
 		String codePutTile = "";
-		boolean putTile = false;
 		boolean putField = false;
 		System.out.println(this);
 		sendToAllPlayers(":NAMELIST");
@@ -279,9 +305,14 @@ public class Fjorde implements IJeu {
 		}
 		sendToAllPlayers(":ENDLIST");
 
-		while (round < 3) {
+		for( int i=0; i<2; i++ ) {
+			sendToPlayer(":PLAYER:"+currentPlayer);
+			changePlayer();
+		}
+		
+		
+		while (round < 3 && nbPlayer == 2) {
 
-			sendToAllPlayers(":DISCOVERY");
 			while (nbPlayer == 2 && !endDiscovery()) {
 				// Changement de joueur
 				if (endTurn) {
@@ -299,61 +330,63 @@ public class Fjorde implements IJeu {
 					break;
 				}
 
-				String[] action = msg.trim().split(":");
-				int code;
+				int code = processMessage(msg);
 
-				/** Test pour les regles du jeu **/
-				// On ne peut pas poser une hutte avant d'avoir piocher
-				if (action[1].equals("HUT") && !putTile)
-					code = -1;
-				else
-					code = processMessage(msg);
-
-				// On ne peut pas piocher apres avoir poser une tuile
-				if (action[1].equals("PICK") && putTile
-						|| action[1].equals("OPICK") && putTile)
-					code = -1;
-				else
-					code = processMessage(msg);
-
-				
 				switch (code) {
+				case -4:
+					sendToPlayer(":SEND_TO_OPICK:NO");
+					break;
+				
+				case -3:
+					sendToPlayer(":OPICK:NO");
+					break;
+				
 				case -2:
 					sendToPlayer(":ERROR:ID");
 					break;
 				case -1:
 					sendToPlayer(":ERROR:ENTRY");
 					break;
-				case 0:
+				case 0: // Poser les tuiles
 					putTile = true;
-					
-					if(players[currentPlayer].getNbHutte()!=0)
+
+					if (players[currentPlayer].getNbHutte() != 0)
 						sendToPlayer(":HUT");
-					
-					
+
 					break;
-				case 1:
-					codePutTile = players[currentPlayer].getTile().getCode();
-					action = msg.trim().split(":");
-					
-					sendToAllPlayers(":POSET:" + codePutTile + ":"
+				case 1: // Poser les huttes
+					String[] action = msg.trim().split(":");
+
+					sendToAllPlayers(":POSET:" + this.tileInTheBoard + ":"
+							+ this.side + ":"
+							+ this.board.getTile(board.getSize()) + ":"
+							+ this.orientation + ":"
 							+ action[2]);
 					break;
-				case 3:
+				case 3: // Piocher dans la pioche ferme
 					sendToPlayer(":PICK:"
 							+ players[currentPlayer].getTile().getCode());
+					
 					break;
-				case 4:
-					sendToPlayer(":OPICK:127");
+				case 4: // Piocher dans la pioche ouverte
+					sendToPlayer(":OPICK:YES");
 					break;
-				case 5:
-					if(endDiscovery()) {
+				case 5: // Defausser
+					if (endDiscovery()) {
 						playerStartColonization = currentPlayer;
 					}
-						
-					sendToPlayer("SEND_TO_OPICK:127");
+
+					sendToPlayer(":SEND_TO_OPICK");
 					break;
-				case 6:
+					
+				case 6: // Renvoie les possiblite de placement 
+					sendToPlayer(":PLACEMENTLIST");
+					for( Tile t : board.getPossibilities(players[currentPlayer].getTile()).keySet()) {
+						sendToPlayer( ":" + t.getCode() + ":" + board.getPossibilities(players[currentPlayer].getTile()).get(t));
+					}
+					sendToPlayer(":ENDLISTE");
+					break;
+				case 7: // Finir le tour
 					if (putTile)
 						endTurn = true;
 					else
@@ -363,9 +396,9 @@ public class Fjorde implements IJeu {
 
 			}
 
-			
-			
-			
+			endTurn = false;
+			currentPlayer = 1 - playerStartColonization;
+
 			sendToAllPlayers(":COLONIZATION");
 			while (nbPlayer == 2 && !endColonization()) {
 				// Changement de joueur
@@ -387,15 +420,17 @@ public class Fjorde implements IJeu {
 				int code = processMessage(msg);
 
 				switch (code) {
-				case -2:
+				case -2: // Identifiant incorrecte
 					sendToPlayer(":ERROR:ID");
 					break;
-				case -1:
+				case -1: // Entrer incorrecte
 					sendToPlayer(":ERROR:ENTRY");
 					break;
-				case 2:
+				case 2: // Poser un champ
 					putField = true;
-					sendToPlayer(":FIELD:TRUE");
+					endTurn = true;
+					
+					sendToAllPlayers(":FIELD:" + this.tileInTheBoard);
 					break;
 				case 6:
 					if (putField || putTileByPlayerIsValid())
@@ -407,9 +442,22 @@ public class Fjorde implements IJeu {
 
 			}
 
+			// Fin d'une manche
 			this.board.setScore();
+			this.setRound();
+			sendToAllPlayers(":END:SCORE1:" + players[0].getScore()
+					+ ":SCORE2:" + players[1].getScore());
 			round++;
 		}
+
+		if (nbPlayer == 2)
+			if (win() != -1)
+				sendToAllPlayers(":WIN:" + players[win()].getId());
+			else
+				sendToAllPlayers(":EGALITE");
+		else
+			sendToAllPlayers(":CANCEL");
+
 	}
 
 	@Override

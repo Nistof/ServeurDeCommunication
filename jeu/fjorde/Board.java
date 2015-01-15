@@ -3,7 +3,6 @@ package jeu.fjorde;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -17,7 +16,6 @@ import java.util.Scanner;
  */
 
 public class Board {
-	private static int CURRENT_ID = 0;
 	private ArrayList<Tile> alTiles;
 
 	/**

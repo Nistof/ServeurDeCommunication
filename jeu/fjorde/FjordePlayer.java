@@ -18,6 +18,7 @@ public class FjordePlayer extends Player {
 	private int nbHutte;
 	private int nbChamp;
 	private int score;
+	private int winRound;
 	
 	public FjordePlayer( String nom, String couleur ) {
 		super(nom);
@@ -25,6 +26,7 @@ public class FjordePlayer extends Player {
 		this.nbHutte = 4;
 		this.nbChamp = 20;
 		this.score = 0;
+		this.winRound = 0;
 	}
 	
 	/**
@@ -49,6 +51,14 @@ public class FjordePlayer extends Player {
 	 */
 	public int getScore() {
 		return this.score;
+	}
+	
+	/**
+	 * 
+	 * @return Le nombre de manche gagne
+	 */
+	public int getWinRound() {
+		return this.winRound;
 	}
 	
 	
@@ -79,6 +89,13 @@ public class FjordePlayer extends Player {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Incremente winRound si le joueur gagne une manche
+	 */
+	public void setWinRound() {
+		this.winRound++;
 	}
 	
 	/**
