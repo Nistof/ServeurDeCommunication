@@ -175,6 +175,16 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			this.playerWait(true);
 			return 0;
 		}
+		//HUT
+		else if (splStr.length == 2 && splStr[1].equals("HUT")) {
+			this.grid.setHutWindowVisible(true);
+			return 0;
+		}
+		//POSET
+		else if (splStr.length == 5 && splStr[1].equals("POSET")) {
+			
+			return 0;
+		}
 		/* MESSAGES A ENVOYER AU SERVEUR */
 		//OPICK:NOM_PIECE
 		else if (splStr.length == 2 && splStr[0].equals("OPICK")) {
