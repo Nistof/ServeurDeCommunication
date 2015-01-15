@@ -22,7 +22,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.OverlayLayout;
 
 import client.Fjorde.GridFjorde;
 
@@ -58,7 +57,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.numPlayer = 1;
 		
 		this.panel = new JPanel();
-		this.panel.setLayout(new OverlayLayout(panel));
+		this.panel.setLayout(null);
 		this.panel.setBounds(0, 0, this.getWidth(), this.getHeight());
 		
 		//Panel de connexion
@@ -91,9 +90,10 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.connexion.add(sendConnexion);
 		this.add(connexion);
 		
-		//----------------
+		//----------------//
 		// Bouton quitter
 		this.quitButton = new JButton("Quitter");
+		this.quitButton.setBounds( 0, 0, 100, 30);
 		this.quitButton.addActionListener(this);
 		this.quitButton.setAlignmentX(0.0f);
 		this.quitButton.setAlignmentY(0.0f);
@@ -103,7 +103,6 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.setVisible(true);
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		//this.playerWait(true);
 		this.repaint();
 	}
 	
@@ -112,14 +111,8 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	 * @param isWaiting Etat de l'attente
 	 */
 	public void playerWait(boolean isWaiting) {
-		if (isWaiting) {
-			this.add(wait,0);
-			this.remove(quitButton);
-			this.add(quitButton, 0);
-			this.repaint();
-		} else {
-			this.remove(wait);
-		}
+		this.wait.setVisible(isWaiting);
+		this.repaint();
 	}
 	
 	/**
@@ -141,10 +134,12 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.wait.setOpaque(true);
 		this.wait.setBackground(new Color(0xAA7BC5DD, true));
 		this.wait.add(textWait);
+		this.wait.setVisible(false);
 		
 		//Rendre le panel bloquant (Le joueur ne peut ainsi effectuer aucune action)
 		this.wait.addFocusListener(this);
 		this.wait.addMouseListener(this);
+		this.panel.add(wait);
 		
 		// Plateau de jeu
 		this.grid = new GridFjorde(this);
@@ -298,6 +293,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			if (isConnected) {
 				this.connexion.setVisible(false);
 				this.setFrame();
+				this.playerWait(true);
 			}
 			else {
 				this.connexionTitle.setText("Connexion : Saisie invalide");
