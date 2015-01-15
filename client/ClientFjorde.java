@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.OverlayLayout;
 
 import client.Fjorde.GridFjorde;
@@ -38,39 +40,64 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	private JPanel panel;
 	private JPanel wait;
 	
+	private JPanel connexion;
+	private JLabel connexionTitle;
+	private JTextField serverIp;
+	private JTextField serverPort;
+	private JButton sendConnexion;
+	
 	private int numPlayer;
 
 	/**
 	 * Initialisation du client (Fenetre et dependances a la communication avec le serveur)
 	 */
 	public ClientFjorde() {
-		this.numPlayer = 1;
+		this.setTitle("Fjorde");
+		this.setLocation(0, 0);
 		this.goFullScreen();
+		this.numPlayer = 1;
 		
 		this.panel = new JPanel();
 		this.panel.setLayout(new OverlayLayout(panel));
 		this.panel.setBounds(0, 0, this.getWidth(), this.getHeight());
 		
-		//Ecran d'attente
-		JLabel textWait = new JLabel("En attente du serveur...");
-		textWait.setForeground(Color.black);
-		textWait.setBounds( (this.getWidth()/2)-25, this.getHeight()/2-10,
-							this.getWidth(), 20);
+		//Panel de connexion
+		this.connexion = new JPanel(null);
+		this.connexion.setBounds(this.getWidth()/2-this.getWidth()/6, this.getHeight()/2-this.getHeight()/4, 
+								 this.getWidth()/3, this.getWidth()/4);
+		this.connexion.setOpaque(true);
+		this.connexion.setBackground(new Color(0x7BC5DD));
+		this.connexionTitle = new JLabel("Connexion");
+		this.connexionTitle.setOpaque(true);
+		this.connexionTitle.setBackground(new Color(0x9DD8DD));
+		this.connexionTitle.setBounds(0, 0, connexion.getWidth(), 25);
+		JLabel labelIp = new JLabel("IP du serveur :");
+		labelIp.setBounds(connexion.getWidth()/2-connexion.getWidth()/8, 50, connexion.getWidth()/4, 25);
+		JLabel labelPort = new JLabel("Port :");
+		labelPort.setBounds(connexion.getWidth()/2-connexion.getWidth()/8, 125, connexion.getWidth()/4, 25);
+		this.serverIp = new JTextField();
+		this.serverIp.setBounds(connexion.getWidth()/2-connexion.getWidth()/6, 75, connexion.getWidth()/3, 25);
+		this.serverPort = new JTextField();
+		this.serverPort.setBounds(connexion.getWidth()/2-connexion.getWidth()/6, 150, connexion.getWidth()/3, 25);
+		this.sendConnexion = new JButton("Connexion");
+		this.sendConnexion.setBounds(connexion.getWidth()/2-connexion.getWidth()/8, 200, connexion.getWidth()/4, 25);
+		this.sendConnexion.addActionListener(this);
 		
-		this.wait = new JPanel();
-		this.wait.setLayout(null);
-		this.wait.setBounds(0, 0, this.getWidth(), this.getHeight());
-		this.wait.setOpaque(true);
-		this.wait.setBackground(new Color(0xAA7BC5DD, true));
-		this.wait.add(textWait);
+		this.connexion.add(this.connexionTitle);
+		this.connexion.add(labelIp);
+		this.connexion.add(serverIp);
+		this.connexion.add(labelPort);
+		this.connexion.add(serverPort);
+		this.connexion.add(sendConnexion);
+		this.add(connexion);
 		
-		//Rendre le panel bloquant (Le joueur ne peut ainsi effectuer aucune action)
-		this.wait.addFocusListener(this);
-		this.wait.addMouseListener(this);
-		
-		this.setTitle("Fjorde");
-		this.setLocation(0, 0);
-		this.setFrame();
+		//----------------
+		// Bouton quitter
+		this.quitButton = new JButton("Quitter");
+		this.quitButton.addActionListener(this);
+		this.quitButton.setAlignmentX(0.0f);
+		this.quitButton.setAlignmentY(0.0f);
+		this.panel.add(quitButton,0);
 		this.add(panel);
 		
 		this.setVisible(true);
@@ -102,12 +129,22 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		// Dimensions de la fenetre
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		// Bouton quitter
-		this.quitButton = new JButton("Quitter");
-		this.quitButton.addActionListener(this);
-		this.quitButton.setAlignmentX(0.0f);
-		this.quitButton.setAlignmentY(0.0f);
-		this.panel.add(quitButton,0);
+		//Ecran d'attente
+		JLabel textWait = new JLabel("En attente du serveur...");
+		textWait.setForeground(Color.black);
+		textWait.setBounds( (this.getWidth()/2)-25, this.getHeight()/2-10,
+							this.getWidth(), 20);
+		
+		this.wait = new JPanel();
+		this.wait.setLayout(null);
+		this.wait.setBounds(0, 0, this.getWidth(), this.getHeight());
+		this.wait.setOpaque(true);
+		this.wait.setBackground(new Color(0xAA7BC5DD, true));
+		this.wait.add(textWait);
+		
+		//Rendre le panel bloquant (Le joueur ne peut ainsi effectuer aucune action)
+		this.wait.addFocusListener(this);
+		this.wait.addMouseListener(this);
 		
 		// Plateau de jeu
 		this.grid = new GridFjorde(this);
@@ -116,6 +153,26 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.grid.setAlignmentX(0.0f);
 		this.grid.setAlignmentY(0.0f);
 		this.panel.add(grid);
+		
+		this.repaint();
+	}
+	
+	/**
+	 * Initialise la connexion au serveur
+	 * @return Vrai si la connexion a ete effectuee
+	 * @throws IOException
+	 */
+	private boolean initConnexion() throws IOException {	
+		try {
+			this.ip = InetAddress.getByName(this.serverIp.getText());
+			this.port = Integer.parseInt(this.serverPort.getText());
+		} 
+		catch (UnknownHostException ex) { throw new IOException(); }
+		catch (NumberFormatException ex) { throw new IOException(); }
+		
+		this.clientSocket = new DatagramSocket();
+		
+		return true;
 	}
 	
 	/**
@@ -233,6 +290,22 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.quitButton)
 			System.exit(0);
+		if (e.getSource() == this.sendConnexion) {
+			boolean isConnected = false;
+			try { isConnected = this.initConnexion(); } 
+			catch (IOException ex) { isConnected = false; }
+			
+			if (isConnected) {
+				this.connexion.setVisible(false);
+				this.setFrame();
+			}
+			else {
+				this.connexionTitle.setText("Connexion : Saisie invalide");
+				this.serverIp.setText("");
+				this.serverPort.setText("");
+			}
+			
+		}
 	}
 
 	@Override

@@ -411,7 +411,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			JButton button = (JButton)e.getSource();
 			if ( button.getText().equals("Oui")) {
 				try {
-					this.client.processMessage("HUT:TRUE");
+					this.client.processMessage("HUT:YES");
 				} catch (IOException ex) { ex.printStackTrace(); }
 				this.tiles.get(tiles.size()-1).setItem('H',client.getNumPlayer());
 				this.hutWindow.setVisible(false);
@@ -421,7 +421,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			}
 			else {
 				try {
-					this.client.processMessage("HUT:FALSE");
+					this.client.processMessage("HUT:NO");
 				} catch (IOException ex) { ex.printStackTrace(); }
 				this.hutWindow.setVisible(false);
 			}
