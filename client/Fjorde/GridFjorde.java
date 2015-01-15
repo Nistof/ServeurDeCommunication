@@ -1,6 +1,7 @@
 package client.Fjorde;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -144,12 +145,14 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.add(hutWindow);
 			this.add(board);
 			
+			//TODO : Retirer la ligne suivante
 			this.createTest();
 		}
 		
 		this.isInit = true;
 	}
 
+	//TODO : Supprimer la methode suivante
 	private void createTest() {
 		this.tiles.add(new Tile("MMMMMM", 0));
 		this.tiles.add(new Tile("ETMMTE", 1));
@@ -199,6 +202,10 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		}
 		
 		//this.setColonisationPhase();
+	}
+	
+	public Dimension getBoardSize() {
+		return new Dimension(board.getWidth(),board.getHeight());
 	}
 	
 	/**

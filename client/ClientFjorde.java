@@ -274,6 +274,11 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			this.grid.setHutWindowVisible(true);
 			return 127;
 		}
+		//POSET:TILE:ORIENTAION
+		else if (splStr.length == 4 && splStr[1].equals("POSET")) {
+			Tile t = new Tile(splStr[2], Integer.parseInt(splStr[3]));
+			t.setLocation(grid.getBoardSize().width/2, grid.getBoardSize().height/2);
+		}
 		//POSET:NEIGHBOOR:POSITION:TILE:ORIENTAION:YES/NO //
 		else if (splStr.length == 7 && splStr[1].equals("POSET")) {
 			if ( this.wait.isVisible()) {
@@ -324,8 +329,8 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			this.grid.setColonizationPhase();
 			return 127;
 		}
-		//END                                  //
-		//WIN                                  //
+		//END:SCORE1:score:SCORE2:score        //
+		//WIN:ID                               //
 		//EGALITE                              //
 		//CANCEL                               //
 		
