@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import client.Fjorde.GridFjorde;
+import client.Fjorde.Tile;
 
 public class ClientFjorde extends JFrame implements ActionListener, MouseListener, FocusListener {
 	private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
@@ -54,7 +55,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.setTitle("Fjorde");
 		this.setLocation(0, 0);
 		this.goFullScreen();
-		this.numPlayer = 1;
+		this.numPlayer = 0;
 		
 		this.panel = new JPanel();
 		this.panel.setLayout(null);
@@ -179,6 +180,26 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		device.setFullScreenWindow(this);
 	}
 	
+	//-------------------------------------//
+	//    MESSAGES RECUS PAR LE CLIENT     //
+	//-------------------------------------//
+	//PLAYER:NUMERO                        //
+	//HUT                                  //
+	//POSET:NEIGHBOOR:POSITION:TILE:YES/NO //
+	//FIELD:TILE                           //
+	//PICK:TILE                            //
+	//OPICK:YES/NO                         //
+	//SEND_TO_OPICK:YES/NO                 //
+	//PLACEMENTLIST                        //
+	// * -> NEIGHBOOR:POSITION             //
+	// * -> ENDLIST                        //
+	//COLONIZATION                         //
+	//END                                  //
+	//WIN                                  //
+	//EGALITE                              //
+	//CANCEL                               //
+	//-------------------------------------//
+	
 	/**
 	 * Reception d'un message de la part du serveur
 	 * @return Message envoye par le serveur
@@ -229,28 +250,84 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	 */
 	public int processMessage(String message) throws IOException {
 		String splStr[] = message.trim().split(":");
+		if (!splStr[0].equals(this.clientId))
+			return -1;
 		
 		/* MESSAGES RECUS PAR LE CLIENT */
-		//START
-		if (splStr.length == 2 && splStr[1].equals("START")) {
-			this.playerWait(false);
-			return 0;
+		//PLAYER:NUMERO                        //
+		if (splStr.length == 3 && splStr[1].equals("PLAYER")) {
+			this.numPlayer = Integer.parseInt(splStr[2]);
+			return 127;
 		}
-		//ENDTURN
+		//START                                //
+		else if (splStr.length == 2 && splStr[1].equals("START")) {
+			this.playerWait(false);
+			return 127;
+		}
+		//ENDTURN                              //
 		else if (splStr.length == 2 && splStr[1].equals("ENDTURN")) {
 			this.playerWait(true);
-			return 0;
+			return 127;
 		}
-		//HUT
+		//HUT                                  //
 		else if (splStr.length == 2 && splStr[1].equals("HUT")) {
 			this.grid.setHutWindowVisible(true);
-			return 0;
+			return 127;
 		}
-		//POSET
-		else if (splStr.length == 5 && splStr[1].equals("POSET")) {
-			
-			return 0;
-		}		
+		//POSET:NEIGHBOOR:POSITION:TILE:ORIENTAION:YES/NO //
+		else if (splStr.length == 7 && splStr[1].equals("POSET")) {
+			if ( this.wait.isVisible()) {
+				Tile t = new Tile(splStr[4], Integer.parseInt(splStr[5]));
+				t.setItem('H', numPlayer);
+				Tile neighboor = grid.getTile(splStr[2]);
+				t.setLocationWithTile(neighboor, Integer.parseInt(splStr[3]));
+				this.grid.addTile(t);
+			}
+			return 127;
+		}
+		//FIELD:TILE                           //
+		else if (splStr.length == 3 && splStr[1].equals("FIELD")) {
+			int player = (!this.wait.isVisible()?this.numPlayer:(this.numPlayer+1)%2);
+			Tile t = grid.getTile(splStr[2]);
+			t.setItem('F', player);
+		}
+		//PICK:TILE                            //
+		else if (splStr.length == 3 && splStr[1].equals("PICK")) {
+			this.grid.pickedTile(splStr[2]);
+			return 127;
+		}
+		//OPICK:YES/NO                         //
+		//SEND_TO_OPICK:YES/NO                 //
+		else if (splStr.length == 3 && (splStr[1].equals("OPICK") || splStr[1].equals("SEND_TO_OPICK"))) {
+			if (splStr[2].equals("YES"))
+				return 127;
+			else
+				return -1;
+		}
+		//PLACEMENTLIST                        //
+		// * -> NEIGHBOOR:POSITION             //
+		// * -> ENDLIST                        //
+		else if (splStr.length == 2 && splStr[1].equals("PLACEMENTLIST")) {
+			do {
+				String[] tile = this.receiveMessage().trim().split(":");
+				if (tile.length == 2 && tile[1].equals("ENDLIST")) {
+					return 127;
+				}
+				//Ajout des tuiles de placement
+				else if (tile.length == 3) {
+					this.grid.addPlacementTile(grid.getTile(tile[1]), Integer.parseInt(tile[2]));
+				}
+			} while (true);
+		}
+		//COLONIZATION                         //
+		else if (splStr.length == 2 && splStr[1].equals("COLONIZATION")) {
+			this.grid.setColonizationPhase();
+			return 127;
+		}
+		//END                                  //
+		//WIN                                  //
+		//EGALITE                              //
+		//CANCEL                               //
 		
 		return -1;
 	}

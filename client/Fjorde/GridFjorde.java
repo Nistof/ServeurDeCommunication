@@ -174,24 +174,24 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		openPick.addTile(tiles.get(6));
 		openPick.addTile(tiles.get(7));
 		
-		this.addPlacementTile(tiles.get(0), 1, 0);
-		this.addPlacementTile(tiles.get(0), 2, 1);
-		this.addPlacementTile(tiles.get(0), 3, 2);
-		this.addPlacementTile(tiles.get(0), 4, 3);
-		this.addPlacementTile(tiles.get(0), 1, 4);
-		this.addPlacementTile(tiles.get(0), 2, 5);
-		this.addPlacementTile(tiles.get(1), 0, 1);
-		this.addPlacementTile(tiles.get(1), 1, 2);
-		this.addPlacementTile(tiles.get(1), 2, 3);
-		this.addPlacementTile(tiles.get(1), 5, 0);
-		this.addPlacementTile(tiles.get(1), 0, 4);
-		this.addPlacementTile(tiles.get(1), 1, 5);
-		this.addPlacementTile(tiles.get(2), 0, 3);
-		this.addPlacementTile(tiles.get(2), 3, 0);
-		this.addPlacementTile(tiles.get(2), 4, 1);
-		this.addPlacementTile(tiles.get(2), 5, 2);
-		this.addPlacementTile(tiles.get(2), 3, 4);
-		this.addPlacementTile(tiles.get(2), 4, 5);
+		this.addPlacementTile(tiles.get(0), 1);
+		this.addPlacementTile(tiles.get(0), 2);
+		this.addPlacementTile(tiles.get(0), 3);
+		this.addPlacementTile(tiles.get(0), 4);
+		this.addPlacementTile(tiles.get(0), 1);
+		this.addPlacementTile(tiles.get(0), 2);
+		this.addPlacementTile(tiles.get(1), 0);
+		this.addPlacementTile(tiles.get(1), 1);
+		this.addPlacementTile(tiles.get(1), 2);
+		this.addPlacementTile(tiles.get(1), 5);
+		this.addPlacementTile(tiles.get(1), 0);
+		this.addPlacementTile(tiles.get(1), 1);
+		this.addPlacementTile(tiles.get(2), 0);
+		this.addPlacementTile(tiles.get(2), 3);
+		this.addPlacementTile(tiles.get(2), 4);
+		this.addPlacementTile(tiles.get(2), 5);
+		this.addPlacementTile(tiles.get(2), 3);
+		this.addPlacementTile(tiles.get(2), 4);
 		
 		for (int i = 0; i < 3; i++) {
 			tiles.get(i).setBounds(tiles.get(i).getX(), tiles.get(i).getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
@@ -249,6 +249,13 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		}
 	}
 	
+	public Tile getTile(String type) {
+		for (Tile t : tiles)
+			if (t.getType().equals(type))
+				return t;
+		return null;
+	}
+	
 	/**
 	 * Fait la demande des tuiles de placement au client
 	 */
@@ -268,9 +275,9 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * @param neighboor Voisin de la PlacementTile
 	 * @param position Cote ou est lie la PlacementTile
 	 */
-	public void addPlacementTile(Tile neighboor, int position, int orientation) {
+	public void addPlacementTile(Tile neighboor, int position) {
 		if (neighboor != null) {
-			PlacementTile pt = new PlacementTile(neighboor, position, orientation);
+			PlacementTile pt = new PlacementTile(neighboor, position, selected.getOrientation());
 			pt.setBounds(pt.getX(), pt.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			pt.setVisible(false);
 			pt.addMouseListener(this);
@@ -325,7 +332,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * Cache tout les elements ne servant pas lors de la phase de colonisation
 	 * et ajoute des MouseListener sur les tuiles afin de pouvoir placer les champs
 	 */
-	public void setColonisationPhase() {
+	public void setColonizationPhase() {
 		this.panelClose.setVisible(false);
 		this.panelOpen.setVisible(false);
 		this.labelHut.setVisible(false);
@@ -335,6 +342,13 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			t.addMouseListener(this);
 		
 		client.repaint();
+	}
+	
+	/**
+	 * 
+	 */
+	public void pickedTile(String tile) {
+		selected.setSelectedTile(tile);
 	}
 	
 	@Override
