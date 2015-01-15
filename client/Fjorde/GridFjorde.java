@@ -249,6 +249,20 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	}
 	
 	/**
+	 * Fait la demande des tuiles de placement au client
+	 */
+	private void requestPlacementTiles() {
+		//On vérifie que la requete n'a pas deja ete faite
+		for (PlacementTile t: placement)
+			if (t.getOrientation() == selected.getOrientation())
+				return ;
+		
+		//Demande au client
+		try { client.sendMessage("REQUEST_PLACEMENT:"+selected.getOrientation()); }
+		catch( IOException ex ) {}
+	}
+	
+	/**
 	 * Cree une PlacementTile a cote de la tuile passee en parametre
 	 * @param neighboor Voisin de la PlacementTile
 	 * @param position Cote ou est lie la PlacementTile
@@ -276,6 +290,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * Met a jour l'affichage des tuiles de placement
 	 */
 	public void updatePlacementTile() {
+		this.requestPlacementTiles();
 		this.purgeVisiblePlacementTile();
 		for (PlacementTile t : placement) 
 			if ( t.getOrientation() == selected.getOrientation()) 
@@ -356,7 +371,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.selected.setSelectedTile(null); //Retrait de la selection
 			
 			//Envoi du placement au serveur
-			try { client.processMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { ex.printStackTrace(); }
+			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { ex.printStackTrace(); }
 		}
 		//Placement d'un champ
 		else if ( e.getSource() instanceof Tile) {
@@ -364,7 +379,8 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			int returnedValue = -1;
 			
 			//Envoi du placement au serveur
-			try { returnedValue = client.processMessage("FIELD:"+ t.getType()); } catch ( IOException ex) { ex.printStackTrace(); }
+			try { client.sendMessage("FIELD:"+ t.getType()); } catch ( IOException ex) { ex.printStackTrace(); }
+			//TODO : Reception de la reponse et traitement
 			
 			if ( returnedValue == 127) {
 				t.setItem('F',client.getNumPlayer());
@@ -396,8 +412,9 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			//Demande au serveur si il est possible d'envoyer a la pioche ouverte
 			int returnedValue = -1;
 			try {
-				returnedValue = this.client.processMessage("SEND_TO_OPICK");
+				this.client.sendMessage("SEND_TO_OPICK");
 			} catch (IOException ex) { ex.printStackTrace(); }
+			//TODO : Reception de la reponse et traitement
 			
 			//Si le serveur a accepte le placement dans la pioche ouverte
 			if ( returnedValue == 127 ) {
@@ -411,7 +428,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			JButton button = (JButton)e.getSource();
 			if ( button.getText().equals("Oui")) {
 				try {
-					this.client.processMessage("HUT:YES");
+					this.client.sendMessage("HUT:YES");
 				} catch (IOException ex) { ex.printStackTrace(); }
 				this.tiles.get(tiles.size()-1).setItem('H',client.getNumPlayer());
 				this.hutWindow.setVisible(false);
@@ -421,7 +438,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			}
 			else {
 				try {
-					this.client.processMessage("HUT:NO");
+					this.client.sendMessage("HUT:NO");
 				} catch (IOException ex) { ex.printStackTrace(); }
 				this.hutWindow.setVisible(false);
 			}

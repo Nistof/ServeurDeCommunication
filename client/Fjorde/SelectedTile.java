@@ -47,8 +47,8 @@ public class SelectedTile extends JPanel implements ActionListener {
 		
 		this.toOpenPick.setEnabled(false);
 		
-		this.rotateLeft.setBounds(20, Tile.IMG_HEIGHT*2+20, 42, 25);
-		this.rotateRight.setBounds(Tile.IMG_WIDTH*2-60, Tile.IMG_HEIGHT*2+20, 42, 25);
+		this.rotateLeft.setBounds(20, Tile.IMG_HEIGHT*2+20, 50, 25);
+		this.rotateRight.setBounds(Tile.IMG_WIDTH*2-60, Tile.IMG_HEIGHT*2+20, 50, 25);
 		this.rotateLeft.addActionListener(this);
 		this.rotateRight.addActionListener(this);
 		this.rotateLeft.setVisible(false);

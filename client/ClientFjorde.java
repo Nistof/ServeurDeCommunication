@@ -124,7 +124,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		
 		//Ecran d'attente
 		JLabel textWait = new JLabel("En attente du serveur...");
-		textWait.setForeground(Color.black);
+		textWait.setForeground(Color.BLACK);
 		textWait.setBounds( (this.getWidth()/2)-25, this.getHeight()/2-10,
 							this.getWidth(), 20);
 		
@@ -194,12 +194,25 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		return new String(packet.getData());
 	}
 	
+	
+	//--------------------------------//
+	// MESSAGES A ENVOYER AU SERVEUR  //
+	//--------------------------------//
+	//OPICK:TILE                      //
+	//PICK                            //
+	//SEND_TO_OPICK                   //
+	//REQUEST_PLACEMENT:ORIENTATION   //
+	//POSET:TILE:POSITION             //
+	//HUT:YES ou HUT:NO               //
+	//FIELD:TILE                      //
+	//--------------------------------//
+	
 	/**
 	 * Envoi d'un message au serveur
 	 * @param message Message a envoyer
 	 * @throws IOException
 	 */
-	private void sendMessage(String message) throws IOException {
+	public void sendMessage(String message) throws IOException {
 		byte[] data = new byte[1024];
 		message = this.clientId + ":" + message;
 		data = message.getBytes();
@@ -236,39 +249,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		else if (splStr.length == 5 && splStr[1].equals("POSET")) {
 			
 			return 0;
-		}
-		/* MESSAGES A ENVOYER AU SERVEUR */
-		//OPICK:NOM_PIECE
-		else if (splStr.length == 2 && splStr[0].equals("OPICK")) {
-			System.out.println("OpenPick -> send");
-			//return -1; //Erreur d'entree
-			return 127; //OK
-		}
-		//PICK
-		else if (splStr.length == 1 && splStr[0].equals("PICK")) {
-			System.out.println("ClosePick -> send");
-			//return -1; //Erreur d'entree
-			return 127; //OK
-		}
-		//SEND_TO_OPICK
-		else if (splStr.length == 1 && splStr[0].equals("SEND_TO_OPICK")) {
-			System.out.println("SelectedTile -> send");
-			//return -1; //Erreur d'entree
-			return 127; //OK
-		}
-		//POSET
-		else if (splStr.length == 3 && splStr[0].equals("POSET")) {
-			return 127;
-		}
-		//HUT
-		else if (splStr.length == 2 && splStr[0].equals("HUT")) {
-			return 127;
-		}
-		//FIELD
-		else if (splStr.length == 2 && splStr[0].equals("FIELD")) {
-			return 127;
-		}
-		
+		}		
 		
 		return -1;
 	}
@@ -293,7 +274,8 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			if (isConnected) {
 				this.connexion.setVisible(false);
 				this.setFrame();
-				this.playerWait(true);
+				//TODO : Decommenter la ligne suivante
+				//this.playerWait(true);
 			}
 			else {
 				this.connexionTitle.setText("Connexion : Saisie invalide");
