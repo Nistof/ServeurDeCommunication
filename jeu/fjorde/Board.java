@@ -49,34 +49,19 @@ public class Board {
 			System.out.println("Erreur fichier" + exc);
 		}
 
+		/* Liaison des tuiles de depart puis generation des fantomes */
 		alTiles.get(0).setNeighboorById(alTiles.get(1), 2);
 		alTiles.get(0).generateGhosts();
-		System.out.println(alTiles.get(0));
 		alTiles.get(1).setNeighboorById(alTiles.get(2), 4);
 		alTiles.get(1).generateGhosts();
-
 		alTiles.get(2).setNeighboorById(alTiles.get(0), 0);
 		alTiles.get(2).generateGhosts();
-		/*
-		 * System.out.println(alTiles.get(0).getNeighboors());
-		 * System.out.println(alTiles.get(1).getNeighboors());
-		 * System.out.println(alTiles.get(2).getNeighboors());
-		 */
-
-		/*
-		 * for(int i=0; i<alTiles.size(); i++){
-		 * //alTiles.get(i-1).setNeighboor(alTiles.get(i));
-		 * System.out.println(alTiles.get(i).getNeighboors()); }
-		 */
-		System.out.println("Hashset");
-		getVoid();
 	}
 
 	/**
 	 * Donne pour un joueur donne les hutte qu'il possede sur le plateau
 	 * 
-	 * @param p
-	 *            joueur de la tuile
+	 * @param p joueur de la tuile
 	 * @return le nombre de hutte sur le plateau
 	 */
 	public int getNbHut(FjordePlayer p) {
@@ -92,8 +77,7 @@ public class Board {
 	/**
 	 * Ajoute une tuile a la liste de tuiles presentent sur le plateau
 	 * 
-	 * @param t
-	 *            Tuile a ajouter
+	 * @param t Tuile a ajouter
 	 */
 	public boolean add(Tile t, int side, int id) {
 		System.out.println(getPossibilities(t));
@@ -107,7 +91,7 @@ public class Board {
 	}
 
 	/**
-	 * Attributs les scores aux joueurs
+	 * Attribue les scores aux joueurs
 	 */
 	public void setScore() {
 		for (Tile t : this.alTiles) {
@@ -118,7 +102,7 @@ public class Board {
 
 	/**
 	 * 
-	 * @return Le nombre de tuiles poser sur la table
+	 * @return Le nombre de tuiles posé sur la table
 	 */
 	public int getSize() {
 		return this.alTiles.size();
@@ -126,8 +110,7 @@ public class Board {
 
 	/**
 	 * 
-	 * @param i
-	 *            Indice de la tuile voulu
+	 * @param i Indice de la tuile voulue
 	 * @return Une tuile a un indice donne
 	 */
 	public Tile getTile(int i) {
@@ -139,8 +122,7 @@ public class Board {
 
 	/**
 	 * 
-	 * @param code
-	 *            Le code de la tuile
+	 * @param code Le code de la tuile
 	 * @return Le numero de la tuile dans l'ArrayList correspondant au code
 	 */
 	public int getTileByCode(String code) {
@@ -151,7 +133,12 @@ public class Board {
 
 		return -1;
 	}
-
+	
+	/**
+	 * Retourne les possibilites de jeu selon une tuile donne
+	 * @param selection La tuile a jouer
+	 * @return une hashmap liant une tuile a un cote
+	 */
 	public HashMap<Tile, Integer> getPossibilities(Tile selection) {
 		HashMap<Tile, Integer> hmTiles = new HashMap<Tile, Integer>();
 		for (Tile t : getVoid()) {
@@ -169,7 +156,11 @@ public class Board {
 		}
 		return hmTiles;
 	}
-
+	
+	/**
+	 * Permet de connaitre les tuiles fantomes ayant 2 voisins cote a cote
+	 * @return un hashset des tuiles concernees
+	 */
 	private HashSet<Tile> getVoid() {
 		HashSet<Tile> hsTile = new HashSet<Tile>();
 		for (Tile t : alTiles) {
@@ -188,8 +179,7 @@ public class Board {
 	}
 
 	/**
-	 * Permets de voir l'etat du plateau, les tuiles posees et leurs numeros
-	 * 
+	 * Permet de voir l'etat du plateau, les tuiles posees et leurs numeros
 	 * @return une chaine de caractere de l'avance du jeu
 	 */
 	public String toString() {

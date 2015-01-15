@@ -1,12 +1,12 @@
 package jeu.fjorde;
 
 //import java.io.FileNotFoundException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
-import server.Server;
-
 import jeu.IJeu;
+import server.Server;
 
 public class Fjorde implements IJeu {
 	private Board board;
@@ -31,11 +31,12 @@ public class Fjorde implements IJeu {
 		this.players[0] = new FjordePlayer("FLORIAN", "BLANC");
 		this.currentPlayer = 0;
 		this.nbPlayer = 0;
+		try { 
+		    this.server = new Server(this); 
+		} catch (FileNotFoundException e) { 
+		    e.printStackTrace(); 
+		}
 
-		/*
-		 * try { this.server = new Server(this); } catch (FileNotFoundException
-		 * e) { e.printStackTrace(); }
-		 */
 	}
 
 	/**
@@ -89,10 +90,8 @@ public class Fjorde implements IJeu {
 
 	/**
 	 * 
-	 * @param id
-	 *            L'identifiant de la tuile
-	 * @param side
-	 *            Cote de la tuile sur leplateau
+	 * @param id L'identifiant de la tuile
+	 * @param side Cote de la tuile sur leplateau
 	 * @return Si la pose est correcte
 	 */
 	public boolean play(int id, int side) {
@@ -104,8 +103,7 @@ public class Fjorde implements IJeu {
 	/**
 	 * Permet de poser un champ
 	 * 
-	 * @param i
-	 *            Indice de la tuile dans l'ArrayList
+	 * @param i Indice de la tuile dans l'ArrayList
 	 * @return Si le champ a ete poser
 	 */
 	public boolean putItem(int i, char c) {
@@ -168,7 +166,10 @@ public class Fjorde implements IJeu {
 		}
 		return -1;
 	}
-
+	
+	/**
+	 * 
+	 */
 	public void setRound() {
 		if (players[0].getScore() > players[1].getScore())
 			players[0].setWinRound();
@@ -290,7 +291,8 @@ public class Fjorde implements IJeu {
 		return -1;
 	}
 
-	@Override
+	@SuppressWarnings("unused")
+    @Override
 	public void launchGame() throws IOException {
 		boolean endTurn = false;
 		int round = 0;
@@ -384,7 +386,7 @@ public class Fjorde implements IJeu {
 					for( Tile t : board.getPossibilities(players[currentPlayer].getTile()).keySet()) {
 						sendToPlayer( ":" + t.getCode() + ":" + board.getPossibilities(players[currentPlayer].getTile()).get(t));
 					}
-					sendToPlayer(":ENDLISTE");
+					sendToPlayer(":ENDLIST");
 					break;
 				case 7: // Finir le tour
 					if (putTile)

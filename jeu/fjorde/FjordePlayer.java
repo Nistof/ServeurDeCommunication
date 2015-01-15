@@ -20,6 +20,11 @@ public class FjordePlayer extends Player {
 	private int score;
 	private int winRound;
 	
+	/**
+	 * Construit un joueur  de Fjorde
+	 * @param nom Le nom a utiliser
+	 * @param couleur La couleur du joueur
+	 */
 	public FjordePlayer( String nom, String couleur ) {
 		super(nom);
 		this.color = couleur;
@@ -137,8 +142,7 @@ public class FjordePlayer extends Player {
 	public Tile removeFromHand() {
 		Tile tmp = this.tile;
 		tile = null;
-		//System.out.println(tmp);
-		return new Tile("ETMTTE",false,false);
+		return tmp;
 	}
 	
 }

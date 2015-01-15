@@ -20,7 +20,7 @@ public enum Type {
     Type(char id){
     	this.id = id;
     }
-
+    
     public static Type getTypeById (char id) {
         switch(id) {
             case 'T':

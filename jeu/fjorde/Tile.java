@@ -19,16 +19,20 @@ public class Tile {
     private boolean start;
     private FjordePlayer owner;
     private Item item;
-
+    
+    /*
+     * Ce constructeur construit une tuile fantôme 
+     */
     public Tile() {
         this("FFFFFF", false, true);
     }
 
+    
     /**
-     * Retourne l'etat de la pioche Construit une tuile
      * 
-     * @param start
-     *            Determine si c'est une tuile de départ
+     * @param type Le type de la tuile
+     * @param start Indique s'il s'agit d'une tuile de départ
+     * @param fake Indique si c'est une fausse tuile
      */
     public Tile(String type, boolean start, boolean fake) {
         this.fake = fake;
@@ -42,6 +46,9 @@ public class Tile {
         }
     }
 
+    /*
+     * Renvoie le nombre de voisins
+     */
     public int getNeighboorsCount () {
     	return this.neighboors.length;
     }
@@ -49,10 +56,8 @@ public class Tile {
     /**
      * Permet de poser un item sur une tuile
      * 
-     * @param item
-     *            L'item à poser
-     * @param p
-     *            Le joueur détenant l'item
+     * @param item L'item à poser
+     * @param p Le joueur détenant l'item
      * @return Si la pose de l'item a reussi
      */
     public boolean setItem(Item item, FjordePlayer p) {
@@ -70,8 +75,7 @@ public class Tile {
 
     /**
      * 
-     * @param p
-     *            Joueur qui demande si le placement d'un champ est possible
+     * @param p Joueur qui demande si le placement d'un champ est possible
      * @return Si le placement du champ est possible
      */
     public boolean putChampIsValid(FjordePlayer p) {
@@ -97,8 +101,7 @@ public class Tile {
 
     /**
      * 
-     * @param p
-     *            Joueur qui demande si le placement d'une hutte est possible
+     * @param p Joueur qui demande si le placement d'une hutte est possible
      * @return Si le placement d'une hutte est possible
      */
     public boolean putHutteIsValid(FjordePlayer p) {
@@ -144,10 +147,9 @@ public class Tile {
     }
 
     /**
-     * permet d'avoir les sommet correspondant � une id donn�e
+     * permet d'avoir les sommet correspondant a une id donnee
      * 
-     * @param id
-     *            numero de cote
+     * @param id numero de cote
      * @return une arraylist de sommet
      */
     public Type[] getTypesBySide(int side) {
@@ -158,53 +160,26 @@ public class Tile {
     }
 
     /**
-     * verifie si c'est un voisin, et l'ajoute au tableau
-     * 
-     * @param t
-     *            une tuile
-     * @return boolean
-     */
-    /*
-     * public boolean setNeighboor (Tile t) { for(int i=0;
-     * i<this.neighboors.length; i++){ if(neighboors[i] == null) { for(int j=0;
-     * j<t.neighboors.length; j++){ if(t.neighboors[i] == null){
-     * if(this.getTypesById(i).get(0)==t.getTypesById(j).get(0) &&
-     * this.getTypesById(i).get(1)==t.getTypesById(j).get(1)){ neighboors[i] =
-     * t; t.neighboors[j]=this; return true; } } } } } return false; }
-     */
-
-    /**
-     * @return la liste des voisins
+     * Permet d'obtenir le voisin par son id
+     * @param side Cote utilise pour renvoyer le voisin
+     * @return Le voisin au cote side
      */
     public Tile getNeighboorBySide(int side) {
     	return neighboors[side];
-        /*String s = "";
-        for (int i = 0; i < this.neighboors.length; i++) {
-            // System.out.println(this.neighboors[i]);
-            if (this.neighboors[i] != null)
-                s += i + " : " + this.neighboors[i].toString() + "\n";
-        }
-        return s;*/
     }
 
     /**
-     * Place une tuile voisine
-     * 
-     * @param id
-     *            Cote a utiliser
-     * @param t
-     *            Tuile a placer
-     * @return vrai si la pose de la tuile a reussi
+     * Place une tuile sur un des cotes
+     * @param t La tuile a placer
+     * @param side Le cote sur lequel la placer
+     * @return
      */
     public boolean setNeighboorById(Tile t, int side) {
-        System.out.println("Tuile : " + t + " place sur le cote " + side + " de " + this + "\n");
         boolean b = false;
-        //System.out.println(this.neighboors[side]);
         if ((this.neighboors[side] == null || this.neighboors[side].isFakeTile())) {
             if (this.isStart() && t.isStart()) {
                 b = true;
                 this.neighboors[side] = t;
-                //setNeighboorByCircle(t, side, 0);
                 t.setNeighboorById(this, (side + 3) % 6);
             }
             else {
@@ -217,7 +192,12 @@ public class Tile {
         }
         return b;
     }
-
+    
+    /**
+     * Renvoie le nombre de voisins reels sur le cote concerne
+     * @param side Le cote a inspecter
+     * @return Le nombre de voisins reels
+     */
     public int getNumberOfRealNeighboors(int side) {
 		int n = 0;
 		if(this.neighboors[(6+side-1)%6] != null && !this.neighboors[(6+side-1)%6].isFakeTile()) {
@@ -228,7 +208,11 @@ public class Tile {
 		}
 		return n;
 	}
-
+    
+    /**
+     * Renvoie le premier voisin reel de la tuile
+     * @return Le premier voisin reel trouve
+     */
     public int getFirstRealNeighboor() {
     	int t = -1;
     	for(int i = 0; t == -1 && i < this.neighboors.length; i++) {
@@ -239,6 +223,13 @@ public class Tile {
     	return t;
     }
     
+    /**
+     * Fixe les voisins en faisant le tour recusivement (permet de combler les trous)
+     * @param t La tuile a ajouter
+     * @param sideOrg Le cote d'origine
+     * @param turn Le tour courant
+     * @return vrai si la pose a reussi
+     */
 	private boolean setNeighboorByCircle (Tile t, int sideOrg, int turn) {
     	boolean b = true;
     	if(turn == 0) {
@@ -252,7 +243,6 @@ public class Tile {
     		}
     	}
     	else {
-    		System.out.println(turn);
     		int direction = turn/Math.abs(turn);
     		b &= isValid(t, sideOrg) && getNeighboorsByDirection(sideOrg, direction).setNeighboorByCircle(t, (6+sideOrg-direction)%6, turn+direction);
     		if(b) {
@@ -263,28 +253,39 @@ public class Tile {
         return b;
     }
     
+	/**
+	 * Permet de savoir si c'est une fausse tuile
+	 * @return vrai si c'est une fausse tuile
+	 */
     public boolean isFakeTile() {
         return fake;
     }
-
+    
+    /**
+     * Permet d'avoir le voisin dans une direction donnee
+     * @param side Le cote d'ou l'on part
+     * @param direction 1 pour le sens horaire, -1 pour le sens anti-horaire
+     * @return La tuile voisine dans la direction donnee
+     */
     private Tile getNeighboorsByDirection (int side, int direction) {
-        Tile t = neighboors[(6+side+direction)%6];
-        System.out.println(t);
-        return t;
+        return neighboors[(6+side+direction)%6];
+
     }
     
     /**
      * Permet de fixer les 6 types de la tuile
-     * 
-     * @param types
-     *            La chaine a utiliser pour definir les types
+     * @param types La chaine a utiliser pour definir les types
      */
     public void setTypes(String types) {
         for (int i = 0; i < types.length(); i++) {
             this.types[i] = Type.getTypeById(types.charAt(i));
         }
     }
-
+    
+    /**
+     * Donne le code la tuile (Ex : "ETTMET")
+     * @return Le code de la tuile
+     */
     public String getCode() {
         String s = "";
         for (int i = 0; i < types.length; i++) {
@@ -292,22 +293,32 @@ public class Tile {
         }
         return s;
     }
-
+    
+    /**
+     * Permet de voir si une tuile peut etre place contre la tuile en cours
+     * @param t la tuile a placer
+     * @param side le cote ou l'on place
+     * @return vrai si le placement est valide
+     */
     public boolean isValid (Tile t, int side) {
-    	System.out.println("Side : " + side);
         Type[] neighboors1 = this.getTypesBySide(side);
         Type[] neighboors2 = t.getTypesBySide((side+3)%6);
         boolean b = true;
         b &= (neighboors1[0] == neighboors2[1] && neighboors1[1] == neighboors2[0]) || isGhost(neighboors1);
-        System.out.println(neighboors1[0] + " : " + neighboors1[1]);
-        System.out.println(neighboors2[0] + " : " + neighboors2[1]);
         return b;
     }
     
+    /**
+     * 
+     * @param neighboors1 types d'un cote d'une tuile
+     * @return vrai si les types sont fantomes
+     */
     private boolean isGhost(Type[] neighboors1) {
         return neighboors1[0] == null && neighboors1[1] == null;
     }
-
+    
+    
+    
     public String toString() {
         String s = "";
         for (int i = 0;!isFakeTile() &&  i < this.types.length; i++) {
@@ -324,7 +335,11 @@ public class Tile {
         s += ":" + cpt + ":" + f;
         return s;
     }
-
+    
+    /**
+     * Permet de generer les tuiles fantomes qui permettront
+     * de faire des liaisons entre les tuiles meme non adjacentes
+     */
     public void generateGhosts() {
         for (int i = 0; i < neighboors.length; i++) {
         	if(neighboors[i] == null) {
