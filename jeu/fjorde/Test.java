@@ -28,16 +28,18 @@ public class Test {
 	}
 	
 	public void tourC(){
-		
+		fjorde.draw();
+		fjorde.play(0, 0);
 	}
 	
 	public static void main(String[] args) {
 		Test t = new Test();
 		
-		System.out.println(t.display());
+		//System.out.println(t.display());
 		//for(int i=0; i<2; i++){ 
 			t.tourD();
-			System.out.println(t.display()); 
+			t.tourC();
+			//System.out.println(t.display()); 
 		//}
 		System.out.println(t.display());
 		

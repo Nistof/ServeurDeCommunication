@@ -137,8 +137,8 @@ public class FjordePlayer extends Player {
 	public Tile removeFromHand() {
 		Tile tmp = this.tile;
 		tile = null;
-		System.out.println(tmp);
-		return tmp;
+		//System.out.println(tmp);
+		return new Tile("ETMTTE",false,false);
 	}
 	
 }
