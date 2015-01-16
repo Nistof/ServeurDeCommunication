@@ -397,8 +397,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			if (isConnected) {
 				this.connexion.setVisible(false);
 				this.setFrame();
-				//TODO : Decommenter la ligne suivante
-				//this.playerWait(true);
+				this.playerWait(true);
 			}
 			else {
 				this.connexionTitle.setText("Connexion : Saisie invalide");

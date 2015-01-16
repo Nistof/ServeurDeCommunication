@@ -146,7 +146,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.add(board);
 			
 			//TODO : Retirer la ligne suivante
-			this.createTest();
+			//this.createTest();
 		}
 		
 		this.isInit = true;
