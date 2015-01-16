@@ -201,11 +201,27 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.board.add(tiles.get(i));
 		}
 		
-		//this.setColonisationPhase();
+		this.setColonizationPhase();
 	}
 	
+	/**
+	 * Taille du plateau de jeu
+	 * @return Taille du plateau de jeu
+	 */
 	public Dimension getBoardSize() {
 		return new Dimension(board.getWidth(),board.getHeight());
+	}
+	
+	/**
+	 * Pioche une tuile dans la pioche ouverte
+	 * @param tileName Nom de la tuile a piocher
+	 */
+	public void pickFromOpenPick(String tileName) {
+		//on la retire de la pioche ouverte
+		if ( openPick.removeTile(tileName)) {
+			selected.setSelectedTile(tileName);; //On la place en tant que tuile selectionnee
+			updatePlacementTile(); //Affichage des PlacementTile
+		}
 	}
 	
 	/**
@@ -213,22 +229,11 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * @param tileName Nom de la tuile
 	 */
 	public void keepChoosenTile(String tileName) {
-		int returnedValue = -1;
-		
 		//Envoi de la demande au serveur
-		try { 
-			client.sendMessage("OPICK:" + tileName); 
+		try {
+			client.setTileName(tileName);
+			client.sendMessage("OPICK:" + tileName);
 		} catch ( IOException ex) {  System.out.println("Failed!");  }
-		//TODO : Reception de la reponse et traitement
-		
-		//Si la tuile peut etre prise
-		if ( returnedValue == 127 && removeTileViewer()) {
-			//on la retire de la pioche ouverte
-			if ( openPick.removeTile(tileName)) {
-				selected.setSelectedTile(tileName);; //On la place en tant que tuile selectionnee
-				updatePlacementTile(); //Affichage des PlacementTile
-			}
-		}
 	}
 	
 	/**
@@ -398,17 +403,11 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		//Placement d'un champ
 		else if ( e.getSource() instanceof Tile) {
 			Tile t = (Tile)e.getSource();
-			int returnedValue = -1;
-			
+		
 			//Envoi du placement au serveur
-			try { client.sendMessage("FIELD:"+ t.getType()); } catch ( IOException ex) {  System.out.println("Failed!");  }
-			//TODO : Reception de la reponse et traitement
-			
-			if ( returnedValue == 127) {
-				t.setItem('F',client.getNumPlayer());
-				t.removeMouseListener(this);
-				client.repaint();
-			}
+			try { 
+				client.sendMessage("FIELD:"+ t.getType());
+			} catch ( IOException ex) {  System.out.println("Failed!");  }
 		}
 		//Clic sur une zone du plateau
 		else if ( e.getSource() == this.board) {
@@ -426,24 +425,25 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.isBoardSelected = false;
 		}
 	}
-
+	
+	/**
+	 * Envoi la selection en cours a la pioche ouverte
+	 */
+	public void sendToOpenPick () {
+		this.openPick.addTile(new Tile(selected.getType(), 0));
+		this.selected.setSelectedTile(null);
+		this.removeAllPlacementTile();
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//Si il s'agit du bouton d'envoi a la pioche ouverte
 		if ( e.getSource() == selected.getToOpenPickButton() && selected.hasSelection()) {
+			
 			//Demande au serveur si il est possible d'envoyer a la pioche ouverte
-			int returnedValue = -1;
 			try {
 				this.client.sendMessage("SEND_TO_OPICK");
-			} catch (IOException ex) { ex.printStackTrace(); }
-			//TODO : Reception de la reponse et traitement
-			
-			//Si le serveur a accepte le placement dans la pioche ouverte
-			if ( returnedValue == 127 ) {
-				this.openPick.addTile(new Tile(selected.getType(), 0));
-				this.selected.setSelectedTile(null);
-				this.removeAllPlacementTile();
-			}
+			} catch (IOException ex) { ex.printStackTrace(); }			
 		}
 		//Si il s'agit des bouttons de validation pour la hutte
 		else if( e.getSource() instanceof JButton) {

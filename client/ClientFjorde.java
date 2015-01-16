@@ -47,6 +47,9 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	private JButton sendConnexion;
 	
 	private int numPlayer;
+	private boolean isInit;
+	private boolean hasPlayed;
+	private String tileName;
 
 	/**
 	 * Initialisation du client (Fenetre et dependances a la communication avec le serveur)
@@ -56,6 +59,9 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.setLocation(0, 0);
 		this.goFullScreen();
 		this.numPlayer = 0;
+		this.isInit = false;
+		this.hasPlayed = true;
+		this.tileName = null;
 		
 		this.panel = new JPanel();
 		this.panel.setLayout(null);
@@ -151,6 +157,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.panel.add(grid);
 		
 		this.repaint();
+		this.isInit = true;
 	}
 	
 	/**
@@ -179,6 +186,10 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			this.setUndecorated(true);	
 		device.setFullScreenWindow(this);
 	}
+	
+	public void setTileName(String name) { this.tileName = name; }
+	public boolean isInit() { return this.isInit; }
+	public boolean hasPlayed() { return this.hasPlayed; }
 	
 	//-------------------------------------//
 	//    MESSAGES RECUS PAR LE CLIENT     //
@@ -249,25 +260,33 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	 * @throws IOException
 	 */
 	public int processMessage(String message) throws IOException {
-		String splStr[] = message.trim().split(":");
+		message = message.trim();
+		String splStr[] = message.split(":");
+		
 		if (!splStr[0].equals(this.clientId))
 			return -1;
 		
 		/* MESSAGES RECUS PAR LE CLIENT */
+		if(splStr[1].equals("OK")) {
+			this.clientId = splStr[0];
+			return 127;
+		}
 		//PLAYER:NUMERO                        //
-		if (splStr.length == 3 && splStr[1].equals("PLAYER")) {
+		else if (splStr.length == 3 && splStr[1].equals("PLAYER")) {
 			this.numPlayer = Integer.parseInt(splStr[2]);
 			return 127;
 		}
 		//START                                //
 		else if (splStr.length == 2 && splStr[1].equals("START")) {
 			this.playerWait(false);
-			return 127;
+			this.hasPlayed = false;
+			return 2;
 		}
 		//ENDTURN                              //
 		else if (splStr.length == 2 && splStr[1].equals("ENDTURN")) {
 			this.playerWait(true);
-			return 127;
+			this.hasPlayed =  true;
+			return 3;
 		}
 		//HUT                                  //
 		else if (splStr.length == 2 && splStr[1].equals("HUT")) {
@@ -278,6 +297,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		else if (splStr.length == 4 && splStr[1].equals("POSET")) {
 			Tile t = new Tile(splStr[2], Integer.parseInt(splStr[3]));
 			t.setLocation(grid.getBoardSize().width/2, grid.getBoardSize().height/2);
+			return 127;
 		}
 		//POSET:NEIGHBOOR:POSITION:TILE:ORIENTAION:YES/NO //
 		else if (splStr.length == 7 && splStr[1].equals("POSET")) {
@@ -295,6 +315,9 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			int player = (!this.wait.isVisible()?this.numPlayer:(this.numPlayer+1)%2);
 			Tile t = grid.getTile(splStr[2]);
 			t.setItem('F', player);
+			t.removeMouseListener(this);
+			this.repaint();
+			return 127;
 		}
 		//PICK:TILE                            //
 		else if (splStr.length == 3 && splStr[1].equals("PICK")) {
@@ -302,12 +325,25 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			return 127;
 		}
 		//OPICK:YES/NO                         //
-		//SEND_TO_OPICK:YES/NO                 //
-		else if (splStr.length == 3 && (splStr[1].equals("OPICK") || splStr[1].equals("SEND_TO_OPICK"))) {
-			if (splStr[2].equals("YES"))
-				return 127;
-			else
+		else if (splStr.length == 3 && splStr[1].equals("OPICK")) {
+			if (splStr[2].equals("YES")) {
+				grid.pickFromOpenPick(tileName); //On place la tuile en tant que tuile selectionnee
+				this.tileName = null;
+				return 3;
+			}
+			else {
 				return -1;
+			}
+		}
+		//SEND_TO_OPICK:YES/NO                 //
+		else if (splStr.length == 3 && splStr[1].equals("SEND_TO_OPICK")) {
+			if (splStr[2].equals("YES")) {
+				grid.sendToOpenPick();
+				return 4;
+			}
+			else {
+				return -1;
+			}
 		}
 		//PLACEMENTLIST                        //
 		// * -> NEIGHBOOR:POSITION             //
@@ -330,9 +366,19 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			return 127;
 		}
 		//END:SCORE1:score:SCORE2:score        //
+		else if (splStr.length == 6 && splStr[1].equals("WIN")) {
+			//TODO : Traitement
+			return 0;
+		}
 		//WIN:ID                               //
+		else if (splStr.length == 3 && splStr[1].equals("WIN")) {
+			return 1;
+		}
 		//EGALITE                              //
 		//CANCEL                               //
+		else if (splStr.length == 2 && (splStr[1].equals("EGALITE") || splStr[1].equals("CANCEL"))) {
+			return 1;
+		}
 		
 		return -1;
 	}
@@ -391,6 +437,25 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	public void mouseReleased(MouseEvent arg0) {}
 	
 	public static void main(String[] args) {
-		new ClientFjorde();
+		ClientFjorde cf = new ClientFjorde();
+		while ( !cf.isInit()) { System.out.println("Attente");} //Attente que le client soit connecte
+		System.out.println("Init!");
+		
+		try {
+			cf.sendMessage("CLIENT");//Nom pour le serveur
+			String message;
+			boolean endGame = false;
+			int returnedValue;
+			do {
+				message = cf.receiveMessage();
+				returnedValue = cf.processMessage(message);
+				switch (returnedValue) {
+					case 1://WIN EGALITE CANCEL
+						endGame = true;
+						break;
+				}
+			} while (!endGame);
+		}
+		catch (IOException ex) {}
 	}
 }
