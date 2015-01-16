@@ -172,7 +172,10 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		catch (NumberFormatException ex) { throw new IOException(); }
 		
 		this.clientSocket = new DatagramSocket();
-				
+		
+		if (this.port > 0)
+			sendMessage("CLIENT");//Nom pour le serveur
+		
 		return (this.port > 0);
 	}
 	
@@ -220,6 +223,8 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		//Recuperation du message
 		this.clientSocket.receive(packet);
 		
+		System.out.println(new String(packet.getData()));
+		
 		return new String(packet.getData());
 	}
 	
@@ -231,7 +236,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	//PICK                            //
 	//SEND_TO_OPICK                   //
 	//REQUEST_PLACEMENT:ORIENTATION   //
-	//POSET:TILE:POSITION             //
+	//POSET:TILE:POSITION:ORIENTATION //
 	//HUT:YES ou HUT:NO               //
 	//FIELD:TILE                      //
 	//--------------------------------//
@@ -243,7 +248,9 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	 */
 	public void sendMessage(String message) throws IOException {
 		byte[] data = new byte[1024];
-		message = this.clientId + ":" + message;
+		if (this.clientId != null)
+			message = this.clientId + ":" + message;
+		
 		data = message.getBytes();
 		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 		//Envoi du message
@@ -259,16 +266,18 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		message = message.trim();
 		String splStr[] = message.split(":");
 		
+		if(splStr.length == 2 && splStr[1].equals("OK")) {
+			this.clientId = splStr[0];
+			return 127;
+		}
+		
 		if (!splStr[0].equals(this.clientId))
 			return -1;
 		
 		/* MESSAGES RECUS PAR LE CLIENT */
-		if(splStr[1].equals("OK")) {
-			this.clientId = splStr[0];
-			return 127;
-		}
+		
 		//PLAYER:NUMERO                        //
-		else if (splStr.length == 3 && splStr[1].equals("PLAYER")) {
+		if (splStr.length == 3 && splStr[1].equals("PLAYER")) {
 			this.numPlayer = Integer.parseInt(splStr[2]);
 			return 127;
 		}
@@ -291,17 +300,18 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		else if (splStr.length == 4 && splStr[1].equals("POSET")) {
 			Tile t = new Tile(splStr[2], Integer.parseInt(splStr[3]));
 			t.setLocation(grid.getBoardSize().width/2, grid.getBoardSize().height/2);
+			this.grid.addTile(t);
 			return 127;
 		}
 		//POSET:NEIGHBOOR:POSITION:TILE:ORIENTAION:YES/NO //
 		else if (splStr.length == 7 && splStr[1].equals("POSET")) {
-			if ( this.wait.isVisible()) {
-				Tile t = new Tile(splStr[4], Integer.parseInt(splStr[5]));
-				t.setItem('H', numPlayer);
-				Tile neighboor = grid.getTile(splStr[2]);
-				t.setLocationWithTile(neighboor, Integer.parseInt(splStr[3]));
-				this.grid.addTile(t);
+			Tile t = new Tile(splStr[4], Integer.parseInt(splStr[5]));
+			if ( this.wait.isVisible() && splStr[6].equals("YES")) {
+				t.setItem('H', (numPlayer+1)%2);
 			}
+			Tile neighboor = grid.getTile(splStr[2]);
+			t.setLocationWithTile(neighboor, Integer.parseInt(splStr[3]));
+			this.grid.addTile(t);
 			return 127;
 		}
 		//FIELD:TILE                           //
@@ -431,10 +441,13 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	
 	public static void main(String[] args) {
 		ClientFjorde cf = new ClientFjorde();
-		while ( !cf.isInit()) {} //Attente que le client soit connecte
+		boolean isInit;
+		do {
+			isInit = cf.isInit();
+			System.out.print('\0');
+		} while ( !isInit ); //Attente que le client soit connecte
 		
 		try {
-			cf.sendMessage("CLIENT");//Nom pour le serveur
 			String message;
 			boolean endGame = false;
 			int returnedValue;

@@ -258,6 +258,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			tile.setBounds(tile.getX(), tile.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
 			this.tiles.add(tile);
 			this.board.add(tile);
+			this.client.repaint();
 		}
 	}
 	
@@ -272,7 +273,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * Fait la demande des tuiles de placement au client
 	 */
 	private void requestPlacementTiles() {
-		//On vérifie que la requete n'a pas deja ete faite
+		//On vï¿½rifie que la requete n'a pas deja ete faite
 		for (PlacementTile t: placement)
 			if (t.getOrientation() == selected.getOrientation())
 				return ;
@@ -291,10 +292,11 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 		if (neighboor != null) {
 			PlacementTile pt = new PlacementTile(neighboor, position, selected.getOrientation());
 			pt.setBounds(pt.getX(), pt.getY(), Tile.IMG_WIDTH, Tile.IMG_HEIGHT);
-			pt.setVisible(false);
+			pt.setVisible(true);
 			pt.addMouseListener(this);
 			this.placement.add(pt);
 			this.board.add(pt);
+			this.client.repaint();
 		}
 	}
 	
@@ -398,7 +400,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.selected.setSelectedTile(null); //Retrait de la selection
 			
 			//Envoi du placement au serveur
-			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition()); } catch ( IOException ex) { System.out.println("Failed!");  }
+			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition() + ":" + pt.getOrientation()); } catch ( IOException ex) { System.out.println("Failed!");  }
 		}
 		//Placement d'un champ
 		else if ( e.getSource() instanceof Tile) {

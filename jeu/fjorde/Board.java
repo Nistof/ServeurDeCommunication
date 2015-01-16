@@ -151,8 +151,10 @@ public class Board {
 				int firstNeighboor = t.getFirstRealNeighboor();
 				hmTiles.put(t.getNeighboorBySide(firstNeighboor),
 						(firstNeighboor + 3) % 6);
+				System.out.println("ok");
 			}
 		}
+		System.out.println(hmTiles);
 		return hmTiles;
 	}
 	

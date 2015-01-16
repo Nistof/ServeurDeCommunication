@@ -48,8 +48,23 @@ public class Tile {
         }
     }
     
-    public void setOrientation(int orientation) {
+    
+    private void updateTypes () {
+    	Type t = types[0];
+    	for(int i = 0; i < types.length-1; i--) {
+    		types[i] = types[i+1];
+    	}
+    	types[5] = t;
+    }
+    
+    public int getOrientation() {
+		return orientation;
+	}
+
+
+	public void setOrientation(int orientation) {
         this.orientation = orientation;
+        updateTypes();
     }
     
     /*
@@ -91,13 +106,13 @@ public class Tile {
             return b;
 
         for (int i = 0; i < this.neighboors.length; i++) {
-            if (this.neighboors[(i+orientation)%6] != null
-                    && this.neighboors[(i+orientation)%6].getItem() != null
+            if (this.neighboors[i%6] != null
+                    && this.neighboors[i%6].getItem() != null
                     && p == this.neighboors[i].getOwner()) {
-                if (!this.types[(i+orientation)%6].equals(Type.MONTAGNE)
-                        && !this.types[(i + 1 + orientation) % 6].equals(Type.MONTAGNE)
-                        || !this.types[(i+orientation)%6].equals(Type.EAU)
-                        && !this.types[(i + 1 + orientation) % 6].equals(Type.EAU)) {
+                if (!this.types[i%6].equals(Type.MONTAGNE)
+                        && !this.types[(i + 1) % 6].equals(Type.MONTAGNE)
+                        || !this.types[i%6].equals(Type.EAU)
+                        && !this.types[(i + 1) % 6].equals(Type.EAU)) {
                     b = true;
                 }
             }
@@ -120,7 +135,7 @@ public class Tile {
         if (!this.isStart()) {
             int cpt = 0; // Nombre de somments montagne sur la tuile
             for (int i = 0; i < this.types.length; i++) {
-                if (this.types[(i+orientation)%6].equals(Type.MONTAGNE))
+                if (this.types[i%6].equals(Type.MONTAGNE))
                     cpt++;
             }
 
@@ -160,8 +175,8 @@ public class Tile {
      */
     public Type[] getTypesBySide(int side) {
         Type[] neighboors = new Type[2];
-        neighboors[0] = types[(side+orientation)%6];
-        neighboors[1] = types[(side + 1 + orientation) % 6];
+        neighboors[0] = types[side%6];
+        neighboors[1] = types[(side + 1) % 6];
         return neighboors;
     }
 
@@ -171,7 +186,7 @@ public class Tile {
      * @return Le voisin au cote side
      */
     public Tile getNeighboorBySide(int side) {
-    	return neighboors[(side+orientation)%6];
+    	return neighboors[(6+side)%6];
     }
 
     /**
@@ -182,16 +197,16 @@ public class Tile {
      */
     public boolean setNeighboorById(Tile t, int side) {
         boolean b = false;
-        if ((this.neighboors[(side+orientation)%6] == null || this.neighboors[(side+orientation)%6].isFakeTile())) {
+        if ((this.neighboors[side%6] == null || this.neighboors[side%6].isFakeTile())) {
             if (this.isStart() && t.isStart()) {
                 b = true;
-                this.neighboors[(side+orientation)%6] = t;
-                t.setNeighboorById(this, (side + 3 + orientation) % 6);
+                this.neighboors[side%6] = t;
+                t.setNeighboorById(this, (side + 3) % 6);
             }
             else {
-                if(getNumberOfRealNeighboors((side+orientation)%6) >= 1 && isValid(t, (side+orientation)%6) && setNeighboorByCircle(t, (side+orientation)%6, 0)) {
-                    t.neighboors[(side+orientation+3)%6] = this;
-                    this.neighboors[(side+orientation)%6] = t;
+                if(getNumberOfRealNeighboors((side)%6) >= 1 && isValid(t, side%6) && setNeighboorByCircle(t, side%6, 0)) {
+                    t.neighboors[(side+3)%6] = this;
+                    this.neighboors[side%6] = t;
                     b = true;
                 }
             }
@@ -206,10 +221,10 @@ public class Tile {
      */
     public int getNumberOfRealNeighboors(int side) {
 		int n = 0;
-		if(this.neighboors[(6+side+orientation-1)%6] != null && !this.neighboors[(6+side+orientation-1)%6].isFakeTile()) {
+		if(this.neighboors[(6+side-1)%6] != null && !this.neighboors[(6+side-1)%6].isFakeTile()) {
 			n++;
 		}
-		if(this.neighboors[(side+1+orientation)%6] != null && !this.neighboors[(side+1+orientation)%6].isFakeTile()) {
+		if(this.neighboors[(side+1)%6] != null && !this.neighboors[(side+1)%6].isFakeTile()) {
 			n++;
 		}
 		return n;
@@ -222,7 +237,7 @@ public class Tile {
     public int getFirstRealNeighboor() {
     	int t = -1;
     	for(int i = 0; t == -1 && i < this.neighboors.length; i++) {
-    		if(this.neighboors[(i+orientation)%2] != null && !this.neighboors[(i+orientation)%6].isFakeTile()) {
+    		if(this.neighboors[i%6] != null && !this.neighboors[i%6].isFakeTile()) {
     			t = i;
     		}
     	}
@@ -239,8 +254,8 @@ public class Tile {
 	private boolean setNeighboorByCircle (Tile t, int sideOrg, int turn) {
     	boolean b = true;
     	if(turn == 0) {
-    		b &= getNeighboorsByDirection((sideOrg+orientation)%6, -1).setNeighboorByCircle(t, (sideOrg+1)%6, turn+1) &&
-    				getNeighboorsByDirection((sideOrg+orientation)%6, 1).setNeighboorByCircle(t, (6+sideOrg-1)%6, turn-1);
+    		b &= getNeighboorsByDirection(sideOrg%6, -1).setNeighboorByCircle(t, (sideOrg+1)%6, turn+1) &&
+    				getNeighboorsByDirection((sideOrg)%6, 1).setNeighboorByCircle(t, (6+sideOrg-1)%6, turn-1);
     	}
     	else if (Math.abs(turn) == 3) {
     		if(isValid(t, sideOrg)) {
@@ -250,7 +265,7 @@ public class Tile {
     	}
     	else {
     		int direction = turn/Math.abs(turn);
-    		b &= isValid(t, (sideOrg+orientation)%6) && getNeighboorsByDirection((sideOrg+orientation)%6, direction).setNeighboorByCircle(t, (6+sideOrg-direction)%6, turn+direction);
+    		b &= isValid(t, (sideOrg)%6) && getNeighboorsByDirection((sideOrg)%6, direction).setNeighboorByCircle(t, (6+sideOrg-direction)%6, turn+direction);
     		if(b) {
     			this.neighboors[sideOrg] = t;
     			t.neighboors[(sideOrg+3)%6] = this;
@@ -274,7 +289,7 @@ public class Tile {
      * @return La tuile voisine dans la direction donnee
      */
     private Tile getNeighboorsByDirection (int side, int direction) {
-        return neighboors[(6+side+direction+orientation)%6];
+        return neighboors[(6+side+direction)%6];
 
     }
     
@@ -284,7 +299,7 @@ public class Tile {
      */
     public void setTypes(String types) {
         for (int i = 0; i < types.length(); i++) {
-            this.types[(i+orientation)%6] = Type.getTypeById(types.charAt(i));
+            this.types[(i)%6] = Type.getTypeById(types.charAt(i));
         }
     }
     
@@ -330,6 +345,9 @@ public class Tile {
         for (int i = 0;!isFakeTile() &&  i < this.types.length; i++) {
             s += this.types[i].toString();
         }
+        if(isFakeTile()) {
+        	s += "Fantome";
+        }
         return s;
     }
     
@@ -339,14 +357,14 @@ public class Tile {
      */
     public void generateGhosts() {
         for (int i = 0; i < neighboors.length; i++) {
-        	if(neighboors[(i+orientation)%6] == null) {
-        		neighboors[(i+orientation)%6] = new Tile();
-        		neighboors[(i+orientation)%6].neighboors[(i+3)%6] = this;
+        	if(neighboors[(i)%6] == null) {
+        		neighboors[(i)%6] = new Tile();
+        		neighboors[(i)%6].neighboors[(i+3)%6] = this;
         	}
         }
         for (int i = 0; i < neighboors.length; i++) {
-            neighboors[(i+orientation)%6].neighboors[((i+3%6)+1)%6] = neighboors[(6+i-1)%6];
-            neighboors[(i+orientation)%6].neighboors[(6+(i+3%6)-1)%6] = neighboors[(i+1)%6];
+            neighboors[(i)%6].neighboors[(((i+3)%6)+1)%6] = neighboors[(6+i-1)%6];
+            neighboors[(i)%6].neighboors[(6+((i+3)%6)-1)%6] = neighboors[(i+1)%6];
         }
         
     }

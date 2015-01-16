@@ -28,7 +28,7 @@ public class Fjorde implements IJeu {
 		this.pickOpen = new Pick(false);
 		this.players = new FjordePlayer[2];
 		this.players[0] = new FjordePlayer("SARAH", "MARRON");
-		this.players[0] = new FjordePlayer("FLORIAN", "BLANC");
+		this.players[1] = new FjordePlayer("FLORIAN", "BLANC");
 		this.currentPlayer = 0;
 		this.nbPlayer = 0;
 		try { 
@@ -51,11 +51,6 @@ public class Fjorde implements IJeu {
 			if (this.players[currentPlayer].getTile() == null) {
 				players[currentPlayer].draw(pickClose.draw());
 				b = true;
-			} else if (this.players[currentPlayer].getTile() != null) {
-				if (putInOpenPick()) {
-					players[currentPlayer].draw(pickClose.draw());
-					b = true;
-				}
 			}
 		}
 
@@ -76,12 +71,13 @@ public class Fjorde implements IJeu {
 			if (this.players[currentPlayer].getTile() == null) {
 				players[currentPlayer].draw(pickOpen.draw(i));
 				b = true;
-			} else if (this.players[currentPlayer].getTile() != null) {
+			}/* else if (this.players[currentPlayer].getTile() != null) {
 				if (putInOpenPick()) {
 					players[currentPlayer].draw(pickOpen.draw(i));
 					b = true;
 				}
-			}
+				
+			}*/
 		}
 		return b;
 	}
@@ -209,11 +205,13 @@ public class Fjorde implements IJeu {
 	public void add(String name, String id) {
 		server.log("Ajout du joueur " + name + " avec l'id " + id);
 		players[nbPlayer].setName(name);
-		players[nbPlayer++].setId(id);
+		players[nbPlayer].setId(id);
+		nbPlayer++;
 	}
 
 	@Override
 	public void sendToAllPlayers(String action) throws IOException {
+		System.out.println("Envoiee a tout le monde");
 		server.sendToAllClient(action);
 	}
 
@@ -293,14 +291,21 @@ public class Fjorde implements IJeu {
 		}
 		return -1;
 	}
+	
+	private void sendPlacementList() throws IOException {
+		sendToPlayer(":PLACEMENTLIST");
+		for( Tile t : board.getPossibilities(players[currentPlayer].getTile()).keySet()) {
+			sendToPlayer( ":" + t.getCode() + ":" + board.getPossibilities(players[currentPlayer].getTile()).get(t));
+		}
+		sendToPlayer(":ENDLIST");
+	}
 
-	@SuppressWarnings("unused")
     @Override
 	public void launchGame() throws IOException {
 		boolean endTurn = false;
+		boolean startTurn = true;
 		int round = 0;
 		int playerStartColonization = 0;
-		String codePutTile = "";
 		boolean putField = false;
 		System.out.println(this);
 		sendToAllPlayers(":NAMELIST");
@@ -315,19 +320,27 @@ public class Fjorde implements IJeu {
 			changePlayer();
 		}
 		
+		sendToAllPlayers(":POSET:"+ this.board.getTile(0).getCode()+":0");
+		for (int i = 1; i < board.getSize(); i++)
+			sendToAllPlayers(":POSET:"+board.getTile(i-1)+":"+2*i+":"+board.getTile(i)+":"+board.getTile(i).getOrientation()+":NO");
 		
 		while (round < 3 && nbPlayer == 2) {
-
+			startTurn = true;
 			while (nbPlayer == 2 && !endDiscovery()) {
+				if (startTurn) {
+					sendToPlayer(":START");
+					startTurn = false;
+				}
+				
 				// Changement de joueur
 				if (endTurn) {
 					changePlayer();
 					endTurn = false;
 					putTile = false;
+					startTurn = true;
 				}
 
 				String msg = "";
-				sendToPlayer(":START");
 				try {
 					msg = receiveFromPlayer();
 				} catch (SocketTimeoutException e) {
@@ -364,32 +377,30 @@ public class Fjorde implements IJeu {
 
 					sendToAllPlayers(":POSET:" + this.tileInTheBoard + ":"
 							+ this.side + ":"
-							+ this.board.getTile(board.getSize()) + ":"
+							+ this.board.getTile(board.getSize()-1) + ":"
 							+ this.orientation + ":"
 							+ action[2]);
 					break;
 				case 3: // Piocher dans la pioche ferme
 					sendToPlayer(":PICK:"
 							+ players[currentPlayer].getTile().getCode());
+					this.sendPlacementList();
 					
 					break;
 				case 4: // Piocher dans la pioche ouverte
 					sendToPlayer(":OPICK:YES");
+					this.sendPlacementList();
 					break;
 				case 5: // Defausser
 					if (endDiscovery()) {
 						playerStartColonization = currentPlayer;
 					}
 
-					sendToPlayer(":SEND_TO_OPICK");
+					sendToPlayer(":SEND_TO_OPICK:YES");
 					break;
 					
 				case 6: // Renvoie les possiblite de placement 
-					sendToPlayer(":PLACEMENTLIST");
-					for( Tile t : board.getPossibilities(players[currentPlayer].getTile()).keySet()) {
-						sendToPlayer( ":" + t.getCode() + ":" + board.getPossibilities(players[currentPlayer].getTile()).get(t));
-					}
-					sendToPlayer(":ENDLIST");
+					this.sendPlacementList();
 					break;
 				case 7: // Finir le tour
 					if (putTile)

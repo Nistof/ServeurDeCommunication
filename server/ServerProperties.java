@@ -84,6 +84,7 @@ class ServerProperties {
 					serverPort = Integer.parseInt(value);
 			}
 			
+			this.save();
 			sc.close();
 		} catch ( FileNotFoundException e) { e.printStackTrace(); }
 	}
