@@ -48,7 +48,6 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	
 	private int numPlayer;
 	private boolean isInit;
-	private boolean hasPlayed;
 	private String tileName;
 
 	/**
@@ -60,7 +59,6 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		this.goFullScreen();
 		this.numPlayer = 0;
 		this.isInit = false;
-		this.hasPlayed = true;
 		this.tileName = null;
 		
 		this.panel = new JPanel();
@@ -189,7 +187,6 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	
 	public void setTileName(String name) { this.tileName = name; }
 	public boolean isInit() { return this.isInit; }
-	public boolean hasPlayed() { return this.hasPlayed; }
 	
 	//-------------------------------------//
 	//    MESSAGES RECUS PAR LE CLIENT     //
@@ -279,13 +276,11 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		//START                                //
 		else if (splStr.length == 2 && splStr[1].equals("START")) {
 			this.playerWait(false);
-			this.hasPlayed = false;
 			return 2;
 		}
 		//ENDTURN                              //
 		else if (splStr.length == 2 && splStr[1].equals("ENDTURN")) {
 			this.playerWait(true);
-			this.hasPlayed =  true;
 			return 3;
 		}
 		//HUT                                  //
