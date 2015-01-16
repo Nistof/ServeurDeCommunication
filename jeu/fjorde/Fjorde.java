@@ -237,11 +237,13 @@ public class Fjorde implements IJeu {
 		if (!action[0].equals(players[currentPlayer].getId()))
 			return -2;
 		if (action[1].equals("POSET")) {
+			this.players[currentPlayer].rotateTile(Integer.parseInt(action[4]));
 			if (play(this.board.getTileByCode(action[2]),
 					Integer.parseInt(action[3]))) {
 				this.tileInTheBoard = action[2];
 				this.side = Integer.parseInt(action[3]);
 				this.orientation = Integer.parseInt(action[4]);
+				this.putTile = true;
 				return 0;
 			} else
 				return -1;
@@ -281,8 +283,10 @@ public class Fjorde implements IJeu {
 				return -4;
 			
 		} else if (action[1].equals("REQUEST_PLACEMENT")) { //Ajouter l'orientation
-			if(players[currentPlayer].getTile()!=null)
+			if(players[currentPlayer].getTile()!=null) {
+				players[currentPlayer].rotateTile(Integer.parseInt(action[2]));
 				return 6;
+			}
 			else
 				return -1;
 
@@ -326,18 +330,19 @@ public class Fjorde implements IJeu {
 		
 		while (round < 3 && nbPlayer == 2) {
 			startTurn = true;
-			while (nbPlayer == 2 && !endDiscovery()) {
-				if (startTurn) {
-					sendToPlayer(":START");
-					startTurn = false;
-				}
-				
+			while (nbPlayer == 2 && !endDiscovery()) {			
 				// Changement de joueur
 				if (endTurn) {
 					changePlayer();
 					endTurn = false;
 					putTile = false;
 					startTurn = true;
+				}
+				
+				//Debut de tour
+				if (startTurn) {
+					sendToPlayer(":START");
+					startTurn = false;
 				}
 
 				String msg = "";
@@ -378,13 +383,14 @@ public class Fjorde implements IJeu {
 					sendToAllPlayers(":POSET:" + this.tileInTheBoard + ":"
 							+ this.side + ":"
 							+ this.board.getTile(board.getSize()-1) + ":"
-							+ this.orientation + ":"
+							+ this.board.getTile(board.getSize()-1).getOrientation() + ":"
 							+ action[2]);
+					sendToPlayer(":ENDTURN");
+					endTurn = true;
 					break;
 				case 3: // Piocher dans la pioche ferme
 					sendToPlayer(":PICK:"
 							+ players[currentPlayer].getTile().getCode());
-					this.sendPlacementList();
 					
 					break;
 				case 4: // Piocher dans la pioche ouverte

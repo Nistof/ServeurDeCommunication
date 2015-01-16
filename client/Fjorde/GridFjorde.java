@@ -41,6 +41,8 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	private boolean isInit;
 	private int nbHut;
 	
+	private boolean[] isChecked = {false,false,false,false,false,false};
+	
 	/**
 	 * Initialisation du plateau de jeu
 	 * @param client client s'occupant de la communication avec le serveur
@@ -273,10 +275,11 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 * Fait la demande des tuiles de placement au client
 	 */
 	private void requestPlacementTiles() {
-		//On v�rifie que la requete n'a pas deja ete faite
-		for (PlacementTile t: placement)
-			if (t.getOrientation() == selected.getOrientation())
-				return ;
+		//On verifie que la requete n'a pas deja ete faite
+		if (isChecked[selected.getOrientation()])
+			return ;
+		else
+			isChecked[selected.getOrientation()] = true;
 		
 		//Demande au client
 		try { client.sendMessage("REQUEST_PLACEMENT:"+selected.getOrientation()); }
@@ -305,7 +308,7 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 	 */
 	private void purgeVisiblePlacementTile() {
 		for (PlacementTile t : placement)
-				t.setVisible(false);
+			t.setVisible(false);
 	}
 	
 	/**
@@ -327,6 +330,8 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			this.board.remove(placement.get(0));
 			placement.remove(0);
 		}
+		for (int i = 0; i < 6;i++)
+			isChecked[i] = false;
 		client.repaint();
 	}
 	
@@ -395,12 +400,14 @@ public class GridFjorde extends JPanel implements MouseMotionListener, MouseList
 			Tile tile = new Tile(selected.getType(), pt.getOrientation());
 			tile.setLocation(pt.getX(), pt.getY());
 			
+			//Envoi du placement au serveur
+			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition() + ":" + pt.getOrientation()); } catch ( IOException ex) { System.out.println("Failed!");  }
+			
 			this.addTile(tile);	//Ajout au plateau
 			this.removeAllPlacementTile(); //Retrait des PlacementTile
 			this.selected.setSelectedTile(null); //Retrait de la selection
 			
-			//Envoi du placement au serveur
-			try { client.sendMessage("POSET:"+ pt.getNeighboor().getType() + ":" + pt.getPosition() + ":" + pt.getOrientation()); } catch ( IOException ex) { System.out.println("Failed!");  }
+			
 		}
 		//Placement d'un champ
 		else if ( e.getSource() instanceof Tile) {

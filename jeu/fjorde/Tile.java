@@ -13,6 +13,8 @@ package jeu.fjorde;
 
 public class Tile {
 
+	private String originalCode;
+	private String orientedCode;
     private Type[] types;
     private Tile[] neighboors;
     private boolean fake;
@@ -43,18 +45,31 @@ public class Tile {
         this.item = null;
         this.owner = null;
         this.orientation = 0;
+        this.originalCode = type;
+        this.orientedCode = type;
         for (int i = 0; i < type.length(); i++) {
             this.types[i] = Type.getTypeById(type.charAt(i));
         }
     }
     
     
-    private void updateTypes () {
-    	Type t = types[0];
-    	for(int i = 0; i < types.length-1; i--) {
-    		types[i] = types[i+1];
-    	}
-    	types[5] = t;
+    private void updateTypes (int newOrientation) {
+    	char[] typeC = originalCode.toCharArray();
+    	System.out.println(originalCode);
+    	char tmp1, tmp2;
+		for (int i = 0; i < newOrientation; i++) {
+			tmp2 = typeC[0];
+			for (int j = 0; j < 6; j++) {
+				tmp1 = typeC[(j+1)%6];
+				typeC[(j+1)%6] = tmp2;
+				tmp2 = tmp1;
+			}
+		}
+    	this.orientedCode = new String(typeC);
+    	System.out.println(orientedCode);
+    	for (int i = 0; i < orientedCode.length()-1; i++) {
+            this.types[i] = Type.getTypeById(orientedCode.charAt(i));
+        }
     }
     
     public int getOrientation() {
@@ -63,8 +78,8 @@ public class Tile {
 
 
 	public void setOrientation(int orientation) {
+		updateTypes(orientation);
         this.orientation = orientation;
-        updateTypes();
     }
     
     /*
@@ -308,11 +323,7 @@ public class Tile {
      * @return Le code de la tuile
      */
     public String getCode() {
-        String s = "";
-        for (int i = 0; i < types.length; i++) {
-            s += types[i];
-        }
-        return s;
+    	return this.originalCode;
     }
     
     /**

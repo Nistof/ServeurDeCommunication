@@ -223,8 +223,6 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 		//Recuperation du message
 		this.clientSocket.receive(packet);
 		
-		System.out.println(new String(packet.getData()));
-		
 		return new String(packet.getData());
 	}
 	
@@ -304,14 +302,16 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 			return 127;
 		}
 		//POSET:NEIGHBOOR:POSITION:TILE:ORIENTAION:YES/NO //
-		else if (splStr.length == 7 && splStr[1].equals("POSET")) {
+		else if (splStr.length == 7 && splStr[1].equals("POSET") && this.wait.isVisible()) {
 			Tile t = new Tile(splStr[4], Integer.parseInt(splStr[5]));
-			if ( this.wait.isVisible() && splStr[6].equals("YES")) {
-				t.setItem('H', (numPlayer+1)%2);
+			if ( t != null) {
+				if ( splStr[6].equals("YES")) {
+					t.setItem('H', (numPlayer+1)%2);
+				}
+				Tile neighboor = grid.getTile(splStr[2]);
+				t.setLocationWithTile(neighboor, Integer.parseInt(splStr[3]));
+				this.grid.addTile(t);
 			}
-			Tile neighboor = grid.getTile(splStr[2]);
-			t.setLocationWithTile(neighboor, Integer.parseInt(splStr[3]));
-			this.grid.addTile(t);
 			return 127;
 		}
 		//FIELD:TILE                           //

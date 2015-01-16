@@ -144,5 +144,9 @@ public class FjordePlayer extends Player {
 		tile = null;
 		return tmp;
 	}
+
+	public void rotateTile(int orientation) {
+		this.tile.setOrientation(orientation);
+	}
 	
 }

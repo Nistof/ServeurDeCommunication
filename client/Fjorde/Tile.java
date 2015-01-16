@@ -31,7 +31,7 @@ public class Tile extends JLabel {
 		this.xLocation = 0;
 		this.yLocation = 0;
 		
-		if ( !type.equals("")) {
+		if ( type != null && !type.equals("")) {
 			this.defaultImage = RotatedTile.getImage(type, orientation, IMG_WIDTH, IMG_HEIGHT);
 			this.setIcon(new ImageIcon(defaultImage));
 		}
@@ -93,6 +93,9 @@ public class Tile extends JLabel {
 	 * @param position cote sur lequel la tuile doit etre placee
 	 */
 	public void setLocationWithTile(Tile tile, int position) {
+		if (tile == null)
+			return ;
+		
 		if ( position == 1 || position == 4) {
 			this.xLocation = tile.getX()+(position == 1?IMG_WIDTH:-IMG_WIDTH);
 			this.yLocation = tile.getY();

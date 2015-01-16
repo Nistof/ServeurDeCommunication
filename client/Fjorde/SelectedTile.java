@@ -73,6 +73,7 @@ public class SelectedTile extends JPanel implements ActionListener {
 			this.toOpenPick.setEnabled(true);
 			this.rotateLeft.setVisible(true);
 			this.rotateRight.setVisible(true);
+			grid.updatePlacementTile();
 		} else {
 			this.type = "";
 			this.tile.setIcon(null);
@@ -118,7 +119,7 @@ public class SelectedTile extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//Changement de l'orientation de la pièce
+		//Changement de l'orientation de la piï¿½ce
 		//Rotation gauche
 		if ( e.getSource() == this.rotateLeft) {
 			orientation = ((orientation-1)%6+6)%6;

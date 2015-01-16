@@ -63,8 +63,8 @@ public class PlacementTile extends JLabel implements MouseListener {
 	public Tile getNeighboor() { return this.neighboor; }
 	
 	/**
-	 * Retourne la position a laquelle est liée la PlacementTile sur le voisin
-	 * @return Position a laquelle est liée la PlacementTile sur le voisin
+	 * Retourne la position a laquelle est liï¿½e la PlacementTile sur le voisin
+	 * @return Position a laquelle est liï¿½e la PlacementTile sur le voisin
 	 */
 	public int getPosition() { return this.position; }
 
