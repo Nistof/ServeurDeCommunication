@@ -244,7 +244,6 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	public void sendMessage(String message) throws IOException {
 		byte[] data = new byte[1024];
 		message = this.clientId + ":" + message;
-		System.out.println(message);
 		data = message.getBytes();
 		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 		//Envoi du message
@@ -433,8 +432,7 @@ public class ClientFjorde extends JFrame implements ActionListener, MouseListene
 	
 	public static void main(String[] args) {
 		ClientFjorde cf = new ClientFjorde();
-		while ( !cf.isInit()) { System.out.println("Attente");} //Attente que le client soit connecte
-		System.out.println("Init!");
+		while ( !cf.isInit()) {} //Attente que le client soit connecte
 		
 		try {
 			cf.sendMessage("CLIENT");//Nom pour le serveur
