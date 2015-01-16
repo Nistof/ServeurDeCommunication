@@ -41,11 +41,11 @@ public abstract class RotatedTile {
 		
 		for ( int i = 0; i < 6; i++) {
 			//Creation du triangle
-			Polygon triangle = new Polygon();
-			triangle.addPoint(center.x, center.y);
-			triangle.addPoint((points[i].x+points[((i-1)%6+6)%6].x)/2, (points[i].y+points[((i-1)%6+6)%6].y)/2);
-			triangle.addPoint(points[i].x, points[i].y);
-			triangle.addPoint((points[i].x+points[(i+1)%6].x)/2, (points[i].y+points[(i+1)%6].y)/2);
+			Polygon polygon = new Polygon();
+			polygon.addPoint(center.x, center.y);
+			polygon.addPoint((points[i].x+points[((i-1)%6+6)%6].x)/2, (points[i].y+points[((i-1)%6+6)%6].y)/2);
+			polygon.addPoint(points[i].x, points[i].y);
+			polygon.addPoint((points[i].x+points[(i+1)%6].x)/2, (points[i].y+points[(i+1)%6].y)/2);
 			
 			//Couleur du triangle
 			Color c;
@@ -71,8 +71,8 @@ public abstract class RotatedTile {
 			
 			//Dessin du triangle sur le Graphics
 			g.setColor(c);
-			g.drawPolygon(triangle);
-			g.fillPolygon(triangle);
+			g.drawPolygon(polygon);
+			g.fillPolygon(polygon);
 		}
 		
 		//Dessin du contour de l'hexagone
