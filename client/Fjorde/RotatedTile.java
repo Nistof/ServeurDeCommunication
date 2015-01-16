@@ -43,8 +43,9 @@ public abstract class RotatedTile {
 			//Creation du triangle
 			Polygon triangle = new Polygon();
 			triangle.addPoint(center.x, center.y);
+			triangle.addPoint((points[i].x+points[((i-1)%6+6)%6].x)/2, (points[i].y+points[((i-1)%6+6)%6].y)/2);
 			triangle.addPoint(points[i].x, points[i].y);
-			triangle.addPoint(points[(i+1)%6].x, points[(i+1)%6].y);
+			triangle.addPoint((points[i].x+points[(i+1)%6].x)/2, (points[i].y+points[(i+1)%6].y)/2);
 			
 			//Couleur du triangle
 			Color c;
